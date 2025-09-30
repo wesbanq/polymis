@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PolyminoShape" load_steps=7 format=3 uid="uid://bvlkfmgky2us1"]
+
+[ext_resource type="Script" uid="uid://cruubg6nait1l" path="res://polyminoshape.gd" id="1_3qvwr"]
+[ext_resource type="Script" uid="uid://c8h0liekeyd2c" path="res://block_info.gd" id="2_ybnp1"]
+
+[sub_resource type="Resource" id="Resource_ykuon"]
+script = ExtResource("2_ybnp1")
+metadata/_custom_type_script = "uid://c8h0liekeyd2c"
+
+[sub_resource type="Resource" id="Resource_3sl6m"]
+script = ExtResource("2_ybnp1")
+metadata/_custom_type_script = "uid://c8h0liekeyd2c"
+
+[sub_resource type="Resource" id="Resource_oe4yw"]
+script = ExtResource("2_ybnp1")
+metadata/_custom_type_script = "uid://c8h0liekeyd2c"
+
+[sub_resource type="Resource" id="Resource_dmnv7"]
+script = ExtResource("2_ybnp1")
+metadata/_custom_type_script = "uid://c8h0liekeyd2c"
+
+[resource]
+script = ExtResource("1_3qvwr")
+shape_string = Array[ExtResource("2_ybnp1")]([null, SubResource("Resource_ykuon"), SubResource("Resource_3sl6m"), null, null, SubResource("Resource_oe4yw"), null, null, null, SubResource("Resource_dmnv7"), null, null, null, null, null, null])
+rotation_center = 3
+metadata/_custom_type_script = "uid://cruubg6nait1l"

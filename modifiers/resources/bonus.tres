@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="BonusModifier" load_steps=2 format=3 uid="uid://b1i8nfehtimkm"]
+
+[ext_resource type="Script" uid="uid://do2fuwq00jjwr" path="res://modifiers/bonus.gd" id="1_nie26"]
+
+[resource]
+script = ExtResource("1_nie26")
+bonus_amount = 100
+sur_bonus_am = 25
+sur_bonus_exp = 2
+display_name = "Bonus"
+description = ""
+metadata/_custom_type_script = "uid://do2fuwq00jjwr"
