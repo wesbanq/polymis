@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Bag" load_steps=9 format=3 uid="uid://7hxwa5ekk6hy"]
+
+[ext_resource type="Script" uid="uid://cruubg6nait1l" path="res://polyminoshape.gd" id="2_scpr4"]
+[ext_resource type="Script" uid="uid://b0uuh8aing25x" path="res://bag.gd" id="2_ypvcm"]
+[ext_resource type="Resource" uid="uid://p7m6ph4dwen" path="res://polymino_shapes/straight.tres" id="3_ci0cs"]
+[ext_resource type="Resource" uid="uid://dibvcegdcpjbb" path="res://polymino_shapes/cube.tres" id="4_0l5ar"]
+[ext_resource type="Resource" uid="uid://bgxvpffnrdrrb" path="res://polymino_shapes/l1.tres" id="5_ja3tc"]
+[ext_resource type="Resource" uid="uid://bvlkfmgky2us1" path="res://polymino_shapes/l2.tres" id="6_7cj72"]
+[ext_resource type="Resource" uid="uid://dsrj1kn2vnmey" path="res://polymino_shapes/skew1.tres" id="7_3ncey"]
+[ext_resource type="Resource" uid="uid://cmufhytivhbl1" path="res://polymino_shapes/skew2.tres" id="8_st7rc"]
+
+[resource]
+script = ExtResource("2_ypvcm")
+shapes = Array[ExtResource("2_scpr4")]([ExtResource("3_ci0cs"), ExtResource("4_0l5ar"), ExtResource("5_ja3tc"), ExtResource("6_7cj72"), ExtResource("7_3ncey"), ExtResource("8_st7rc")])
+metadata/_custom_type_script = "uid://b0uuh8aing25x"

@@ -1,0 +1,12 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+*.aseprite
+*.tmp
+*.xcf
+*.import
+*.png
+*.bmp
+fonts/
+*.svg
