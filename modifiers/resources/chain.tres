@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ChainModifier" load_steps=2 format=3 uid="uid://cx2aykmcrh6px"]
+
+[ext_resource type="Script" uid="uid://dse5e0nxv8xn1" path="res://modifiers/chain.gd" id="1_liful"]
+
+[resource]
+script = ExtResource("1_liful")
+display_name = ""
+description = ""
+metadata/_custom_type_script = "uid://dse5e0nxv8xn1"
