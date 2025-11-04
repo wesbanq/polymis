@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://dttcuu5g6dsk7"]
+
+[ext_resource type="Shader" uid="uid://bi25rufc411k6" path="res://abil_ico.gdshader" id="1_fr743"]
+[ext_resource type="Texture2D" uid="uid://qxrfqn7wfy48" path="res://abils/active/icons/gen_abil.png" id="2_lmxx1"]
+[ext_resource type="Theme" uid="uid://bsow2mqhludnw" path="res://text.tres" id="3_cg2pg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5cmo5"]
+shader = ExtResource("1_fr743")
+shader_parameter/tint = Vector3(1, 1, 1)
+shader_parameter/otint = Vector3(0.3, 0.3, 0.3)
+shader_parameter/active = true
+
+[node name="Abil" type="HBoxContainer"]
+offset_right = 200.0
+offset_bottom = 46.0
+
+[node name="AbilIcon" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_5cmo5")
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+size_flags_stretch_ratio = 20.0
+texture = ExtResource("2_lmxx1")
+stretch_mode = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+size_flags_stretch_ratio = 20.0
+
+[node name="AbilName" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme = ExtResource("3_cg2pg")
+theme_override_font_sizes/normal_font_size = 20
+bbcode_enabled = true
+text = "Name"
+fit_content = true
+scroll_active = false
+vertical_alignment = 1
+
+[node name="Control" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(30, 21)
+layout_mode = 2
+size_flags_vertical = 3

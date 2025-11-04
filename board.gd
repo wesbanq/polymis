@@ -5,20 +5,28 @@ class_name Board
 
 @warning_ignore("unused_signal")
 signal UpdatedBoardSize(size: Vector2)
+signal ChangedAttr(name: String, new: Variant)
+
+@onready var game: GameMain = $/root/GameMain
+@onready var container := get_parent()
 
 var width := 10
-var height := 20
+var height := 20:
+	set(v): height = v; ChangedAttr.emit("height", v)
 
-var grid_size_px := 16
-var grid_padding_px := 0
+var _init_grid_size := func() -> int: ChangedAttr.emit("grid_size_px", game.default_grid_size_px); return game.default_grid_size_px
+@onready var grid_size_px: int = _init_grid_size.call():
+	set(v): grid_size_px = v; update_position(); ChangedAttr.emit("grid_size_px", v)
+var grid_padding_px := 0:
+	set(v): grid_padding_px = v; update_position()
 
 var board_size_px: Vector2:
-	get: return Vector2(grid_size_px * width + grid_padding_px * (width-1), grid_size_px * height + grid_padding_px * (height-1))
+	#get: return Vector2(grid_size_px * (width+1) + grid_padding_px * (width-1), grid_size_px * (height) + grid_padding_px * (height-1))
+	get: return Vector2((width+1) * grid_size_px + grid_padding_px * width - grid_padding_px - grid_size_px, \
+						height * grid_padding_px + (height+1) * grid_size_px - grid_size_px - grid_padding_px)
 var offsets: Vector2:
 	get: return Vector2(-board_size_px.x/4, board_size_px.y/4)
 
-@onready var game := $/root/GameMain
-@onready var container := get_parent()
 var block_list#: Array[Array[Block]]
 
 func update_block_list() -> void:
@@ -40,11 +48,6 @@ func get_surrounding(pos: Vector2i) -> Array[Block]:
 		(block_list[pos.x][pos.y - 1] if pos.y-1 > 0 else null)
 	]
 
-#func update_position() -> void:
-	#var size = Vector2(grid_size_px * width + grid_padding_px * (width-1), grid_size_px * (height-4) + grid_padding_px * (height-5)) * scale
-	#position = Vector2(get_viewport_rect().size.x/2.0 - size.x/2.0, get_viewport_rect().size.y/2.0 + size.y/2.0)
-	#UpdatedBoardSize.emit(size)
-
 func _add_polymino(ps: PolyminoShape, origin: Vector2i = Vector2i(int(width/2.0 - 2)+1, height-4), ghost: bool = true) -> Polymino:
 	var new_polymino := ps.create_polymino(self, origin)
 	new_polymino.enable_ghost = ghost
@@ -56,7 +59,11 @@ func _add_polymino(ps: PolyminoShape, origin: Vector2i = Vector2i(int(width/2.0 
 func update_position() -> void:
 	#offset_left = offsets.x
 	#offset_top = offsets.y
-	custom_minimum_size = board_size_px
+	if container:
+		##FIX ME
+		#container.custom_minimum_size = board_size_px*1.1
+		custom_minimum_size = board_size_px
+	#custom_minimum_size = board_size_px
 
 func change_board_size(new_size: Vector2i) -> void:
 	if new_size.x > width:
@@ -65,6 +72,18 @@ func change_board_size(new_size: Vector2i) -> void:
 		height = new_size.y
 	#update_position()
 
+func check_bounds(blk: Vector2i) -> bool:
+		return blk.x >= width \
+				or blk.y >= height \
+				or blk.x < 0 \
+				or blk.y < 0 \
+				#or blk.y >= board.height-4 \
+				#or (board.block_list[blk.x+1][blk.y] is Block \
+				#or board.block_list[blk.x-1][blk.y] is Block \
+				#or board.block_list[blk.x][blk.y+1] is Block \
+				#or board.block_list[blk.x][blk.y-1] is Block \
+				or block_list[blk.x][blk.y] is Block
+
 #func update(size: Vector2) -> void:
 	##scale = main_board.scale
 	##position = Vector2(main_board.position.x - width * grid_size_px - grid_padding_px, main_board.position.y + size.y - height * grid_size_px)
@@ -72,11 +91,10 @@ func change_board_size(new_size: Vector2i) -> void:
 	#position = Vector2()
 
 func _init(s_x: int = 10, s_y: int = 20, scle: float = 1.0) -> void:
-	height = s_y+4
+	height = s_y
 	width = s_x
 	scale = Vector2(scle, scle)
 	
-	#size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	set_anchors_preset(Control.PRESET_CENTER)
 	
-	#set_anchors_preset(PRESET_CENTER)
 	update_position()
