@@ -1,5 +1,16 @@
 extends Node
 
+const UI_COLORS := {
+	"SP": Color("#c8c800"),
+	"ACTIVE_ABIL_ICON_P": Color("#4cffbf"),
+	"INACTIVE_ABIL_ICON_P": Color("#1e664c"),
+	"ACTIVE_ABIL_ICON_A": Color("#ffffff"),
+	"INACTIVE_ABIL_ICON_A": Color("#595959"),
+	
+	"UNAVAIL_TEXT": Color("#595959"),
+	"NORMAL_TEXT": Color("#ffffff"),
+}
+
 const COLORS := {
 	"WHITE": Color("#ffffff"),
 	#"BLACK": Color("#000000"),
@@ -13,6 +24,7 @@ const COLORS := {
 }
 
 const POLYMINO_SHAPES := [
+	## DO NOT USE
 	#1: rotation center 2: bottom blocks array[1st one is the lowest] 3+: blocks
 	#"i 4567 4 5 6 7",	
 	"p 1 d 9 5 1",		#4 straight
@@ -24,12 +36,21 @@ const POLYMINO_SHAPES := [
 ]
 
 var MODIFIERS := {
-	"": null,
+	#"": null,
 	"random": RandomModifier,
 	"bonus": BonusModifier,
 	"chain": ChainModifier,
 	"gold": GoldModifier,
 	"armored": ArmoredModifier,
+}
+
+var ABILITIES_ACTIVE := {
+	"makestraight": MakeStraight,
+	"removelast": RemoveLast,
+}
+
+var ABILITIES_PASSIVE := {
+	
 }
 
 enum SCORE_BOARD {
@@ -38,6 +59,13 @@ enum SCORE_BOARD {
 	SCORE_GOAL,
 	SCORE_CURRENT,
 	PTS_ADDED,
+}
+
+enum ABIL_BOARD {
+	SP,
+	ABIL_1,
+	ABIL_2,
+	ABIL_3,
 }
 
 enum BOARD_FINISH {

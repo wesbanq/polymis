@@ -15,26 +15,14 @@ var enable_ghost: bool = true
 
 signal DownTimer
 
-static func check(blk: Vector2i, board: GameBoard) -> bool:
-		return blk.x >= board.width \
-				or blk.y >= board.height \
-				or blk.x < 0 \
-				or blk.y == -1 \
-				#or blk.y >= board.height-4 \
-				#or (board.block_list[blk.x+1][blk.y] is Block \
-				#or board.block_list[blk.x-1][blk.y] is Block \
-				#or board.block_list[blk.x][blk.y+1] is Block \
-				#or board.block_list[blk.x][blk.y-1] is Block \
-				or board.block_list[blk.x][blk.y] is Block
-
-func check_collision(board: GameBoard, direction: Vector2i, all: bool = true) -> bool:
+func check_collision(direction: Vector2i, all: bool = true) -> bool:
 	if all:
 		for v in blocks:
-			if v is Block and check(v.board_position + direction, board):
+			if v is Block and game_board.check_bounds(v.board_position + direction):
 				return true
 	else:
 		for v in bottom:
-			if check(blocks[v].board_position + direction, board):
+			if game_board.check_bounds(blocks[v].board_position + direction):
 				return true
 	return false
 
@@ -69,7 +57,7 @@ func turn(cw: bool = true) -> void:
 				var final_bp = v.board_position + p_delta
 				#print(i,p_delta,PolyminoShape.get_hex_from_board_position(b_p + p_delta),"BP")
 				final_bp.x += s
-				if check(final_bp, game_board):
+				if game_board.check_bounds(final_bp):
 					c = true
 					break
 		@warning_ignore("unassigned_variable")
@@ -93,11 +81,11 @@ func turn(cw: bool = true) -> void:
 	bottom = calculate_bottom()
 	bottom2 = calculate_bottom2()
 	if ghost:
-		ghost.turn(cw)
+		#ghost.turn(cw)
 		ghost.UpdateGhost.emit()
 
 func move(direction: Vector2i) -> void:
-	if not check_collision(game_board, direction):
+	if not check_collision(direction):
 		for v in blocks:
 			if v is Block:
 				v.board_position += direction

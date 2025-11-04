@@ -16,7 +16,7 @@ var _hold_cooldown: bool = false
 var score_current := 0:
 	set(v): score_current = v; ScoreChanged.emit()
 
-var pm_left: int = 5: #TODO fomrula
+@onready var pm_left: int = 5: #TODO fomrula
 	set(v): pm_left = v; game.score_board.ChangeNumber.emit(pm_left, Enums.SCORE_BOARD.PM_LEFT)
 @onready var score_goal: int = game.round_num * (width*1000):
 	set(v): score_goal = v; game.score_board.ChangeNumber.emit(score_goal, Enums.SCORE_BOARD.SCORE_GOAL)
@@ -29,12 +29,19 @@ var difficulty: float = 1.0
 var falling_speed: float:
 	get: return 1.59658/(1+exp(1)**(.556572*difficulty - 3.2994))
 
+var special_points := 0:
+	set(v): special_points = v; ChangedAttr.emit("special_points", v)
+
 @onready var next_board: Board = Board.new(4*game.next_size+max(game.next_size-1, 0), 4)
 @onready var hold_board: Board = Board.new(4*game.hold_size+max(game.hold_size-1, 0), 4)
 
 func spawn_polymino(ps: PolyminoShape, origin: Vector2i = Vector2i(int(width/2.0 - 2)+1, height-4)) -> void:
 	if pm_left <= 0:
-		board_finish(Enums.BOARD_FINISH.LOSE_PM_LEFT)
+		pm_left += 1
+		if goal_reached:
+			board_finish(Enums.BOARD_FINISH.WIN_PM_LEFT)
+		else:
+			board_finish(Enums.BOARD_FINISH.LOSE_PM_LEFT)
 		return
 	
 	if _controlled_polymino != null:
@@ -44,11 +51,9 @@ func spawn_polymino(ps: PolyminoShape, origin: Vector2i = Vector2i(int(width/2.0
 	_controlled_polymino = _add_polymino(ps, origin)
 	
 	#check gameover
-	if _controlled_polymino.check_collision(self, Vector2i(0, -1)):
+	if _controlled_polymino.check_collision(Vector2i(0, -1)):
 		board_finish(Enums.BOARD_FINISH.LOSE_NO_SPACE)
 		return
-	
-	pm_left -= 1
 
 func board_finish(reason: Enums.BOARD_FINISH) -> void:
 	BoardCleared.emit(reason)
@@ -56,7 +61,7 @@ func board_finish(reason: Enums.BOARD_FINISH) -> void:
 		_controlled_polymino.destroy()
 		_controlled_polymino = null
 	
-	if reason == Enums.BOARD_FINISH.WIN_PM_LEFT or reason == Enums.BOARD_FINISH.WIN_CONTINUE:
+	if not GameMain.is_fail_reason(reason):
 		game.pts += pts_added
 
 func move_rows_down(from_y: int, amount: int = 1) -> void:
@@ -93,6 +98,25 @@ func get_score() -> int:
 			score += score_row(y)
 	return score
 
+func hold_polymino() -> void:
+	if not _hold_cooldown: 
+		if _held_polyminos.size() >= game.hold_size:
+			var new_polymino = _held_polyminos.pop_front()
+			_held_polyminos.append(_controlled_polymino.string)
+			_controlled_polymino.destroy()
+			_controlled_polymino = null
+			spawn_polymino(new_polymino)
+		else:
+			_held_polyminos.append(_controlled_polymino.string)
+			_controlled_polymino.destroy()
+			_controlled_polymino = null
+			spawn_polymino(game.bag.next)
+		_hold_cooldown = true
+		print(_held_polyminos)
+
+func trigger_ability(idx: int) -> void:
+	game.trigger_ability(idx)
+
 func setup_timer() -> void:
 	#print(falling_speed)
 	_down_timer.wait_time = falling_speed
@@ -101,8 +125,8 @@ func setup_timer() -> void:
 func _ready() -> void:
 	#scale = Vector2(.5, .5) # remove l8r
 	height += 4 # for spawning polyminos
-	#update_position()
 	update_block_list()
+	update_position()
 	
 	PolyminoPlaced.connect(func(pm: Polymino) -> void:
 		#print("POLYMINOPLACED", pm) #remove l8r
@@ -122,7 +146,6 @@ func _ready() -> void:
 			Scored.emit(score_gained)
 			game.score_board.ChangeNumber.emit(score_current, Enums.SCORE_BOARD.SCORE_CURRENT)
 			game.score_board.ChangeNumber.emit(max(pts_added, 0), Enums.SCORE_BOARD.PTS_ADDED)
-			print(pts_added)
 	)
 	
 	_down_timer = Timer.new()
@@ -140,22 +163,6 @@ func _ready() -> void:
 	_down_timer.autostart = true
 	add_child(_down_timer)
 	setup_timer()
-
-func hold_polymino() -> void:
-	if not _hold_cooldown: 
-		if _held_polyminos.size() >= game.hold_size:
-			var new_polymino = _held_polyminos.pop_front()
-			_held_polyminos.append(_controlled_polymino.string)
-			_controlled_polymino.destroy()
-			_controlled_polymino = null
-			spawn_polymino(new_polymino)
-		else:
-			_held_polyminos.append(_controlled_polymino.string)
-			_controlled_polymino.destroy()
-			_controlled_polymino = null
-			spawn_polymino(game.bag.next)
-		_hold_cooldown = true
-		print(_held_polyminos)
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_echo() or event.is_released() or not _controlled_polymino: return
@@ -182,3 +189,12 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	
 	if event.is_action("rotate_ccw"):
 		_controlled_polymino.turn(false)
+	
+	if event.is_action("abil_1"):
+		trigger_ability(0)
+	
+	if event.is_action("abil_2"):
+		trigger_ability(1)
+	
+	if event.is_action("abil_3"):
+		trigger_ability(2)

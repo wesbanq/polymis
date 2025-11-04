@@ -17,8 +17,13 @@ var t
 
 func score() -> int:
 	if modifier: score_amount += modifier.trigger()
-	queue_free()
+	destroy()
 	return score_amount
+
+func destroy() -> void:
+	queue_free()
+	if board.block_list[board_position.x][board_position.y] == self:
+		board.block_list[board_position.x][board_position.y] = null
 
 func _process(_delta: float) -> void:
 	if board:
@@ -27,11 +32,11 @@ func _process(_delta: float) -> void:
 		if board.game.show_block_position: t.text = "(%s, %s)" % [board_position.x, board_position.y]
 		else: t.text = ""
 
-@warning_ignore("shadowed_variable")
-static func get_position_from_grid(grid_pos: Vector2i, board: Board) -> Vector2:
-	return Vector2( (grid_pos.x * board.grid_size_px + (grid_pos.x-1) * board.grid_padding_px) - (board.grid_size_px*board.width)/2., \
-					-(grid_pos.y * board.grid_size_px + (grid_pos.y-1) * board.grid_padding_px) + (board.grid_size_px*(board.height))/2.) + \
-					board.size/2.
+static func get_position_from_grid(grid_pos: Vector2i, brd: Board) -> Vector2:
+	@warning_ignore("integer_division")
+	return Vector2(brd.board_size_px.x/2. + (brd.grid_size_px * (grid_pos.x-(brd.width/2))), \
+				   brd.board_size_px.y/2. - (brd.grid_size_px * (grid_pos.y-(brd.height/2)))) + \
+			Vector2(brd.grid_size_px/2., -brd.grid_size_px/2.)
 
 func click_within_block(clk: Vector2) -> bool:
 	@warning_ignore("integer_division")
@@ -53,6 +58,8 @@ func _ready() -> void:
 		else: t.text = ""
 
 func _init(b_i: BlockInfo, b: Vector2i, brd: Board):
+	#deep duplicate to make it local to scene
+	#prevents bug with changing the blockinfo in shop
 	info = b_i.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 	color = info.color
 	board = brd
