@@ -1,0 +1,79 @@
+[gd_scene load_steps=5 format=3 uid="uid://ceamdnqt1cwfb"]
+
+[ext_resource type="Texture2D" uid="uid://owkavabbglxn" path="res://block.png" id="1_ch7g7"]
+[ext_resource type="Theme" uid="uid://bsow2mqhludnw" path="res://text.tres" id="1_ub4nd"]
+[ext_resource type="Shader" uid="uid://dy12s3su30yjr" path="res://abil_ui.gdshader" id="1_yd8fl"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ub4nd"]
+resource_local_to_scene = true
+shader = ExtResource("1_yd8fl")
+shader_parameter/tint = Vector4(0.8, 0.8, 0, 1)
+shader_parameter/otint = Vector4(0.3, 0.3, 0.3, 1)
+shader_parameter/progress = 1.0
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PassiveAbils" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 6
+
+[node name="ActiveAbils" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+
+[node name="Bar" type="BoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/Bar"]
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+theme = ExtResource("1_ub4nd")
+bbcode_enabled = true
+text = "S
+P
+:
+1
+0
+0
+%"
+fit_content = true
+scroll_active = false
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/Bar"]
+visible = false
+material = SubResource("ShaderMaterial_ub4nd")
+layout_mode = 2
+texture = ExtResource("1_ch7g7")
+expand_mode = 5
+stretch_mode = 4
+
+[node name="Control" type="Control" parent="HBoxContainer/Bar"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Bar/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0

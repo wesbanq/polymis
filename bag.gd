@@ -4,23 +4,22 @@ class_name Bag
 @export var shapes: Array[PolyminoShape]
 
 var next: PolyminoShape: 
-	get = get_next
+	get = _get_next
 
 var _shuffled: Array[PolyminoShape]
 
 func add_to_bag(ps: PolyminoShape) -> void:
-	#print(ps)
 	shapes.append(ps)
 
-func get_shuffled() -> void:
+func reshuffle() -> void:
 	_shuffled = []
 	for v in RNG.shuffle(shapes.duplicate()):
 		_shuffled.append(v)
 
-func get_next() -> PolyminoShape:
+func _get_next() -> PolyminoShape:
 	var result: PolyminoShape = _shuffled.pop_front()
 	if result:
 		return result
 	else:
-		get_shuffled()
+		reshuffle()
 		return _shuffled.pop_front()

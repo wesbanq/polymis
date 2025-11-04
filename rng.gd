@@ -1,7 +1,8 @@
 extends Node
 
 var rng := RandomNumberGenerator.new()
-var current_seed := 0
+var current_seed := 0:
+	set(v): current_seed = v; rng.seed = v; LimboConsole.info("Changed RNG seed to %d." % v)
 
 @warning_ignore("shadowed_global_identifier")
 func initialize(seed: int) -> void:
@@ -17,13 +18,13 @@ func randf(min: float, max: float) -> float:
 	return rng.randf_range(min, max)
 
 func pick_random_weight(ranges: Array[float], items: Array[Variant]) -> Variant:
-	var w := self.randf(0, ranges.max())
+	var w := self.randf(0, ranges[-1])
 	var left := 0
 	var right := ranges.size()-1
-	#binary search w/ slight changes
+	##binary search w/ slight changes
 	while left <= right:
 		@warning_ignore("integer_division")
-		var mid := left + int((right - left)/2)
+		var mid := left + (right - left)/2
 		if ranges[mid] > w and (ranges[mid-1] < w if mid > 0 else true):
 			return items[mid]
 		elif ranges[mid] < w:
@@ -31,7 +32,7 @@ func pick_random_weight(ranges: Array[float], items: Array[Variant]) -> Variant:
 		elif ranges[mid] > w:
 			right = mid-1
 	
-	push_error("FAILED TO GET SHAPE")
+	push_error("failed to return item. w: %f. ranges: %v" % [w, ranges])
 	return
 
 func pick_random(src: Array[Variant]) -> Variant:

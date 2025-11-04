@@ -7,7 +7,9 @@ signal BoughtAbility
 signal BoardClear
 
 @export var _selling_amount := 3
-@export var _grid_spacing := 2
+@export var _grid_spacing := 1
+
+const PM_SIZE := 4
 
 @onready var _avail_pieces: Array[PolyminoShape] = _get_avail_pieces("res://polymino_shapes/")
 @onready var _ranges: Array[float] = _get_ranges(_avail_pieces)
@@ -66,6 +68,7 @@ func _get_pm_price(ps: PolyminoShape) -> int:
 				p += blk.modifier.mod_price
 	
 	#print(n,m,p,game.round_num)
+	@warning_ignore("narrowing_conversion")
 	return clampi(85*game.round_num + game.round_num**(n*.7) + ((p*m)/float(n))**(game.round_num*.15), 0, 999999)
 	#return 999999
 
@@ -82,6 +85,7 @@ func purchase(idx: int) -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.double_click and event.pressed and event.button_index == 1:
 		var world_pos = (get_viewport().get_screen_transform() * get_viewport().get_canvas_transform()).affine_inverse() * event.position
+		#print(world_pos)
 		for i in _selling_amount:
 			var pm = selling[i]
 			if pm is Array and pm[0] is Polymino:
@@ -89,21 +93,23 @@ func _input(event: InputEvent) -> void:
 					if blk is Block and blk.click_within_block(world_pos):
 						purchase(i)
 						return
-		#print(world_pos)
 
 func _ready() -> void:
-	#width = _selling_amount*4 + (_selling_amount+1)*_grid_spacing
+	#width = _selling_amount*4 + (_selling_amount-1)*_grid_spacing
 	#height = _grid_spacing+4+4+4+_grid_spacing
 	##spacing/pm/text+spacing/abil+text/spacing
-	#update_position()
 	
 	for i in range(_selling_amount):
-		var pm := _add_polymino(_get_random_pm(_mod_ranges, _avail_mod, _ranges, _avail_pieces, _mod_chance), Vector2i(_grid_spacing*(i+1) + 4*i, _grid_spacing*6), false)
+		##TODO wacky behaviour w/ height/2 - PM_SIZE/2
+		var pm := _add_polymino(_get_random_pm(_mod_ranges, _avail_mod, _ranges, _avail_pieces, _mod_chance), 
+			Vector2i(i*PM_SIZE + (i+1)*_grid_spacing, height/2), false)
 		selling.append([pm, _get_pm_price(pm.string)])
 		
 		var lbl := RichTextLabel.new()
 		lbl.text = str(selling[-1][1])
 		lbl.theme = load("res://text.tres")
+		
+		##TODO MOVE LABELS IN TANDEM WITH GRID SCALING
 		
 		#FIX ME PLS
 		#VVVVV
@@ -120,9 +126,10 @@ func _ready() -> void:
 	game.score_board.setup_score_board(self)
 	
 	update_block_list()
+	update_position()
 
-func _init(s_x: int = _selling_amount*4 + (_selling_amount+1)*_grid_spacing, s_y: int = _grid_spacing+4+4+4+_grid_spacing, scle: float = 1.0) -> void:
+func _init(s_x: int = _selling_amount*4 + (_selling_amount+1)*_grid_spacing, s_y: int = 24, scle: float = 1.0) -> void:
+	##old: s_y: int = _grid_spacing+4+4+4+_grid_spacing
 	height = s_y
 	width = s_x
 	scale = Vector2(scle, scle)
-	update_position()

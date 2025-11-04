@@ -7,23 +7,27 @@ var ghost_texture = preload("res://ghost_block.png")
 signal UpdateGhost
 
 func move(direction: Vector2i) -> void:
-	if not check_collision(game_board, direction):
-		#print("a")
+	if not check_collision(direction):
 		for v in blocks:
-			#print(v)
 			if v is Block:
 				v.board_position += direction
 				#if ghost: ghost.UpdateGhost.emit()
 
 func _ready() -> void: pass
 
-func refresh() -> void:
+func update() -> void:
 	var old = get_children()
 	copy_blocks(master_polymino)
-	for v in blocks: if v is Block: add_child(v); v.material.set_shader_parameter("tint", get_shader_args(v))#; print(v)
+	for i in blocks.size():
+		if blocks[i] is Block and master_polymino.blocks[i] is Block:
+			blocks[i].board_position = master_polymino.blocks[i].board_position
+			blocks[i].material.set_shader_parameter("tint", get_shader_args(blocks[i]))
 	for v in old: v.queue_free()
-	update()
+	snap_down()
+	for v in blocks: if v is Block: add_child(v)
 
+##FIX reuse blocks when updating ghost instead of recreating them
+##VVVVVV
 #func apply_turn(delta: Array[Vector2i], shift: int) -> void:
 	##TODO FIX ME
 	#var new_blocks: Array[Block] = []
@@ -42,14 +46,15 @@ func refresh() -> void:
 	#bottom = calculate_bottom()
 	#bottom2 = calculate_bottom2()
 	#print(bottom,bottom2)
-
-func update() -> void:
-	#print(blocks,master_polymino.blocks)
-	for i in blocks.size():
-		if blocks[i] is Block and master_polymino.blocks[i] is Block:
-			#print(i)
-			blocks[i].board_position = master_polymino.blocks[i].board_position
-	snap_down()
+#func update() -> void:
+	##print(blocks,master_polymino.blocks)
+	#for i in blocks.size():
+		#if blocks[i] is Block and master_polymino.blocks[i] is Block:
+			##print(i)
+			#blocks[i].board_position = master_polymino.blocks[i].board_position
+	#snap_down()
+##^^^^^^
+##^^^^^^
 
 static func get_shader_args(v) -> Vector4:
 	return Vector4(v.color.r*.75, v.color.g*.75, v.color.b*.75, .8)
@@ -64,7 +69,7 @@ func _init(master: Polymino) -> void:
 			v.material.set_shader_parameter("tint", get_shader_args(v))
 			#v.material.set_shader_parameter("tint", Vector4(1, 1, 1, .8))
 	
-	refresh()
 	UpdateGhost.connect(update)
-	game_board.Scored.connect(func(_n): update())
+	#game_board.Scored.connect(func(_n): update())
 	master_polymino.game_board.add_child(self)
+	update()
