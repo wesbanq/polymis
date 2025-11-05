@@ -11,11 +11,16 @@ signal GameOver
 signal TriggeredAbility(idx: int)
 signal BoardChangedAttr(name: String, val: Variant)
 
+var max_pm := 20
+
 var max_abil_a_size := 3
 var max_abil_p_size := 3
 
 var abils_p: Array[AbilityPassive]
 var abils_a: Array[AbilityActive]
+
+var unlocked_abil_a := 0
+var unlocked_abil_p := 0
 
 var bought_abils_a := 0
 var bought_abils_p := 0
@@ -143,6 +148,7 @@ func register_commands() -> void:
 
 static func is_fail_reason(reason: Enums.BOARD_FINISH) -> bool: return reason >= 2
 
+@warning_ignore("shadowed_variable_base_class")
 func _idk_what_to_call_this_function(name: String, val: Variant) -> void:
 	match name:
 		"grid_size_px":
@@ -151,12 +157,12 @@ func _idk_what_to_call_this_function(name: String, val: Variant) -> void:
 			else:
 				push_error("non int val given: %v+" % val)
 
-func trigger_ability(idx: int) -> void:
-	if abils_a.size() > idx and abils_a[idx] and board and board.special_points >= abils_a[idx].sp_cost:
-		if abils_a[idx].trigger():
+func trigger_ability(slot: int) -> void:
+	if board and slot <= unlocked_abil_a and abils_a.size() > slot and abils_a[slot] and board.special_points >= abils_a[slot].sp_cost:
+		if abils_a[slot].trigger():
 			if not inf_sp:
-				board.special_points -= abils_a[idx].sp_cost
-			TriggeredAbility.emit(idx)
+				board.special_points -= abils_a[slot].sp_cost
+			TriggeredAbility.emit(slot)
 
 func _game_loop() -> Enums.BOARD_FINISH:
 	var reason: Enums.BOARD_FINISH
@@ -175,16 +181,16 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		)
 		bag.reshuffle()
 		
-		##REMOVE L8R VVV dbg
+		#REMOVE L8R VVV dbg
 		board.special_points = 99999
 		board.score_goal = 1
-		board.pm_left = 20
-		##^^^
+		#board.pm_left = 20
+		#^^^
 		
 		state = Enums.GAME_STATE.GAME
 		NewBoard.emit(board)
 		reason = await board.BoardCleared
-		print("ded. %s" % Enums.BOARD_FINISH.keys()[reason])
+		print("over. %s" % Enums.BOARD_FINISH.keys()[reason])
 		board.queue_free()
 		##GAMEPLAY END
 		
@@ -211,8 +217,7 @@ func _game_loop() -> Enums.BOARD_FINISH:
 
 func _ready() -> void:
 	#TODO
-	#posiiton shop labels when scaling
-	#temp remove passives
+	#position shop labels when scaling
 	#shop ability unlock
 	#shop buy pm
 	
