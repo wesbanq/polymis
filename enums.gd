@@ -1,5 +1,11 @@
 extends Node
 
+@warning_ignore("shadowed_global_identifier")
+func shop_add_pm_price(round: int, current: int) -> int:
+	const c := 1.1854
+	@warning_ignore("narrowing_conversion")
+	return (c*current + c**2) * c**round
+
 const UI_COLORS := {
 	"SP": Color("#c8c800"),
 	"ACTIVE_ABIL_ICON_P": Color("#4cffbf"),

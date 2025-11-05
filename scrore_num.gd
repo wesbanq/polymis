@@ -52,6 +52,7 @@ func setup_score_board(brd: Board) -> void:
 		change_number(brd.pm_left, Enums.SCORE_BOARD.PM_LEFT)
 		change_number(brd.score_goal, Enums.SCORE_BOARD.SCORE_GOAL)
 	else:
+		change_number(_game.max_pm, Enums.SCORE_BOARD.PM_LEFT)
 		change_number(_game.pts, Enums.SCORE_BOARD.PTS_ADDED)
 		
 

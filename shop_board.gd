@@ -5,6 +5,7 @@ signal BoughtPolymino(ps: PolyminoShape)
 @warning_ignore("unused_signal")
 signal BoughtAbility
 signal BoardClear
+signal IncreasedPMCount
 
 @export var _selling_amount := 3
 @export var _grid_spacing := 1
@@ -20,6 +21,7 @@ var _mod_chance: float:
 @onready var _mod_ranges: Array[float] = _get_ranges(_avail_mod)
 
 var selling: Array
+var extra_buttons: Array
 
 static func _get_avail_pieces(filepath: String) -> Array[PolyminoShape]:
 	var result: Array[PolyminoShape] = []
@@ -72,20 +74,44 @@ func _get_pm_price(ps: PolyminoShape) -> int:
 	return clampi(85*game.round_num + game.round_num**(n*.7) + ((p*m)/float(n))**(game.round_num*.15), 0, 999999)
 	#return 999999
 
-func purchase(idx: int) -> void:
-	if game.pts >= selling[idx][1]:
-		game.bag.add_to_bag(selling[idx][0].string)
-		game.pts -= selling[idx][1]
-		BoughtPolymino.emit(selling[idx][0].string)
-		selling[idx][0].destroy()
-		selling[idx] = null
+func purchase(idx: int, blks: bool = true) -> void:
+	if blks:
+		if game.pts >= selling[idx][1]:
+			game.bag.add_to_bag(selling[idx][0].string)
+			game.pts -= selling[idx][1]
+			BoughtPolymino.emit(selling[idx][0].string)
+			selling[idx][0].destroy()
+			selling[idx] = null
+		else:
+			print("player has: %d, cost: %d" % [game.pts, selling[idx][1]])
 	else:
-		print("player has: %d, cost: %d" % [game.pts, selling[idx][1]])
+		if game.pts >= extra_buttons[idx][0]:
+			match idx:
+				#add pm
+				0:
+					game.pts -= extra_buttons[0][0]
+					game.max_pm += 1
+					IncreasedPMCount.emit()
+					extra_buttons[0][1].destroy()
+					extra_buttons[0][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
+					extra_buttons[0][1] = ShopButton.new("res://shop_add_pm_icon.png", self)
+					add_child(extra_buttons[0][1])
+					#sends signal to score board to change pm value
+					#TODO crutch pls fix
+					if game.score_board:
+						game.score_board.ChangeNumber.emit(game.max_pm, Enums.SCORE_BOARD.PM_LEFT)
+				#active abils
+				1:
+					pass
+				#passive abils
+				2:
+					pass
+		else:
+			print("player has: %d, cost: %d" % [game.pts, selling[idx][1]])
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.double_click and event.pressed and event.button_index == 1:
 		var world_pos = (get_viewport().get_screen_transform() * get_viewport().get_canvas_transform()).affine_inverse() * event.position
-		#print(world_pos)
 		for i in _selling_amount:
 			var pm = selling[i]
 			if pm is Array and pm[0] is Polymino:
@@ -93,6 +119,14 @@ func _input(event: InputEvent) -> void:
 					if blk is Block and blk.click_within_block(world_pos):
 						purchase(i)
 						return
+		
+		
+		if extra_buttons[0][1].click_within_block(world_pos) and extra_buttons[0][0] <= game.pts:
+			purchase(0, false)
+
+func _pm_pos(i: int, a: bool = true) -> Vector2i:
+	return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1, height - height/3 if a else height/3)
+	#return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1, height/2)
 
 func _ready() -> void:
 	#width = _selling_amount*4 + (_selling_amount-1)*_grid_spacing
@@ -100,25 +134,33 @@ func _ready() -> void:
 	##spacing/pm/text+spacing/abil+text/spacing
 	
 	for i in range(_selling_amount):
-		##TODO wacky behaviour w/ height/2 - PM_SIZE/2
-		var pm := _add_polymino(_get_random_pm(_mod_ranges, _avail_mod, _ranges, _avail_pieces, _mod_chance), 
-			Vector2i(i*PM_SIZE + (i+1)*_grid_spacing, height/2), false)
+		#TODO wacky behaviour w/ "height/2 - PM_SIZE/2"
+		var pm := _add_polymino(
+			_get_random_pm(_mod_ranges, _avail_mod, _ranges, _avail_pieces, _mod_chance), 
+			_pm_pos(i), 
+			false)
+		
 		selling.append([pm, _get_pm_price(pm.string)])
 		
 		var lbl := RichTextLabel.new()
 		lbl.text = str(selling[-1][1])
 		lbl.theme = load("res://text.tres")
 		
-		##TODO MOVE LABELS IN TANDEM WITH GRID SCALING
+		#TODO MOVE LABELS IN TANDEM W/ GRID SCALING
 		
-		#FIX ME PLS
+		#TEMP REMOVE L8R
 		#VVVVV
-		lbl.position = Block.get_position_from_grid(Vector2(_grid_spacing*(i+1) + 4*i, _grid_spacing*5), self)
-		lbl.set("theme_override_font_sizes/normal_font_size", 24)
+		#offset label from corrseponding block by 1 grid space
+		lbl.position = Block.get_position_from_grid(_pm_pos(i) + Vector2i(0, -1), self)
+		lbl.theme = load("res://text.tres")
 		lbl.custom_minimum_size = Vector2(120,120)
 		#^^^^^
 		
-		pm.add_child(lbl)
+		add_child(lbl)
+	
+	var add_pm_button := ShopButton.new("res://shop_add_pm_icon.png", self)
+	extra_buttons.insert(0, [Enums.shop_add_pm_price(game.round_num, game.max_pm), add_pm_button])
+	add_child(add_pm_button)
 	
 	game.score_board.Continue.connect(func():
 		BoardClear.emit()
