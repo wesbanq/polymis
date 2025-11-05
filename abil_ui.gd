@@ -35,10 +35,10 @@ func set_abils_from_arr(abils_a: Array[AbilityActive], abils_p: Array[AbilityPas
 			_a_abils_arr.append(AbilUIElement.new(i+1, abils_a[i]))
 			_a_abils_ctrl.add_child(_a_abils_arr[-1])
 	
-	for i in abils_p.size():
-		#if abils_p[i] is AbilityPassive:
-			_p_abils_arr.append(AbilUIElement.new(i+1, abils_p[i]))
-			_p_abils_ctrl.add_child(_p_abils_arr[-1])
+	#for i in abils_p.size():
+		##if abils_p[i] is AbilityPassive:
+			#_p_abils_arr.append(AbilUIElement.new(i+1, abils_p[i]))
+			#_p_abils_ctrl.add_child(_p_abils_arr[-1])
 	
 	block_size_px = bsp
 
@@ -70,8 +70,7 @@ func _update_bar() -> void:
 @warning_ignore("unused_parameter")
 func _rescale_bar(brd: Board = null) -> void:
 	@warning_ignore("incompatible_ternary")
-	var cb: Board = _game.board if _game.board else (_game.shop if _game.shop else null)
-	print(cb)
+	var cb: Board = _game.board if _game.board else _game.shop if _game.shop else null
 	if cb:
 		for child in _sp_bar_blks.get_children(): child.queue_free()
 		_sp_bar_blks.get_parent().custom_minimum_size = Vector2(cb.grid_size_px, 0)
@@ -104,13 +103,8 @@ func _changed_attr_wrapper(name: String, val: Variant) -> void:
 		"grid_size_px":
 			_rescale_bar()
 
-func _get_board_height() -> int:
-	if _game.board:
-		return _game.board.height
-	elif _game.shop:
-		return _game.shop.height
-	push_error("couldnt fetch board height")
-	return -1
+#func _get_board_height() -> int:
+	#return _game.board.height if _game.board else _game.shop.height if _game.shop else -1
 
 func _ready() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL

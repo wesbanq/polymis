@@ -16,7 +16,7 @@ var _hold_cooldown: bool = false
 var score_current := 0:
 	set(v): score_current = v; ScoreChanged.emit()
 
-@onready var pm_left: int = 5: #TODO fomrula
+@onready var pm_left: int = game.max_pm: #TODO fomrula
 	set(v): pm_left = v; game.score_board.ChangeNumber.emit(pm_left, Enums.SCORE_BOARD.PM_LEFT)
 @onready var score_goal: int = game.round_num * (width*1000):
 	set(v): score_goal = v; game.score_board.ChangeNumber.emit(score_goal, Enums.SCORE_BOARD.SCORE_GOAL)
