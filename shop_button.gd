@@ -8,15 +8,15 @@ var lable: RichTextLabel
 
 func click_within_block(clk: Vector2) -> bool:
 	@warning_ignore("integer_division")
-	var right_x = global_position.x + board.grid_size_px/2
+	var right_x = global_position.x
 	@warning_ignore("integer_division")
-	var left_x = global_position.x - board.grid_size_px/2
+	var left_x = global_position.x + size.x
 	@warning_ignore("integer_division")
-	var up_y = global_position.y + board.grid_size_px/2
+	var up_y = global_position.y
 	@warning_ignore("integer_division")
-	var down_y = global_position.y - board.grid_size_px/2
+	var down_y = global_position.y + size.x
 	
-	return clk.x > left_x and clk.x < right_x and clk.y < up_y and clk.y > down_y
+	return clk.x < left_x and clk.x > right_x and clk.y > up_y and clk.y < down_y
 
 func destroy() -> void:
 	lable.queue_free()

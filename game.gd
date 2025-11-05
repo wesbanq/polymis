@@ -217,9 +217,10 @@ func _game_loop() -> Enums.BOARD_FINISH:
 
 func _ready() -> void:
 	#TODO
-	#position shop labels when scaling
+	#mechanism for auto scaling labels for shops and mods
 	#shop ability unlock
-	#shop buy pm
+	#more abils
+	#more mods
 	
 	abils_a.resize(max_abil_a_size)
 	abils_a.fill(null)
