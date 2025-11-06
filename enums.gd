@@ -29,18 +29,6 @@ const COLORS := {
 	"MAGENTA": Color("#ff00ff"),
 }
 
-const POLYMINO_SHAPES := [
-	## DO NOT USE
-	#1: rotation center 2: bottom blocks array[1st one is the lowest] 3+: blocks
-	#"i 4567 4 5 6 7",	
-	"p 1 d 9 5 1",		#4 straight
-	"i 01 0 1 4 5",		#4 cube
-	"o 016 0 1 5 6",	#4 skew
-	"o 142 4 5 1 2",	#4 skew m
-	"o 12 9 5 1 2",		#4 l
-	"o 01 9 5 1 0",		#4 l m
-]
-
 var MODIFIERS := {
 	#"": null,
 	"random": RandomModifier,
@@ -48,6 +36,7 @@ var MODIFIERS := {
 	"chain": ChainModifier,
 	"gold": GoldModifier,
 	"armored": ArmoredModifier,
+	"glass": GlassModifier
 }
 
 var ABILITIES_ACTIVE := {

@@ -30,14 +30,14 @@ var next_size: int = 3
 
 @onready var default_grid_size_px := int(get_viewport_rect().size.length() * 0.015):
 	set(v): default_grid_size_px = v; set_grid_scale(v)
-@onready var bag: Bag = preload("res://preset_bags/normal.tres")
+var bag: Bag = preload("res://preset_bags/normal.tres")
 var pts := 9999:
 	set(v): pts = v; PtsChanged.emit(v)
 
-@onready var score_board := ScoreNumber.new()
-@onready var abil_board := AbilityControl.new()
-#@onready var board: GameBoard = GameBoard.new()
-#@onready var shop: ShopBoard = ShopBoard.new()
+var score_board := ScoreNumber.new()
+var abil_board := AbilityControl.new()
+var hover_window := Hover.new()
+
 var board: GameBoard
 var shop: ShopBoard
 
@@ -218,6 +218,7 @@ func _game_loop() -> Enums.BOARD_FINISH:
 func _ready() -> void:
 	#TODO
 	#mechanism for auto scaling labels for shops and mods
+	#mod explanation hover window
 	#shop ability unlock
 	#more abils
 	#more mods
@@ -238,5 +239,7 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(func() -> void:
 		default_grid_size_px = int(get_viewport_rect().size.length() * .015)
 	)
+	
+	#add_child(hover_window)
 	
 	_game_loop()

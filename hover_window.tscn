@@ -1,0 +1,70 @@
+[gd_scene load_steps=4 format=3 uid="uid://bbb883gcbvyym"]
+
+[ext_resource type="Theme" uid="uid://bsow2mqhludnw" path="res://text.tres" id="1_5wudu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6ns4s"]
+bg_color = Color(0.67058825, 0.67058825, 0.67058825, 0.28235295)
+border_blend = true
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 4
+shadow_offset = Vector2(4, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5wudu"]
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+expand_margin_left = 4.0
+expand_margin_right = 4.0
+
+[node name="HoverWindow" type="Control"]
+z_index = 4096
+z_as_relative = false
+layout_mode = 3
+anchors_preset = 0
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_right = 274.0
+offset_bottom = 139.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_6ns4s")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Spacer" type="Control" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_5wudu")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/VBoxContainer/PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("1_5wudu")
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+text = "NAME"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+autowrap_trim_flags = 0
+horizontal_alignment = 1
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("1_5wudu")
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+text = "DESCRIPTION"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
