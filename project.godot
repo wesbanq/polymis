@@ -24,6 +24,7 @@ buses/default_bus_layout=""
 Enums="*res://enums.gd"
 RNG="*res://rng.gd"
 LimboConsole="*res://addons/limbo_console/limbo_console.gd"
+HoverManager="*res://hover_manager.gd"
 
 [editor]
 

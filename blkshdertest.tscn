@@ -1,0 +1,16 @@
+[gd_scene load_steps=5 format=3 uid="uid://byikmfihkqbrk"]
+
+[ext_resource type="Shader" uid="uid://dpygrag833b7y" path="res://modifiers/shaders/glass.gdshader" id="1_nd754"]
+[ext_resource type="Texture2D" uid="uid://owkavabbglxn" path="res://block.png" id="2_cyxcx"]
+[ext_resource type="Script" uid="uid://cnlai5cg88nup" path="res://block.gd" id="3_utc1u"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_a1ehi"]
+shader = ExtResource("1_nd754")
+
+[node name="Block" type="Sprite2D"]
+texture_filter = 1
+texture_repeat = 1
+material = SubResource("ShaderMaterial_a1ehi")
+texture = ExtResource("2_cyxcx")
+script = ExtResource("3_utc1u")
+metadata/_custom_type_script = "uid://cnlai5cg88nup"

@@ -19,6 +19,6 @@ func new_parent(new: Block) -> void:
 func _init() -> void:
 	display_name = "Chain"
 	description = "
-		Triggers all modifiers in the column. Swiches direction every placed polymino."
+		Triggers all modifiers in the column either below or above this block. Direction switches every polymino placed."
 	shader_path = "res://modifiers/shaders/bonus.gdshader"
 	mod_price = 3000
