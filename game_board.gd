@@ -13,6 +13,7 @@ var _down_timer: Timer
 var _held_polyminos: Array[PolyminoShape]
 var _hold_cooldown: bool = false
 
+var score_to_add: int
 var score_current := 0:
 	set(v): score_current = v; ScoreChanged.emit()
 
@@ -87,15 +88,11 @@ func score_row(y: int, score: bool = true) -> int:
 func get_score() -> int:
 	var score = 0
 	for y in range(height-1, -1, -1):
-		var count = 0
 		for x in width:
-			if block_list[x][y] is Block:
-				count += 1
-			else:
+			if not block_list[x][y] is Block:
 				break
-		if count == width:
-			LineFinished.emit(y)
-			score += score_row(y)
+		LineFinished.emit(y)
+		score += score_row(y)
 	return score
 
 func hold_polymino() -> void:
@@ -140,10 +137,10 @@ func _ready() -> void:
 		_hold_cooldown = false
 		
 		game.PolyminoPlaced.emit(pm)
-		var score_gained = get_score()
-		if score_gained > 0: 
-			score_current += score_gained
-			Scored.emit(score_gained)
+		score_to_add = get_score()
+		if score_to_add > 0: 
+			score_current += score_to_add
+			Scored.emit(score_to_add)
 			game.score_board.ChangeNumber.emit(score_current, Enums.SCORE_BOARD.SCORE_CURRENT)
 			game.score_board.ChangeNumber.emit(max(pts_added, 0), Enums.SCORE_BOARD.PTS_ADDED)
 	)
