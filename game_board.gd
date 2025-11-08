@@ -75,24 +75,29 @@ func move_rows_down(from_y: int, amount: int = 1) -> void:
 				block_list[x][y] = null
 	update_block_list()
 
-func score_row(y: int, score: bool = true) -> int:
+func score_row(y: int) -> int:
 	var scored = 0
 	for x in width:
-		if score:
-			scored += block_list[x][y].score()
-		#block_list[x][y+i] = null
+		scored += block_list[x][y].score()
+		block_list[x][y] = null
 	update_block_list()
 	move_rows_down(y+1)
 	return scored
 
 func get_score() -> int:
-	var score = 0
+	var score := 0
+	var lines: Array[int] = []
 	for y in range(height-1, -1, -1):
+		var complete := true
 		for x in width:
 			if not block_list[x][y] is Block:
+				complete = false
 				break
-		LineFinished.emit(y)
-		score += score_row(y)
+		if complete:
+			LineFinished.emit(y)
+			lines.append(y)
+	for line in lines: score += score_row(line)
+	
 	return score
 
 func hold_polymino() -> void:
@@ -126,7 +131,6 @@ func _ready() -> void:
 	update_position()
 	
 	PolyminoPlaced.connect(func(pm: Polymino) -> void:
-		#print("POLYMINOPLACED", pm) #remove l8r
 		for v in pm.get_children():
 			v.reparent(self)
 		

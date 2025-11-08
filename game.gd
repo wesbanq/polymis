@@ -30,7 +30,7 @@ var next_size: int = 3
 
 @onready var default_grid_size_px := int(get_viewport_rect().size.length() * 0.015):
 	set(v): default_grid_size_px = v; set_grid_scale(v)
-var bag: Bag = preload("res://preset_bags/normal.tres")
+var bag: Bag
 var pts := 9999:
 	set(v): pts = v; PtsChanged.emit(v)
 
@@ -79,7 +79,7 @@ func blkt() -> void:
 
 func spwn_blk(x: int, y: int) -> Block:
 	if board and not board.check_bounds(Vector2i(x, y)):
-		var new_blk = Block.new(BlockInfo.new(), Vector2i(x, y), board)
+		var new_blk = Block.new(BlockInfo.new(), Vector2i(x, y), board, null)
 		board.add_child(new_blk)
 		board.update_block_list()
 		return new_blk
@@ -99,7 +99,7 @@ func set_mod(x: int, y: int, mod: String) -> void:
 func make_line() -> void:
 	for i in board.width:
 		if board.block_list[i][0] is not Block:
-			var b = Block.new(BlockInfo.new(), Vector2i(i, 0), board)
+			var b = Block.new(BlockInfo.new(), Vector2i(i, 0), board, null)
 			board.add_child(b)
 	board.update_block_list()
 	board.score_current += board.get_score()
@@ -222,6 +222,12 @@ func _ready() -> void:
 	#shop ability unlock
 	#more abils
 	#more mods
+	#test mods
+	
+	#save file
+		#keep unknown data in the save for mod support
+	
+	bag = load(Enums.BAG_PATHS[0]).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 	
 	abils_a.resize(max_abil_a_size)
 	abils_a.fill(null)
@@ -234,7 +240,6 @@ func _ready() -> void:
 	$HBoxContainer.add_child(abil_board)
 	$HBoxContainer.move_child(abil_board, 0)
 	abil_board.set_abils_from_arr(abils_a, abils_p)
-	print(abils_a.size(), abils_p)
 	
 	get_viewport().size_changed.connect(func() -> void:
 		default_grid_size_px = int(get_viewport_rect().size.length() * .015)

@@ -16,9 +16,10 @@ func new_parent(new: Block) -> void:
 	if new.board is GameBoard:
 		block.board.PolyminoPlaced.connect(func(_v): direction *= -1)
 
-func _init() -> void:
-	display_name = "Chain"
-	description = "
-		Triggers all modifiers in the column either below or above this block. Direction switches every polymino placed."
-	shader_path = "res://modifiers/shaders/bonus.gdshader"
-	mod_price = 3000
+#func setup(game: GameMain = null) -> void:
+	#super(game)
+	#display_name = "Chain"
+	#description = "
+		#Triggers all modifiers in the column either below or above this block. Direction switches every polymino placed."
+	#shader_path = "res://modifiers/shaders/bonus.gdshader"
+	#mod_price = 3000

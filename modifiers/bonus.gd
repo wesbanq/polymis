@@ -20,11 +20,12 @@ func trigger(_who: Variant = null) -> int:
 	
 	return bonus_amount + gen_num * sur_bonus_am + bonus_num * sur_bonus_bonus_am
 
-func _init() -> void:
-	display_name = "Bonus"
-	description = "
-		Gives +%s score, gives additional +%s score for each adjacent block with a modifier. \
-		Blocks give extra +%s score if they have a Bonus modifier as well." % \
-		[str(bonus_amount), str(sur_bonus_am), str(sur_bonus_bonus_am)]
-	shader_path = "res://modifiers/shaders/bonus.gdshader"
-	mod_price = 800
+#func setup(game: GameMain = null) -> void:
+	#super(game)
+	#display_name = "Bonus"
+	#description = "
+		#Gives +%s score, gives additional +%s score for each adjacent block with a modifier. \
+		#Blocks give extra +%s score if they have a Bonus modifier as well." % \
+		#[str(bonus_amount), str(sur_bonus_am), str(sur_bonus_bonus_am)]
+	#shader_path = "res://modifiers/shaders/bonus.gdshader"
+	#mod_price = 800

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://byikmfihkqbrk"]
 
-[ext_resource type="Shader" uid="uid://dpygrag833b7y" path="res://modifiers/shaders/glass.gdshader" id="1_nd754"]
+[ext_resource type="Shader" uid="uid://deomttnxj7s73" path="res://modifiers/shaders/test.gdshader" id="1_nd754"]
 [ext_resource type="Texture2D" uid="uid://owkavabbglxn" path="res://block.png" id="2_cyxcx"]
 [ext_resource type="Script" uid="uid://cnlai5cg88nup" path="res://block.gd" id="3_utc1u"]
 

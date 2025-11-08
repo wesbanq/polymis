@@ -17,11 +17,12 @@ func new_parent(new: Block) -> void:
 	if new.board is GameBoard:
 		block.board.LineFinished.connect(func(_v): lines_finished += 1)
 
-func _init() -> void:
-	display_name = "Gold"
-	description = "
-		Every line increases the amount of score this modifier gives by +%s.
-		Inherits bonus from neighbouring Gold modifiers." % \
-		[extra_score]
-	shader_path = "res://modifiers/shaders/bonus.gdshader"
-	mod_price = 5000
+#func _init(game: GameMain) -> void:
+	#super(game)
+	#display_name = "Gold"
+	#description = "
+		#Every line increases the amount of score this modifier gives by +%s.
+		#Inherits bonus from neighbouring Gold modifiers." % \
+		#[extra_score]
+	#shader_path = "res://modifiers/shaders/bonus.gdshader"
+	#mod_price = 5000

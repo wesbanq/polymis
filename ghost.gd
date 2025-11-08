@@ -59,7 +59,7 @@ func update() -> void:
 static func get_shader_args(v) -> Vector4:
 	return Vector4(v.color.r*.75, v.color.g*.75, v.color.b*.75, .8)
 
-func _init(master: Polymino) -> void:
+func _init(master: Polymino = null) -> void:
 	master_polymino = master
 	super(master_polymino.string, master_polymino.game_board)
 	
