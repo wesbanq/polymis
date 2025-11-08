@@ -137,12 +137,12 @@ func copy_blocks(src: Variant, origin: Vector2i = Vector2i(0, 0)) -> void:
 		for i in src.shape_string.size():
 			var v = src.shape_string[i]
 			if v != null:
-				blocks[i] = Block.new(v, PolyminoShape.get_board_position_from_hex(i) + origin, game_board)
+				blocks[i] = Block.new(v, PolyminoShape.get_board_position_from_hex(i) + origin, game_board, src, i)
 	elif src is Polymino:
 		for i in src.blocks.size():
 			var v = src.blocks[i]
 			if v != null:
-				blocks[i] = Block.new(v.info, v.board_position, game_board)
+				blocks[i] = Block.new(v.info, v.board_position, game_board, src.string, i)
 	bottom = src.bottom
 	bottom2 = src.bottom2
 

@@ -1,9 +1,11 @@
-[gd_resource type="Resource" script_class="ChainModifier" load_steps=2 format=3 uid="uid://cx2aykmcrh6px"]
+[gd_resource type="Resource" script_class="ChainModifier" load_steps=2 format=3 uid="uid://i0ncheil2s3w"]
 
 [ext_resource type="Script" uid="uid://dse5e0nxv8xn1" path="res://modifiers/chain.gd" id="1_liful"]
 
 [resource]
 script = ExtResource("1_liful")
-display_name = ""
-description = ""
+display_name = "Chain"
+description = "Triggers all modifiers in the column either below or above this block. Direction switches every polymino placed."
+shader_path = "res://modifiers/shaders/bonus.gdshader"
+mod_price = 3000
 metadata/_custom_type_script = "uid://dse5e0nxv8xn1"

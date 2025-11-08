@@ -48,6 +48,20 @@ func get_surrounding(pos: Vector2i) -> Array[Block]:
 		(block_list[pos.x][pos.y - 1] if pos.y-1 > 0 else null)
 	]
 
+func get_surrounding_all(pos: Vector2i) -> Array[Block]:
+	return [
+		(block_list[pos.x-1][pos.y+1] if Enums.between(0, width, pos.x-1) and Enums.between(0, height, pos.y+1) else null),
+		(block_list[pos.x][pos.y+1] if Enums.between(0, height, pos.y+1) else null),
+		(block_list[pos.x+1][pos.y+1] if Enums.between(0, width, pos.x+1) and Enums.between(0, height, pos.y+1) else null),
+		
+		(block_list[pos.x-1][pos.y] if Enums.between(0, width, pos.x-1) else null),
+		(block_list[pos.x+1][pos.y] if Enums.between(0, width, pos.x+1) else null),
+		
+		(block_list[pos.x-1][pos.y-1] if Enums.between(0, width, pos.x-1) and Enums.between(0, height, pos.y-1) else null),
+		(block_list[pos.x][pos.y-1] if Enums.between(0, height, pos.y-1) else null),
+		(block_list[pos.x+1][pos.y-1] if Enums.between(0, width, pos.x+1) and Enums.between(0, height, pos.y-1) else null),
+	]
+
 func _add_polymino(ps: PolyminoShape, origin: Vector2i = Vector2i(int(width/2.0 - 2)+1, height-4), ghost: bool = true) -> Polymino:
 	var new_polymino := ps.create_polymino(self, origin)
 	new_polymino.enable_ghost = ghost
@@ -77,18 +91,7 @@ func check_bounds(blk: Vector2i) -> bool:
 				or blk.y >= height \
 				or blk.x < 0 \
 				or blk.y < 0 \
-				#or blk.y >= board.height-4 \
-				#or (board.block_list[blk.x+1][blk.y] is Block \
-				#or board.block_list[blk.x-1][blk.y] is Block \
-				#or board.block_list[blk.x][blk.y+1] is Block \
-				#or board.block_list[blk.x][blk.y-1] is Block \
 				or block_list[blk.x][blk.y] is Block
-
-#func update(size: Vector2) -> void:
-	##scale = main_board.scale
-	##position = Vector2(main_board.position.x - width * grid_size_px - grid_padding_px, main_board.position.y + size.y - height * grid_size_px)
-	##position = rel_position * grid_size_px + (-(rel_position - Vector2.ONE) * grid_padding_px) + (main_board.position + size)
-	#position = Vector2()
 
 func _init(s_x: int = 10, s_y: int = 20, scle: float = 1.0) -> void:
 	height = s_y

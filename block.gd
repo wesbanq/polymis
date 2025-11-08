@@ -9,21 +9,24 @@ var score_amount: int = 100
 var modifier: Modifier: # null = no modifier
 	set(new): modifier = new; if modifier: modifier.block = self
 
+var prototype_shape: PolyminoShape
+var prototype_shape_idx: int
+
 var block_path = preload("res://block.png")
-var shader_path = preload("res://block.gdshader")
+var default_shader_path = preload("res://block.gdshader")
 var info: BlockInfo
 
 var t
 
 func score() -> int:
 	if modifier: score_amount += modifier.trigger()
-	destroy()
 	return score_amount
 
 func destroy() -> void:
+	#potential modifier destroy trigger
 	queue_free()
-	if board.block_list[board_position.x][board_position.y] == self:
-		board.block_list[board_position.x][board_position.y] = null
+	#if board.block_list[board_position.x][board_position.y] == self:
+		#board.block_list[board_position.x][board_position.y] = null
 
 func _process(_delta: float) -> void:
 	if board:
@@ -57,7 +60,7 @@ func _ready() -> void:
 		if board.game.show_block_position: t.text = "(%s, %s)" % [board_position.x, board_position.y]
 		else: t.text = ""
 
-func _init(b_i: BlockInfo, b: Vector2i, brd: Board):
+func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, idx: int = 0):
 	#deep duplicate to make it local to scene
 	#prevents bug with changing the blockinfo in shop
 	info = b_i.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
@@ -66,12 +69,15 @@ func _init(b_i: BlockInfo, b: Vector2i, brd: Board):
 	board_position = b
 	modifier = info.modifier
 	
+	prototype_shape = prototype if prototype else PolyminoShape.new()
+	prototype_shape_idx = idx
+	
 	texture = block_path
 	if modifier: # chk if block has modifier
 		material = modifier.get_shader()
 	else:
 		material = ShaderMaterial.new()
-		material.shader = shader_path
+		material.shader = default_shader_path
 	
 	material.set_shader_parameter("tint", Vector4(color.r, color.g, color.b, 1))
 	#position = Vector2(board_position.x * board.grid_size_px + board_position.x * board.grid_padding_px, -board_position.y * board.grid_size_px - board_position.y * board.grid_padding_px)

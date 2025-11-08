@@ -25,7 +25,7 @@ func destroy() -> void:
 func _init(img_path: String, brd: ShopBoard) -> void:
 	asset_path = img_path
 	board = brd
-	blk = Block.new(BlockInfo.new(Enums.COLORS.WHITE), board._pm_pos(0, false), board)
+	blk = Block.new(BlockInfo.new(Enums.COLORS.WHITE), board._pm_pos(0, false), board, null)
 	
 	texture = load(img_path)
 	position = Block.get_position_from_grid(board._pm_pos(0, false), board)

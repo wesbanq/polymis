@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="GlassModifier" load_steps=2 format=3 uid="uid://bh0k7fjwl5lpj"]
+
+[ext_resource type="Script" uid="uid://f1iiid0xcdcf" path="res://modifiers/glass.gd" id="1_gbciu"]
+
+[resource]
+script = ExtResource("1_gbciu")
+mult = 3
+display_name = "Glass"
+description = "Multiplies the score by {mult}x. 
+After scoring {UI.DOWNSIDE_TEXT}removes this modifier from this polymino for the rest of the round{UI.END}.
+{UI.WARN_TEXT}Will be destroyed if there are no block below it{UI.END}."
+shader_path = "res://modifiers/shaders/glass.gdshader"
+mod_price = 6000
+metadata/_custom_type_script = "uid://f1iiid0xcdcf"

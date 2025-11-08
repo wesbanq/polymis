@@ -1,12 +1,22 @@
 extends Node
 
+func between(min: int, max: int, val: int) -> bool:
+	return min <= val and max >= val
+
+func read_folder(path: String) -> Array[String]:
+	var result: Array[String] = []
+	for file_path in DirAccess.get_files_at(path):
+		result.append(path.path_join(file_path))
+	return result
+
 @warning_ignore("shadowed_global_identifier")
 func shop_add_pm_price(round: int, current: int) -> int:
 	const c := 1.1854
 	@warning_ignore("narrowing_conversion")
 	return (c*current + c**2) * c**round
 
-const UI_COLORS := {
+const UI := {
+	"END": "[/color]",
 	"SP": Color("#c8c800"),
 	"ACTIVE_ABIL_ICON_P": Color("#4cffbf"),
 	"INACTIVE_ABIL_ICON_P": Color("#1e664c"),
@@ -15,6 +25,10 @@ const UI_COLORS := {
 	
 	"UNAVAIL_TEXT": Color("#595959"),
 	"NORMAL_TEXT": Color("#ffffff"),
+	
+	"DOWNSIDE_TEXT": Color("#ff0000"),
+	"POSITIVE_TEXT": Color("#00ff00"),
+	"WARN_TEXT": Color("#ffff00"),
 }
 
 const COLORS := {
@@ -29,15 +43,17 @@ const COLORS := {
 	"MAGENTA": Color("#ff00ff"),
 }
 
-var MODIFIERS := {
-	#"": null,
-	"random": RandomModifier,
-	"bonus": BonusModifier,
-	"chain": ChainModifier,
-	"gold": GoldModifier,
-	"armored": ArmoredModifier,
-	"glass": GlassModifier
-}
+var BAG_PATHS := read_folder("res://preset_bags/")
+
+#var MODIFIERS := {
+	##"": null,
+	#"random": RandomModifier,
+	#"bonus": BonusModifier,
+	#"chain": ChainModifier,
+	#"gold": GoldModifier,
+	#"armored": ArmoredModifier,
+	#"glass": GlassModifier
+#}
 
 var ABILITIES_ACTIVE := {
 	"makestraight": MakeStraight,

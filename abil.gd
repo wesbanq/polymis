@@ -23,22 +23,22 @@ func _set_active(val: bool) -> void:
 	active = val
 	_icon_ctrl.material.set_shader_parameter("active", active)
 	_name_ctrl.text = "[color=#%s]%s[/color]" % \
-		[Enums.UI_COLORS.NORMAL_TEXT.to_html(false) if active \
-		else Enums.UI_COLORS.UNAVAIL_TEXT.to_html(), _a_name]
+		[Enums.UI.NORMAL_TEXT.to_html(false) if active \
+		else Enums.UI.UNAVAIL_TEXT.to_html(), _a_name]
 
 func set_abil(abil: Ability) -> void:
 	_a_name = abil.display_name
 	
-	_name_ctrl.text = "[color=#%s]%s[/color]" % [Enums.UI_COLORS.NORMAL_TEXT.to_html(false), _a_name]
+	_name_ctrl.text = "[color=#%s]%s[/color]" % [Enums.UI.NORMAL_TEXT.to_html(false), _a_name]
 	_icon_ctrl.texture = load(abil.image_path)
 	
 	if abil is AbilityActive:
-		_cost_ctrl.text = "[color=#%s]%d%%[/color]" % [Enums.UI_COLORS.SP.to_html(false), abil.sp_cost]
-		_icon_ctrl.material.set_shader_parameter("tint", Enums.UI_COLORS.ACTIVE_ABIL_ICON_A)
-		_icon_ctrl.material.set_shader_parameter("otint", Enums.UI_COLORS.INACTIVE_ABIL_ICON_A)
+		_cost_ctrl.text = "[color=#%s]%d%%[/color]" % [Enums.UI.SP.to_html(false), abil.sp_cost]
+		_icon_ctrl.material.set_shader_parameter("tint", Enums.UI.ACTIVE_ABIL_ICON_A)
+		_icon_ctrl.material.set_shader_parameter("otint", Enums.UI.INACTIVE_ABIL_ICON_A)
 	else:
-		_icon_ctrl.material.set_shader_parameter("tint", Enums.UI_COLORS.ACTIVE_ABIL_ICON_P)
-		_icon_ctrl.material.set_shader_parameter("otint", Enums.UI_COLORS.INACTIVE_ABIL_ICON_P)
+		_icon_ctrl.material.set_shader_parameter("tint", Enums.UI.ACTIVE_ABIL_ICON_P)
+		_icon_ctrl.material.set_shader_parameter("otint", Enums.UI.INACTIVE_ABIL_ICON_P)
 	_set_active(active)
 
 func _init(slt: int, abil: Ability = null) -> void:

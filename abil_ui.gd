@@ -77,8 +77,8 @@ func _rescale_bar(brd: Board = null) -> void:
 		for i in cb.height:
 			var new_blk: TextureRect = _sp_bar_blk_prefab.duplicate()
 			new_blk.material = _sp_bar_blk_prefab.material.duplicate_deep()
-			new_blk.material.set_shader_parameter("tint", Enums.UI_COLORS.SP)
-			new_blk.material.set_shader_parameter("otint", Enums.UI_COLORS.UNAVAIL_TEXT)
+			new_blk.material.set_shader_parameter("tint", Enums.UI.SP)
+			new_blk.material.set_shader_parameter("otint", Enums.UI.UNAVAIL_TEXT)
 			new_blk.visible = true
 			_sp_bar_blks.add_child(new_blk)
 		#_sp_bar_blks.position = Vector2(-cb.grid_size_px, 0)

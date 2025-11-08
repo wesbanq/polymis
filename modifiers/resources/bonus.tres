@@ -1,12 +1,11 @@
-[gd_resource type="Resource" script_class="BonusModifier" load_steps=2 format=3 uid="uid://b1i8nfehtimkm"]
+[gd_resource type="Resource" script_class="BonusModifier" load_steps=2 format=3 uid="uid://dl5v8yqcwrb00"]
 
 [ext_resource type="Script" uid="uid://do2fuwq00jjwr" path="res://modifiers/bonus.gd" id="1_nie26"]
 
 [resource]
 script = ExtResource("1_nie26")
-bonus_amount = 100
-sur_bonus_am = 25
-sur_bonus_exp = 2
 display_name = "Bonus"
-description = ""
+description = "Gives +%s score, gives additional +%s score for each adjacent block with a modifier. \\Blocks give extra +%s score if they have a Bonus modifier as well."
+shader_path = "res://modifiers/shaders/bonus.gdshader"
+mod_price = 800
 metadata/_custom_type_script = "uid://do2fuwq00jjwr"
