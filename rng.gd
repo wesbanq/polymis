@@ -21,11 +21,12 @@ func pick_random_weight(ranges: Array[float], items: Array[Variant]) -> Variant:
 	var w := self.randf(0, ranges[-1])
 	var left := 0
 	var right := ranges.size()-1
-	##binary search w/ slight changes
+	#binary search w/ slight changes
 	while left <= right:
 		@warning_ignore("integer_division")
 		var mid := left + (right - left)/2
 		if ranges[mid] > w and (ranges[mid-1] < w if mid > 0 else true):
+			#
 			return items[mid]
 		elif ranges[mid] < w:
 			left = mid+1

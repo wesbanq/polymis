@@ -12,49 +12,48 @@ signal IncreasedPMCount
 
 const PM_SIZE := 4
 
-@onready var _avail_pieces: Array[PolyminoShape] = _get_avail_pieces("res://polymino_shapes/")
+@onready var _avail_pieces := Enums.read_folder(shape_path)
 @onready var _ranges: Array[float] = _get_ranges(_avail_pieces)
 
-var _mod_chance: float:
-	get: return game.round_num*1.5 + 10
-@onready var _avail_mod := _get_avail_mods()
+var _mod_chance: float = 15#:
+	#get: return game.round_num*1.5 + 10
+@onready var _avail_mod := Enums.read_folder(mod_path)
 @onready var _mod_ranges: Array[float] = _get_ranges(_avail_mod)
 
 var selling: Array
 var extra_buttons: Array
 
-static func _get_avail_pieces(filepath: String) -> Array[PolyminoShape]:
-	var result: Array[PolyminoShape] = []
-	for v in DirAccess.open(filepath).get_files():
-		#duplicate deep so as not to change the original polyminoshape resources
-		result.append(load(filepath+v).duplicate_deep(Resource.DEEP_DUPLICATE_ALL))
-	return result
-
-static func _get_avail_mods() -> Array:
-	var result := []
-	for c in ProjectSettings.get_global_class_list():
-		if c.base == "Modifier" and c.class != "NoModifier" and c.class != "RandomModifier":
-			result.append(load(c.path).new())
-	return result
+const mod_path := "res://modifiers/resources/"
+const shape_path := "res://polymino_shapes/"
 
 static func _get_ranges(weight_src: Array[Variant]) -> Array[float]:
 	var result: Array[float]
 	#create a list of ranges all corresponding to a polymino
 	#the length of a ranges is determined by the polyminos weight	
+	#if "weight" in weight_src[0]:
+		#for v in weight_src:
+			#result.append(v.weight + (result[-1] if result.size() > 0 else 0.))
+	#elif weight_src[0] is String:
 	for v in weight_src:
-		result.append(v.weight + (result[-1] if result.size() > 0 else 0.))
+		var tmp := load(v)
+		result.append(tmp.weight + (result[-1] if result.size() > 0 else 0.))
+	#else:
+		#push_error("given object has no weight attribute")
 	return result
 
 @warning_ignore("shadowed_variable")
-static func _get_random_pm(_mod_ranges: Array[float], _avail_mod: Array, _ranges: Array[float], _avail_pieces: Array[PolyminoShape], _mod_chance: float) -> PolyminoShape:
-	var shape = RNG.pick_random_weight(_ranges, _avail_pieces)
+func _get_random_pm() -> PolyminoShape:
+	#duplicate deep so as not to change the original polyminoshape resources
+	var shape: PolyminoShape = load(RNG.pick_random_weight(_ranges, _avail_pieces)).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 	var new_color := RNG.get_random_color()
 	
 	for blk in shape.shape_string:
 		if blk is BlockInfo:
 			blk.color = new_color
 			if RNG.randi(0, 100) <= _mod_chance:
-				blk.modifier = RNG.pick_random_weight(_mod_ranges, _avail_mod)
+				var new_mod := load(RNG.pick_random_weight(_mod_ranges, _avail_mod))
+				new_mod.setup(game)
+				blk.modifier = new_mod
 	return shape
 
 func _get_pm_price(ps: PolyminoShape) -> int:
@@ -69,16 +68,14 @@ func _get_pm_price(ps: PolyminoShape) -> int:
 				m += 1
 				p += blk.modifier.mod_price
 	
-	#print(n,m,p,game.round_num)
 	@warning_ignore("narrowing_conversion")
 	return clampi(85*game.round_num + game.round_num**(n*.7) + ((p*m)/float(n))**(game.round_num*.15), 0, 999999)
-	#return 999999
 
 func purchase(idx: int, blks: bool = true) -> void:
 	if blks:
 		if game.pts >= selling[idx][1]:
-			game.bag.add_to_bag(selling[idx][0].string)
 			game.pts -= selling[idx][1]
+			game.bag.add_to_bag(selling[idx][0].string)
 			BoughtPolymino.emit(selling[idx][0].string)
 			selling[idx][0].destroy()
 			selling[idx] = null
@@ -128,15 +125,11 @@ func _pm_pos(i: int, a: bool = true) -> Vector2i:
 	return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1, height - height/3 if a else height/3)
 	#return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1, height/2)
 
-func _ready() -> void:
-	#width = _selling_amount*4 + (_selling_amount-1)*_grid_spacing
-	#height = _grid_spacing+4+4+4+_grid_spacing
-	##spacing/pm/text+spacing/abil+text/spacing
-	
+func _stock_shop() -> void:
 	for i in range(_selling_amount):
 		#TODO wacky behaviour w/ "height/2 - PM_SIZE/2"
 		var pm := _add_polymino(
-			_get_random_pm(_mod_ranges, _avail_mod, _ranges, _avail_pieces, _mod_chance), 
+			_get_random_pm(), 
 			_pm_pos(i), 
 			false)
 		
@@ -157,7 +150,13 @@ func _ready() -> void:
 		#^^^^^
 		
 		add_child(lbl)
+
+func _ready() -> void:
+	#width = _selling_amount*4 + (_selling_amount-1)*_grid_spacing
+	#height = _grid_spacing+4+4+4+_grid_spacing
+	##spacing/pm/text+spacing/abil+text/spacing
 	
+	_stock_shop()
 	var add_pm_button := ShopButton.new("res://shop_add_pm_icon.png", self)
 	extra_buttons.insert(0, [Enums.shop_add_pm_price(game.round_num, game.max_pm), add_pm_button])
 	add_child(add_pm_button)
