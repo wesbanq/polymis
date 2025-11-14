@@ -14,11 +14,11 @@ var block: Block:
 var board: GameBoard:
 	get: return block.board if block else null
 var _game: GameMain
-var _copy := false:
+@warning_ignore("unused_private_class_variable")
+var _copy: bool:
 	get: return block != null
 
 func get_shader() -> ShaderMaterial:
-	print(shader_path)
 	if shader_path.length() > 6:
 		var shader := ShaderMaterial.new()
 		shader.shader = load(shader_path)

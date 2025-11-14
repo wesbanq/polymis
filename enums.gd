@@ -1,5 +1,6 @@
 extends Node
 
+@warning_ignore("shadowed_global_identifier")
 func between(min: int, max: int, val: int) -> bool:
 	return min <= val and max >= val
 
@@ -12,6 +13,11 @@ func read_folder(path: String) -> Array[String]:
 @warning_ignore("shadowed_global_identifier")
 func shop_add_pm_price(round: int, current: int) -> int:
 	const c := 1.1854
+	@warning_ignore("narrowing_conversion")
+	return (c*current + c**2) * c**round
+
+func shop_restock_price(round: int, current: int) -> int:
+	const c := 1.0924
 	@warning_ignore("narrowing_conversion")
 	return (c*current + c**2) * c**round
 

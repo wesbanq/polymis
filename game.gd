@@ -218,6 +218,7 @@ func _game_loop() -> Enums.BOARD_FINISH:
 func _ready() -> void:
 	#TODO
 	#mechanism for auto scaling labels for shops and mods
+	#calc consts
 	#mod explanation hover window
 	#shop ability unlock
 	#shop restock
@@ -226,7 +227,7 @@ func _ready() -> void:
 	#test mods
 	
 	#save file
-		#keep unknown data in the save for mod support
+		#keep unknown data in the save for potential future mod support
 	
 	bag = load(Enums.BAG_PATHS[0]).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 	
