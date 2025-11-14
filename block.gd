@@ -80,7 +80,6 @@ func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, id
 	board_position = b
 	modifier = info.modifier
 	
-	
 	prototype_shape = prototype if prototype else PolyminoShape.new()
 	prototype_shape_idx = idx
 	

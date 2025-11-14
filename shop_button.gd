@@ -4,7 +4,8 @@ class_name ShopButton
 var asset_path: String
 var board: ShopBoard
 var blk: Block
-var lable: RichTextLabel
+var lable: GridLabel
+var grid_pos: Vector2i
 
 func click_within_block(clk: Vector2) -> bool:
 	@warning_ignore("integer_division")
@@ -16,25 +17,35 @@ func click_within_block(clk: Vector2) -> bool:
 	@warning_ignore("integer_division")
 	var down_y = global_position.y + size.x
 	
+	print()
 	return clk.x < left_x and clk.x > right_x and clk.y > up_y and clk.y < down_y
 
 func destroy() -> void:
 	lable.queue_free()
 	queue_free()
 
-func _init(img_path: String, brd: ShopBoard) -> void:
+func _rescale() -> void:
+	position = Block.get_position_from_grid(grid_pos, board)
+	size = Vector2(board.grid_size_px*2, board.grid_size_px*2)
+
+
+func _init(img_path: String, brd: ShopBoard, g_p: Vector2i) -> void:
 	asset_path = img_path
 	board = brd
+	grid_pos = g_p
 	blk = Block.new(BlockInfo.new(Enums.COLORS.WHITE), board._pm_pos(0, false), board, null)
 	
 	texture = load(img_path)
-	position = Block.get_position_from_grid(board._pm_pos(0, false), board)
+	#position = Block.get_position_from_grid(board._pm_pos(0, false), board)
 	size = Vector2(board.grid_size_px*2, board.grid_size_px*2)
 	
-	var lbl := RichTextLabel.new()
-	lbl.text = str(Enums.shop_add_pm_price(board.game.round_num, board.game.max_pm))
-	lbl.position = Block.get_position_from_grid(board._pm_pos(0, false) + Vector2i(0, -2), board)
-	lbl.theme = load("res://text.tres")
-	lbl.custom_minimum_size = Vector2(120,120)
-	board.add_child(lbl)
-	lable = lbl
+	board.ChangedAttr.connect(func(name: String, _val: Variant) -> void:
+		if name == "grid_size_px": _rescale()
+	)
+	
+	lable = GridLabel.new(
+		grid_pos + Vector2i(0, -2), 
+		str(Enums.shop_add_pm_price(board.game.round_num, board.game.max_pm)), 
+		board)
+	board.add_child(lable)
+	_rescale()

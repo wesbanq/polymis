@@ -2,8 +2,8 @@ extends Board
 class_name ShopBoard
 
 signal BoughtPolymino(ps: PolyminoShape)
-@warning_ignore("unused_signal")
 signal BoughtAbility
+signal Restock
 signal BoardClear
 signal IncreasedPMCount
 
@@ -78,6 +78,7 @@ func purchase(idx: int, blks: bool = true) -> void:
 			game.bag.add_to_bag(selling[idx][0].string)
 			BoughtPolymino.emit(selling[idx][0].string)
 			selling[idx][0].destroy()
+			selling[idx][2].queue_free()
 			selling[idx] = null
 		else:
 			print("player has: %d, cost: %d" % [game.pts, selling[idx][1]])
@@ -91,17 +92,36 @@ func purchase(idx: int, blks: bool = true) -> void:
 					IncreasedPMCount.emit()
 					extra_buttons[0][1].destroy()
 					extra_buttons[0][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
-					extra_buttons[0][1] = ShopButton.new("res://shop_add_pm_icon.png", self)
+					extra_buttons[0][1] = ShopButton.new("res://shop_add_pm_icon.png", self, _pm_pos(0, false))
 					add_child(extra_buttons[0][1])
 					#sends signal to score board to change pm value
 					#TODO crutch pls fix
 					if game.score_board:
 						game.score_board.ChangeNumber.emit(game.max_pm, Enums.SCORE_BOARD.PM_LEFT)
-				#active abils
+				#restock
 				1:
-					pass
-				#passive abils
+					game.pts -= extra_buttons[1][0]
+					for i in selling.size():
+						if selling[i]:
+							selling[i][0].destroy()
+							selling[i][2].queue_free()
+					_stock_shop()
+					Restock.emit()
+					extra_buttons[1][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
+					extra_buttons[1][1] = ShopButton.new("res://restock.png", self, _pm_pos(1, false))
+					add_child(extra_buttons[1][1])
+				#active abils
 				2:
+					game.unlocked_abil_a += 1
+					game.pts -= extra_buttons[2][0]
+					BoughtAbility.emit()
+					extra_buttons[2][1].destroy()
+					if game.unlocked_abil_a < game.max_abil_a_size:
+						extra_buttons[2][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
+						extra_buttons[2][1] = ShopButton.new("res://restock.png", self, _pm_pos(2, false))
+						add_child(extra_buttons[2][1])
+				#remove polymino
+				3:
 					pass
 		else:
 			print("player has: %d, cost: %d" % [game.pts, selling[idx][1]])
@@ -117,49 +137,42 @@ func _input(event: InputEvent) -> void:
 						purchase(i)
 						return
 		
-		
-		if extra_buttons[0][1].click_within_block(world_pos) and extra_buttons[0][0] <= game.pts:
-			purchase(0, false)
+		for i in extra_buttons.size():
+			if extra_buttons[i][1].click_within_block(world_pos):
+				purchase(i, false)
 
 func _pm_pos(i: int, a: bool = true) -> Vector2i:
 	return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1, height - height/3 if a else height/3)
 	#return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1, height/2)
 
 func _stock_shop() -> void:
+	selling = []
 	for i in range(_selling_amount):
 		#TODO wacky behaviour w/ "height/2 - PM_SIZE/2"
 		var pm := _add_polymino(
 			_get_random_pm(), 
 			_pm_pos(i), 
-			false)
+			false
+		)
 		
-		selling.append([pm, _get_pm_price(pm.string)])
-		
-		var lbl := RichTextLabel.new()
-		lbl.text = str(selling[-1][1])
-		lbl.theme = load("res://text.tres")
-		
-		#TODO MOVE LABELS IN TANDEM W/ GRID SCALING
-		
-		#TEMP REMOVE L8R
-		#VVVVV
-		#offset label from corrseponding block by 1 grid space
-		lbl.position = Block.get_position_from_grid(_pm_pos(i) + Vector2i(0, -1), self)
-		lbl.theme = load("res://text.tres")
-		lbl.custom_minimum_size = Vector2(120,120)
-		#^^^^^
-		
+		var price := _get_pm_price(pm.string)
+		var lbl := GridLabel.new(_pm_pos(i) + Vector2i(0, -1), str(price), self)
 		add_child(lbl)
+		
+		selling.append([pm, price, lbl])
 
 func _ready() -> void:
-	#width = _selling_amount*4 + (_selling_amount-1)*_grid_spacing
-	#height = _grid_spacing+4+4+4+_grid_spacing
 	##spacing/pm/text+spacing/abil+text/spacing
 	
 	_stock_shop()
-	var add_pm_button := ShopButton.new("res://shop_add_pm_icon.png", self)
+	var add_pm_button := ShopButton.new("res://shop_add_pm_icon.png", self, _pm_pos(0, false))
 	extra_buttons.insert(0, [Enums.shop_add_pm_price(game.round_num, game.max_pm), add_pm_button])
 	add_child(add_pm_button)
+	
+	if game.max_abil_a_size > game.unlocked_abil_a:
+		var restock_button := ShopButton.new("res://restock.png", self, _pm_pos(1, false))
+		extra_buttons.insert(1, [Enums.shop_restock_price(game.round_num, game.max_pm), restock_button])
+		add_child(restock_button)
 	
 	game.score_board.Continue.connect(func():
 		BoardClear.emit()
