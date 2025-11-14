@@ -74,7 +74,7 @@ func update_position() -> void:
 	#offset_left = offsets.x
 	#offset_top = offsets.y
 	if container:
-		##FIX ME
+		#FIX ME
 		#container.custom_minimum_size = board_size_px*1.1
 		custom_minimum_size = board_size_px
 	#custom_minimum_size = board_size_px

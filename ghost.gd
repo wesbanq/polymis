@@ -61,7 +61,9 @@ static func get_shader_args(v) -> Vector4:
 
 func _init(master: Polymino = null) -> void:
 	master_polymino = master
-	super(master_polymino.string, master_polymino.game_board)
+	game_board = master.game_board
+	#super(master_polymino.string, master_polymino.game_board)
+	update()
 	
 	for v in blocks:
 		if v is Block:
@@ -72,4 +74,3 @@ func _init(master: Polymino = null) -> void:
 	UpdateGhost.connect(update)
 	#game_board.Scored.connect(func(_n): update())
 	master_polymino.game_board.add_child(self)
-	update()

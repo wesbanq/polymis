@@ -46,6 +46,7 @@ func spawn_polymino(ps: PolyminoShape, origin: Vector2i = Vector2i(int(width/2.0
 		return
 	
 	if _controlled_polymino != null:
+		push_error("spwaned pm while thers a pm active")
 		_controlled_polymino.destroy()
 		_controlled_polymino = null
 	
@@ -75,17 +76,31 @@ func move_rows_down(from_y: int, amount: int = 1) -> void:
 				block_list[x][y] = null
 	update_block_list()
 
-func score_row(y: int) -> int:
+func score_lines(lines: Array[int]) -> int:
 	var scored = 0
-	for x in width:
-		scored += block_list[x][y].score()
-		block_list[x][y] = null
-	update_block_list()
-	move_rows_down(y+1)
+	for y in lines:
+		for x in width:
+			scored += block_list[x][y].score()
+			#block_list[x][y] = null
+		update_block_list()
+		#move_rows_down(y+1)
 	return scored
 
-func get_score() -> int:
-	var score := 0
+func trigger(lines: Array[int], pre: bool) -> void:
+	for y in lines:
+		for x in width:
+			if pre: block_list[x][y].pre_trigger()
+			else: block_list[x][y].post_trigger()
+
+func destroy_lines(lines: Array[int]) -> void:
+	for y in lines:
+		for x in width:
+			block_list[x][y].destroy()
+		update_block_list()
+		move_rows_down(y+1)
+
+func get_scoring_lines() -> Array[int]:
+	#var score := 0
 	var lines: Array[int] = []
 	for y in range(height-1, -1, -1):
 		var complete := true
@@ -96,9 +111,9 @@ func get_score() -> int:
 		if complete:
 			LineFinished.emit(y)
 			lines.append(y)
-	for line in lines: score += score_row(line)
+	#for line in lines: score += score_row(line)
 	
-	return score
+	return lines
 
 func hold_polymino() -> void:
 	if not _hold_cooldown: 
@@ -141,12 +156,21 @@ func _ready() -> void:
 		_hold_cooldown = false
 		
 		game.PolyminoPlaced.emit(pm)
-		score_to_add = get_score()
-		if score_to_add > 0: 
+		#score_to_add = get_score()
+		
+		var lines := get_scoring_lines()
+		if lines.size() > 0:
+			trigger(lines, true)
+			score_to_add = score_lines(lines)
+			trigger(lines, false)
+			
 			score_current += score_to_add
 			Scored.emit(score_to_add)
 			game.score_board.ChangeNumber.emit(score_current, Enums.SCORE_BOARD.SCORE_CURRENT)
 			game.score_board.ChangeNumber.emit(max(pts_added, 0), Enums.SCORE_BOARD.PTS_ADDED)
+			
+			destroy_lines(lines)
+			score_to_add = 0
 	)
 	
 	_down_timer = Timer.new()

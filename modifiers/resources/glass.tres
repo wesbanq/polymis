@@ -4,7 +4,6 @@
 
 [resource]
 script = ExtResource("1_gbciu")
-mult = 3
 display_name = "Glass"
 description = "Multiplies the score by {mult}x. 
 After scoring {UI.DOWNSIDE_TEXT}removes this modifier from this polymino for the rest of the round{UI.END}.
