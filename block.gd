@@ -18,9 +18,20 @@ var info: BlockInfo
 
 var t
 
+func pre_trigger() -> void:
+	if modifier:
+		modifier.pre_trigger()
+
+func post_trigger() -> void:
+	if modifier:
+		modifier.post_trigger()
+
 func score() -> int:
+	#possible bug gna leave it cuz it might lead to intnrsng tech
 	if modifier: score_amount += modifier.trigger()
 	return score_amount
+	#fix VVV
+	#return score_amount + modifier.trigger() if modifier else score_amount
 
 func destroy() -> void:
 	#potential modifier destroy trigger
@@ -62,19 +73,27 @@ func _ready() -> void:
 
 func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, idx: int = 0):
 	#deep duplicate to make it local to scene
-	#prevents bug with changing the blockinfo in shop
+	#prevents bug with the shop changing blockinfo
 	info = b_i.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 	color = info.color
 	board = brd
 	board_position = b
 	modifier = info.modifier
 	
+	
 	prototype_shape = prototype if prototype else PolyminoShape.new()
 	prototype_shape_idx = idx
 	
 	texture = block_path
+	#mb like change it to be more elegant next time???????????????????????
 	if modifier: # chk if block has modifier
-		material = modifier.get_shader()
+		modifier.setup(board.game)
+		var new_shader := modifier.get_shader()
+		if new_shader:
+			material = new_shader
+		else:
+			material = ShaderMaterial.new()
+			material.shader = default_shader_path
 	else:
 		material = ShaderMaterial.new()
 		material.shader = default_shader_path

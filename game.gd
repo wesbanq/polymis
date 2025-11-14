@@ -220,6 +220,7 @@ func _ready() -> void:
 	#mechanism for auto scaling labels for shops and mods
 	#mod explanation hover window
 	#shop ability unlock
+	#shop restock
 	#more abils
 	#more mods
 	#test mods

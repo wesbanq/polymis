@@ -52,7 +52,7 @@ func _get_random_pm() -> PolyminoShape:
 			blk.color = new_color
 			if RNG.randi(0, 100) <= _mod_chance:
 				var new_mod := load(RNG.pick_random_weight(_mod_ranges, _avail_mod))
-				new_mod.setup(game)
+				#new_mod.setup(game)
 				blk.modifier = new_mod
 	return shape
 
