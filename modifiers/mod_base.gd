@@ -3,7 +3,7 @@ class_name Modifier
 
 @export var display_name: String
 @export_multiline var description: String
-@export var shader_path: String
+@export var shader_path: String = fallback_shader_path
 const fallback_shader_path := "res://modifiers/shaders/fallback.gdshader"
 
 @export var mod_price := 1
@@ -14,11 +14,17 @@ var block: Block:
 var board: GameBoard:
 	get: return block.board if block else null
 var _game: GameMain
+var _copy := false:
+	get: return block != null
 
 func get_shader() -> ShaderMaterial:
-	var shader := ShaderMaterial.new()
-	shader.shader = load(shader_path if shader_path.length() > 6 else fallback_shader_path)
-	return shader
+	print(shader_path)
+	if shader_path.length() > 6:
+		var shader := ShaderMaterial.new()
+		shader.shader = load(shader_path)
+		return shader
+	else:
+		return null
 
 func new_parent(new: Block) -> void:
 	#print(new, self)
@@ -37,6 +43,16 @@ func post_trigger() -> void:
 #returns the amount of extra score that should be added to the lines score
 func trigger(_who: Variant = null) -> int:
 	return 0
+
+func get_from_prototype(val: String) -> Variant:
+	if block:
+		if block.prototype_shape.shape_string[block.prototype_shape_idx]:
+			return block.prototype_shape.shape_string[block.prototype_shape_idx].modifier.get(val)
+		else:
+			push_error("no prototype")
+	else:
+		push_error("no block")
+	return get(val) if get(val) else null
 
 func setup(game: GameMain = null) -> void:
 	_game = game

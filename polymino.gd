@@ -139,10 +139,14 @@ func copy_blocks(src: Variant, origin: Vector2i = Vector2i(0, 0)) -> void:
 			if v != null:
 				blocks[i] = Block.new(v, PolyminoShape.get_board_position_from_hex(i) + origin, game_board, src, i)
 	elif src is Polymino:
+		if not self is Ghost: push_warning("used pm not ghost") 
 		for i in src.blocks.size():
-			var v = src.blocks[i]
-			if v != null:
-				blocks[i] = Block.new(v.info, v.board_position, game_board, src.string, i)
+			#var new_shape = src.string.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
+			if src.blocks[i]:
+				var v = src.blocks[i]
+				var new_info = v.info.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
+				new_info.modifier = null
+				blocks[i] = Block.new(new_info, v.board_position, game_board, src.string, i)
 	bottom = src.bottom
 	bottom2 = src.bottom2
 
