@@ -28,7 +28,6 @@ func setup(game: GameMain = null) -> void:
 		#Multiplies the score by %dx. 
 		#After scoring[color=#%s]removes this modifier from this polymino for the rest of the round[/color].
 		#Will be destroyed if there are no block below it." % [mult, Enums.UI_COLORS.UI_DOWNSIDE_TEXT]
-	print(triggered)
 	shader_path = "res://modifiers/shaders/glass.gdshader" if not triggered else ""
 	#mod_price = 6000
 	

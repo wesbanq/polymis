@@ -14,6 +14,7 @@ const _main_scene := preload("res://abil_ui.tscn")
 @onready var _sp_bar_lbl := _main_ctrl.get_node("HBoxContainer/Bar/RichTextLabel")
 @onready var _sp_bar_blks := _sp_bar_ctrl.get_node("Control/VBoxContainer")
 @onready var _a_abils_ctrl := _main_ctrl.get_node("HBoxContainer/ActiveAbils")
+@warning_ignore("unused_private_class_variable")
 @onready var _p_abils_ctrl := _main_ctrl.get_node("HBoxContainer/PassiveAbils")
 @onready var _sp_bar_blk_prefab := _main_ctrl.get_node("HBoxContainer/Bar/TextureRect")
 
@@ -27,6 +28,7 @@ var block_size_px: int
 var _progress: int:
 	set(v): _progress = v; _update_bar()
 
+@warning_ignore("unused_parameter")
 func set_abils_from_arr(abils_a: Array[AbilityActive], abils_p: Array[AbilityPassive], bsp: int = 32) -> void:
 	#assumes len of abils never changes
 	#change when abil len becomes changeable mid gameplay
