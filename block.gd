@@ -86,6 +86,7 @@ func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, id
 	texture = block_path
 	#mb like change it to be more elegant next time???????????????????????
 	if modifier: # chk if block has modifier
+		modifier._copy = true
 		modifier.setup(board.game)
 		var new_shader := modifier.get_shader()
 		if new_shader:

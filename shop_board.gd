@@ -51,9 +51,9 @@ func _get_random_pm() -> PolyminoShape:
 		if blk is BlockInfo:
 			blk.color = new_color
 			if RNG.randi(0, 100) <= _mod_chance:
-				var new_mod := load(RNG.pick_random_weight(_mod_ranges, _avail_mod))
-				#new_mod.setup(game)
+				var new_mod := load(RNG.pick_random_weight(_mod_ranges, _avail_mod)).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 				blk.modifier = new_mod
+				new_mod.setup(game)
 	return shape
 
 func _get_pm_price(ps: PolyminoShape) -> int:
@@ -75,7 +75,7 @@ func purchase(idx: int, blks: bool = true) -> void:
 	if blks:
 		if game.pts >= selling[idx][1]:
 			game.pts -= selling[idx][1]
-			game.bag.add_to_bag(selling[idx][0].string)
+			game.bag.add_to_bag(selling[idx][0].string.duplicate_deep(Resource.DEEP_DUPLICATE_ALL))
 			BoughtPolymino.emit(selling[idx][0].string)
 			selling[idx][0].destroy()
 			selling[idx][2].queue_free()

@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="Bag" load_steps=14 format=3 uid="uid://bpkfd0icbucf6"]
+
+[ext_resource type="Script" uid="uid://b0uuh8aing25x" path="res://bag.gd" id="1_v08eo"]
+[ext_resource type="Script" uid="uid://cruubg6nait1l" path="res://polyminoshape.gd" id="2_tk7do"]
+[ext_resource type="Script" uid="uid://c8h0liekeyd2c" path="res://block_info.gd" id="3_lfwfu"]
+[ext_resource type="Script" uid="uid://f1iiid0xcdcf" path="res://modifiers/glass.gd" id="4_8wow1"]
+
+[sub_resource type="Resource" id="Resource_lfwfu"]
+script = ExtResource("4_8wow1")
+metadata/_custom_type_script = "uid://f1iiid0xcdcf"
+
+[sub_resource type="Resource" id="Resource_8wow1"]
+script = ExtResource("3_lfwfu")
+modifier = SubResource("Resource_lfwfu")
+metadata/_custom_type_script = "uid://c8h0liekeyd2c"
+
+[sub_resource type="Resource" id="Resource_x7mls"]
+script = ExtResource("4_8wow1")
+metadata/_custom_type_script = "uid://f1iiid0xcdcf"
+
+[sub_resource type="Resource" id="Resource_02pye"]
+script = ExtResource("3_lfwfu")
+modifier = SubResource("Resource_x7mls")
+metadata/_custom_type_script = "uid://c8h0liekeyd2c"
+
+[sub_resource type="Resource" id="Resource_qp7po"]
+script = ExtResource("4_8wow1")
+metadata/_custom_type_script = "uid://f1iiid0xcdcf"
+
+[sub_resource type="Resource" id="Resource_cqqj6"]
+script = ExtResource("3_lfwfu")
+modifier = SubResource("Resource_qp7po")
+metadata/_custom_type_script = "uid://c8h0liekeyd2c"
+
+[sub_resource type="Resource" id="Resource_ak7a7"]
+script = ExtResource("4_8wow1")
+metadata/_custom_type_script = "uid://f1iiid0xcdcf"
+
+[sub_resource type="Resource" id="Resource_u87b8"]
+script = ExtResource("3_lfwfu")
+modifier = SubResource("Resource_ak7a7")
+metadata/_custom_type_script = "uid://c8h0liekeyd2c"
+
+[sub_resource type="Resource" id="Resource_wbs5h"]
+script = ExtResource("2_tk7do")
+shape_string = Array[ExtResource("3_lfwfu")]([SubResource("Resource_8wow1"), SubResource("Resource_02pye"), SubResource("Resource_cqqj6"), SubResource("Resource_u87b8"), null, null, null, null, null, null, null, null, null, null, null, null])
+metadata/_custom_type_script = "uid://cruubg6nait1l"
+
+[resource]
+script = ExtResource("1_v08eo")
+shapes = Array[ExtResource("2_tk7do")]([SubResource("Resource_wbs5h")])
+metadata/_custom_type_script = "uid://b0uuh8aing25x"

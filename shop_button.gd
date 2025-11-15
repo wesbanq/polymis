@@ -17,7 +17,6 @@ func click_within_block(clk: Vector2) -> bool:
 	@warning_ignore("integer_division")
 	var down_y = global_position.y + size.x
 	
-	print()
 	return clk.x < left_x and clk.x > right_x and clk.y > up_y and clk.y < down_y
 
 func destroy() -> void:
