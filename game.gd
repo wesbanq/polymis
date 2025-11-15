@@ -3,7 +3,6 @@ class_name GameMain
 
 @warning_ignore("unused_signal")
 signal PolyminoPlaced(pm: Polymino)
-@warning_ignore("unused_signal")
 signal NewBoard(new: Board)
 signal ChangedState(new: Enums.GAME_STATE)
 signal PtsChanged(new: int)
@@ -11,10 +10,12 @@ signal GameOver
 signal TriggeredAbility(idx: int)
 signal BoardChangedAttr(name: String, val: Variant)
 
-var max_pm := 20
+var max_pm := 20:
+	set(v): max_pm = clampi(v, 1, max_max_pm)
 
-var max_abil_a_size := 3
-var max_abil_p_size := 3
+const max_max_pm := 99
+const max_abil_a_size := 3
+const max_abil_p_size := 3
 
 var abils_p: Array[AbilityPassive]
 var abils_a: Array[AbilityActive]
@@ -111,7 +112,6 @@ func set_abil_active(idx: int, abil_name: String) -> void:
 	
 	var new_abil = AbilityActive.get_abil_name(abil_name)
 	
-	#print(new_abil, new_abil.game, new_abil is MakeStraight)
 	if new_abil:
 		new_abil = new_abil.new(self)
 		abils_a[idx] = new_abil
@@ -217,17 +217,18 @@ func _game_loop() -> Enums.BOARD_FINISH:
 
 func _ready() -> void:
 	#TODO
-	#mechanism for auto scaling labels for shops and mods
-	#calc consts
+	#FIXXwhatever is happeng w/ shop buttons
+	#organize assets folder
 	#mod explanation hover window
-	#shop ability unlock
-	#shop restock
+	#calc consts
+	#next pm brd
+	#held pm brd
+	#shop remove
+	#save file;notekeep unknown data in the save for potential future mod support
 	#more abils
 	#more mods
 	#test mods
-	
-	#save file
-		#keep unknown data in the save for potential future mod support
+	#main menu
 	
 	bag = Bag.load_bag_resource(Enums.BAG_PATHS[1], self)
 	

@@ -24,22 +24,9 @@ func post_trigger() -> void:
 
 func setup(game: GameMain = null) -> void:
 	super(game)
-	#display_name = "Glass"
-	#description = "
-		#Multiplies the score by %dx. 
-		#After scoring[color=#%s]removes this modifier from this polymino for the rest of the round[/color].
-		#Will be destroyed if there are no block below it." % [mult, Enums.UI_COLORS.UI_DOWNSIDE_TEXT]
-	shader_path = "res://modifiers/shaders/glass.gdshader" if not triggered else ""
-	#mod_price = 6000
 	local_triggered = triggered
-	#print(_copy)
+	shader_path = "res://modifiers/shaders/glass.gdshader" if not local_triggered else ""
 	if not _copy:
-		print("fsdfds")
 		_game.NewBoard.connect(func(_brd: Board) -> void:
-			print("new board")
 			triggered = false
 		)
-	#_game.NewBoard.connect(func(_brd: Board) -> void:
-		#print("asdfsa")
-		#triggered = false
-	#)

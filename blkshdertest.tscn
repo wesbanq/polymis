@@ -1,11 +1,13 @@
 [gd_scene load_steps=5 format=3 uid="uid://byikmfihkqbrk"]
 
-[ext_resource type="Shader" uid="uid://deomttnxj7s73" path="res://modifiers/shaders/test.gdshader" id="1_nd754"]
+[ext_resource type="Shader" uid="uid://b8pce7evdjk5b" path="res://inactive.gdshader" id="1_nd754"]
 [ext_resource type="Texture2D" uid="uid://owkavabbglxn" path="res://block.png" id="2_cyxcx"]
 [ext_resource type="Script" uid="uid://cnlai5cg88nup" path="res://block.gd" id="3_utc1u"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_a1ehi"]
 shader = ExtResource("1_nd754")
+shader_parameter/avail = true
+shader_parameter/tint = Vector4(1, 1, 1, 1)
 
 [node name="Block" type="Sprite2D"]
 texture_filter = 1
