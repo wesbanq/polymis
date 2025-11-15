@@ -16,6 +16,7 @@ func shop_add_pm_price(round: int, current: int) -> int:
 	@warning_ignore("narrowing_conversion")
 	return (c*current + c**2) * c**round
 
+@warning_ignore("shadowed_global_identifier")
 func shop_restock_price(round: int, current: int) -> int:
 	const c := 1.0924
 	@warning_ignore("narrowing_conversion")
@@ -35,6 +36,11 @@ const UI := {
 	"DOWNSIDE_TEXT": Color("#ff0000"),
 	"POSITIVE_TEXT": Color("#00ff00"),
 	"WARN_TEXT": Color("#ffff00"),
+	
+	
+	
+	"TEXT_THEME": preload("res://text.tres"),
+	"INACTIVE_SHADER": preload("res://inactive.gdshader"),
 }
 
 const COLORS := {
@@ -83,6 +89,14 @@ enum ABIL_BOARD {
 	ABIL_1,
 	ABIL_2,
 	ABIL_3,
+}
+
+enum SHOP_EXTRA_BUTTONS {
+	ADD_PM,
+	RESTOCK,
+	UNLOCK_ACTIVE_ABIL,
+	UNLOCK_PASSIVE_ABIL,
+	REMOVE_PM,
 }
 
 enum BOARD_FINISH {

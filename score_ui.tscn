@@ -13,6 +13,8 @@ shader_parameter/progress = 0.0
 [node name="ScoreNumber" type="Control"]
 z_index = 1000
 z_as_relative = false
+texture_filter = 2
+texture_repeat = 2
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

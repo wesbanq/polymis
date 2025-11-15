@@ -55,7 +55,6 @@ text = "NAME"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
-autowrap_trim_flags = 0
 horizontal_alignment = 1
 
 [node name="RichTextLabel" type="RichTextLabel" parent="PanelContainer/VBoxContainer"]
