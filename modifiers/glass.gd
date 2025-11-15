@@ -2,10 +2,11 @@ extends Modifier
 class_name GlassModifier
 
 @export var mult := 2
-
+#var a := false
 #pattern for having global variable in modifierswdACFS ?ffsD>:{LGFA SFL:OJAHFE f\AF EF
 var triggered := false:
 	get: return get_from_prototype("triggered") if _copy else triggered
+var local_triggered: bool
 #funi gface >:{ >:} ;] :-}   8]
 
 #  o /
@@ -16,7 +17,7 @@ var triggered := false:
 #if ur reading ill kill you irl (threat) /srs
 func post_trigger() -> void:
 	#print(_copy, triggered, get_from_prototype("_copy"))
-	if not triggered:
+	if not local_triggered:
 		board.score_to_add *= mult
 		#triggered = true
 		block.prototype_shape.shape_string[block.prototype_shape_idx].modifier.triggered = true
@@ -30,8 +31,15 @@ func setup(game: GameMain = null) -> void:
 		#Will be destroyed if there are no block below it." % [mult, Enums.UI_COLORS.UI_DOWNSIDE_TEXT]
 	shader_path = "res://modifiers/shaders/glass.gdshader" if not triggered else ""
 	#mod_price = 6000
-	
-	if not _copy: 
+	local_triggered = triggered
+	#print(_copy)
+	if not _copy:
+		print("fsdfds")
 		_game.NewBoard.connect(func(_brd: Board) -> void:
+			print("new board")
 			triggered = false
 		)
+	#_game.NewBoard.connect(func(_brd: Board) -> void:
+		#print("asdfsa")
+		#triggered = false
+	#)

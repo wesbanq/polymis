@@ -23,3 +23,12 @@ func _get_next() -> PolyminoShape:
 	else:
 		reshuffle()
 		return _shuffled.pop_front()
+
+static func load_bag_resource(path: String, game: GameMain) -> Bag:
+	var new_bag: Bag = load(path).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
+	for ps in new_bag.shapes:
+		for blk in ps.shape_string:
+			if blk:
+				blk.modifier.setup(game)
+	
+	return new_bag
