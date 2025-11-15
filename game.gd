@@ -229,7 +229,7 @@ func _ready() -> void:
 	#save file
 		#keep unknown data in the save for potential future mod support
 	
-	bag = load(Enums.BAG_PATHS[0]).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
+	bag = Bag.load_bag_resource(Enums.BAG_PATHS[1], self)
 	
 	abils_a.resize(max_abil_a_size)
 	abils_a.fill(null)

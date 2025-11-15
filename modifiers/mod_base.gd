@@ -15,8 +15,7 @@ var board: GameBoard:
 	get: return block.board if block else null
 var _game: GameMain
 @warning_ignore("unused_private_class_variable")
-var _copy: bool:
-	get: return block != null
+var _copy := false
 
 func get_shader() -> ShaderMaterial:
 	if shader_path.length() > 6:
@@ -52,7 +51,8 @@ func get_from_prototype(val: String) -> Variant:
 			push_error("no prototype")
 	else:
 		push_error("no block")
-	return get(val) if get(val) else null
+	return null
 
 func setup(game: GameMain = null) -> void:
 	_game = game
+	#_copy = cpy
