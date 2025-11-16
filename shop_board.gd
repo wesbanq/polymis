@@ -65,7 +65,7 @@ func _get_pm_price(ps: PolyminoShape) -> int:
 	@warning_ignore("narrowing_conversion")
 	return clampi(85*game.round_num + game.round_num**(n*.7) + ((p*m)/float(n))**(game.round_num*.15), 0, 999999)
 
-func purchase(idx: int, blks: bool = true) -> void:
+func purchase(idx: Enums.SHOP_EXTRA_BUTTONS, blks: bool = true) -> void:
 	if blks:
 		if game.pts >= selling[idx][1]:
 			game.pts -= selling[idx][1]
@@ -84,11 +84,18 @@ func purchase(idx: int, blks: bool = true) -> void:
 					game.max_pm += 1
 					IncreasedPMCount.emit()
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1].destroy()
+					
+					#if game.max_pm < game.max_max_pm:
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1] = ShopButton.new("res://shop_add_pm_icon.png", self, _pm_pos(0, false))
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1] = ShopButton.new(
+						"res://shop_add_pm_icon.png", 
+						self, 
+						_pm_pos(Enums.SHOP_EXTRA_BUTTONS.ADD_PM, false),
+						game.max_pm < game.max_max_pm
+					)
 					add_child(extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1])
 					#sends signal to score board to change pm value
-					#TODO crutch pls fix
+					#TODO crutch pls fix (mb not idk)
 					if game.score_board:
 						game.score_board.ChangeNumber.emit(game.max_pm, Enums.SCORE_BOARD.PM_LEFT)
 				Enums.SHOP_EXTRA_BUTTONS.RESTOCK:
@@ -99,21 +106,25 @@ func purchase(idx: int, blks: bool = true) -> void:
 					_stock_shop()
 					Restock.emit()
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1] = ShopButton.new("res://restock.png", self, _pm_pos(1, false))
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1] = ShopButton.new(
+						"res://restock.png", 
+						self, 
+						_pm_pos(Enums.SHOP_EXTRA_BUTTONS.RESTOCK, false)
+					)
 					add_child(extra_buttons[1][1])
 				Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL:
 					game.unlocked_abil_a += 1
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1].destroy()
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1].destroy()
 					#if game.unlocked_abil_a < game.max_abil_a_size-1:
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1] = ShopButton.new(
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1] = ShopButton.new(
 						"res://shop_unlock_abil.png", 
 						self, 
-						_pm_pos(2, false), 
+						_pm_pos(Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL, false), 
 						game.unlocked_abil_a < game.max_abil_a_size-1
 					)
 					BoughtAbility.emit()
-					add_child(extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1])
+					add_child(extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1])
 				Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM:
 					pass
 				Enums.SHOP_EXTRA_BUTTONS.UNLOCK_PASSIVE_ABIL:
@@ -134,11 +145,12 @@ func _input(event: InputEvent) -> void:
 						purchase(i)
 						return
 		
-		for i in extra_buttons.size():
-			if extra_buttons[i] and extra_buttons[i][1].click_within_block(world_pos):
-				purchase(i, false)
+		for key in Enums.SHOP_EXTRA_BUTTONS:
+			if extra_buttons[Enums.SHOP_EXTRA_BUTTONS[key]] and extra_buttons[Enums.SHOP_EXTRA_BUTTONS[key]][1].click_within_block(world_pos):
+				purchase(Enums.SHOP_EXTRA_BUTTONS[key], false)
 
 func _pm_pos(i: int, a: bool = true) -> Vector2i:
+	@warning_ignore("integer_division")
 	return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1, height - height/3 if a else height/3)
 	#return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1, height/2)
 
@@ -165,7 +177,7 @@ func _ready() -> void:
 	
 	extra_buttons.resize(5)
 	
-	var add_pm_button := ShopButton.new("res://shop_add_pm_icon.png", self, _pm_pos(0, false))
+	var add_pm_button := ShopButton.new("res://shop_add_pm_icon.png", self, _pm_pos(0, false), game.max_pm < game.max_max_pm)
 	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM] = [Enums.shop_add_pm_price(game.round_num, game.max_pm), add_pm_button]
 	add_child(add_pm_button)
 	

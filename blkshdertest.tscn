@@ -6,8 +6,9 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_a1ehi"]
 shader = ExtResource("1_nd754")
-shader_parameter/avail = true
-shader_parameter/tint = Vector4(1, 1, 1, 1)
+shader_parameter/active = true
+shader_parameter/tint = Vector3(1, 1, 1)
+shader_parameter/itint = Vector3(0.5, 0.5, 0.5)
 
 [node name="Block" type="Sprite2D"]
 texture_filter = 1
