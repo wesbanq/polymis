@@ -217,10 +217,10 @@ func _game_loop() -> Enums.BOARD_FINISH:
 
 func _ready() -> void:
 	#TODO
-	#FIXXwhatever is happeng w/ shop buttons
+	#shop buttons/labels react to how many pts u have
 	#organize assets folder
-	#mod explanation hover window
 	#calc consts
+	#mod explanation hover window
 	#next pm brd
 	#held pm brd
 	#shop remove

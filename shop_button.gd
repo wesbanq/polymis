@@ -40,9 +40,11 @@ func _init(img_path: String, brd: ShopBoard, g_p: Vector2i, act: bool = active) 
 	#position = Block.get_position_from_grid(board._pm_pos(0, false), board)
 	material = ShaderMaterial.new()
 	material.shader = Enums.UI.INACTIVE_SHADER
-	active = act
+	material.set_shader_parameter("itint", Enums.UI.UNAVAIL_TEXT)
 	size = Vector2(board.grid_size_px*2, board.grid_size_px*2)
+	active = act
 	
+	@warning_ignore("shadowed_variable_base_class")
 	board.ChangedAttr.connect(func(name: String, _val: Variant) -> void:
 		if name == "grid_size_px": _rescale()
 	)
