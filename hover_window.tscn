@@ -13,6 +13,7 @@ shadow_size = 4
 shadow_offset = Vector2(4, 4)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5wudu"]
+bg_color = Color(0.61257917, 0.5737231, 0.7257635, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6

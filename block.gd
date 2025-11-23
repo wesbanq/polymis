@@ -17,6 +17,24 @@ var default_shader_path = preload("res://block.gdshader")
 var info: BlockInfo
 
 var t
+var buyable := false
+var ghost := false
+var _hover := false:
+	set(v): 
+		if _hover and not v: HoverManager.hide(self)
+		if v: HoverManager.show(self, 
+			modifier.display_name if modifier else _get_color_name(), 
+			modifier.description if modifier else "",
+			modifier.display_name_color if modifier else color,
+			buyable)
+		_hover = v
+
+func _get_color_name() -> String:
+	var i := Enums.COLORS.values().find(color)
+	if i != -1:
+		return Enums.COLORS.keys()[i]
+	else:
+		return "IM FUCKING KILLING MYSLEF"
 
 func pre_trigger() -> void:
 	if modifier:
@@ -70,6 +88,7 @@ func _ready() -> void:
 		position = get_position_from_grid(board_position, board)
 		if board.game.show_block_position: t.text = "(%s, %s)" % [board_position.x, board_position.y]
 		else: t.text = ""
+		if not ghost: HoverManager.CheckHover.connect(func(pos: Vector2) -> void: _hover = click_within_block(pos))
 
 func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, idx: int = 0):
 	#deep duplicate to make it local to scene

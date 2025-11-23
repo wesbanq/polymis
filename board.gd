@@ -62,8 +62,8 @@ func get_surrounding_all(pos: Vector2i) -> Array[Block]:
 		(block_list[pos.x+1][pos.y-1] if Enums.between(0, width, pos.x+1) and Enums.between(0, height, pos.y-1) else null),
 	]
 
-func _add_polymino(ps: PolyminoShape, origin: Vector2i = Vector2i(int(width/2.0 - 2)+1, height-4), ghost: bool = true) -> Polymino:
-	var new_polymino := ps.create_polymino(self, origin)
+func _add_polymino(ps: PolyminoShape, origin: Vector2i = Vector2i(int(width/2.0 - 2)+1, height-4), ghost: bool = true, shop: bool = false) -> Polymino:
+	var new_polymino := ps.create_polymino(self, origin, shop)
 	new_polymino.enable_ghost = ghost
 	
 	add_child(new_polymino)

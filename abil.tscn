@@ -1,8 +1,32 @@
-[gd_scene load_steps=5 format=3 uid="uid://dxjtlkd8pilqi"]
+[gd_scene load_steps=6 format=3 uid="uid://dxjtlkd8pilqi"]
 
 [ext_resource type="Theme" uid="uid://bsow2mqhludnw" path="res://text.tres" id="1_2dm7u"]
 [ext_resource type="Shader" uid="uid://bi25rufc411k6" path="res://abil_ico.gdshader" id="2_nar8i"]
 [ext_resource type="Texture2D" uid="uid://qxrfqn7wfy48" path="res://abils/active/icons/gen_abil.png" id="3_n6kge"]
+
+[sub_resource type="GDScript" id="GDScript_2dm7u"]
+script/source = "extends HBoxContainer
+
+@onready var abilui: AbilUIElement = get_parent()
+
+func click_within_block(clk: Vector2) -> bool:
+	@warning_ignore(\"integer_division\")
+	var right_x = global_position.x
+	@warning_ignore(\"integer_division\")
+	var left_x = global_position.x + size.x
+	@warning_ignore(\"integer_division\")
+	var up_y = global_position.y
+	@warning_ignore(\"integer_division\")
+	var down_y = global_position.y + size.x
+	
+	return clk.x < left_x and clk.x > right_x and clk.y > up_y and clk.y < down_y
+
+func _ready() -> void:
+	HoverManager.CheckHover.connect(func(pos: Vector2) -> void:
+		if click_within_block(pos):
+			
+	)
+"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_n1ojr"]
 shader = ExtResource("2_nar8i")
@@ -14,6 +38,7 @@ shader_parameter/active = false
 offset_right = 200.0
 offset_bottom = 46.0
 size_flags_vertical = 3
+script = SubResource("GDScript_2dm7u")
 
 [node name="Hotkey" type="RichTextLabel" parent="."]
 custom_minimum_size = Vector2(30, 20)
