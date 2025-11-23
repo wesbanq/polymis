@@ -11,6 +11,7 @@ var bottom: Array[int]
 var bottom2: int
 var string: PolyminoShape
 
+var buyable := false
 var enable_ghost: bool = true
 
 signal DownTimer
@@ -154,11 +155,12 @@ func destroy() -> void:
 	if ghost: ghost.queue_free()
 	queue_free()
 
-func _init(ps: PolyminoShape, board: Board, origin: Vector2i = Vector2i(0, 0)) -> void:
+func _init(ps: PolyminoShape, board: Board, origin: Vector2i = Vector2i(0, 0), shop: bool = false) -> void:
 	string = ps
 	shape.assign(string.shape_string.map(func(v): return v is Modifier))
 	rotation_center = string.rotation_center
 	game_board = board
+	buyable = shop
 	
 	DownTimer.connect(func():
 		#print("a")
@@ -168,6 +170,7 @@ func _init(ps: PolyminoShape, board: Board, origin: Vector2i = Vector2i(0, 0)) -
 	copy_blocks(string, origin)
 	for v in blocks:
 		if v is Block:
+			v.buyable = buyable
 			add_child(v)
 	#print(bottom, bottom2, calculate_bottom(), calculate_bottom2())
 

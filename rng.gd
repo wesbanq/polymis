@@ -1,13 +1,34 @@
 extends Node
 
+const SEED_LENGTH := 8
+const SEED_CHARACTERS := ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
+
 var rng := RandomNumberGenerator.new()
 var current_seed := 0:
 	set(v): current_seed = v; rng.seed = v; LimboConsole.info("Changed RNG seed to %d." % v)
 
+func generate_seed() -> String:
+	var new_seed := ""
+	for i in SEED_LENGTH:
+		new_seed += SEED_CHARACTERS[randi_range(0, SEED_CHARACTERS.size()-1)]
+	return new_seed
+
 @warning_ignore("shadowed_global_identifier")
-func initialize(seed: int) -> void:
-	rng.seed = seed
-	current_seed = seed
+func set_seed(seed: String) -> void:
+	if seed.length() - SEED_LENGTH != 0: 
+		push_error("given seed: %s. is not the correct length: %d" % [seed, SEED_LENGTH])
+		LimboConsole.info("Wrong size seed given. Expected string of size: %d." % SEED_LENGTH)
+		return
+	
+	#hex
+	if seed.is_valid_hex_number():
+		current_seed = seed.hex_to_int()
+	else:
+		push_error("non hex seed given: %s" % seed)
+		LimboConsole.Info("A non-hex string given as the seed.")
+		return
+	
+	print(current_seed)
 
 @warning_ignore("shadowed_global_identifier")
 func randi(min: int, max: int) -> int:

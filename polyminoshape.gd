@@ -35,8 +35,8 @@ func calculate_bottom() -> Array[int]:
 	bottom2 = new_bottom.min()
 	return new_bottom
 
-func create_polymino(board: Board, origin: Vector2i = Vector2i(0, 0)) -> Polymino:
-	return Polymino.new(self, board, origin)
+func create_polymino(board: Board, origin: Vector2i = Vector2i(0, 0), shop: bool = false) -> Polymino:
+	return Polymino.new(self, board, origin, shop)
 
 static func get_mod_name(name: String) -> Modifier:
 	return (Enums.MODIFIERS[name.to_lower()].new() if Enums.MODIFIERS.keys().find(name.to_lower()) != -1 else null)

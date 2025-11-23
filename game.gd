@@ -145,6 +145,7 @@ func register_commands() -> void:
 	LimboConsole.register_command(set_sp, "asp", "Adds <add> to the current SP.")
 	LimboConsole.register_command(func() -> void: if board: LimboConsole.info("Current SP: %d" % board.special_points), "sp", "Prints the current amount of SP.")
 	LimboConsole.register_command(func(v: int) -> void: if board: board.special_points = v; LimboConsole.info("Set the SP counter to %d." % v), "ssp", "Sets the SP counter to <arg0>.")
+	LimboConsole.register_command(func(v: String) -> void: RNG.set_seed(v), "seed", "Sets the game's seed to <arg0>.")
 
 static func is_fail_reason(reason: Enums.BOARD_FINISH) -> bool: return reason >= 2
 
@@ -217,27 +218,28 @@ func _game_loop() -> Enums.BOARD_FINISH:
 
 func _ready() -> void:
 	#TODO
-	#shop buttons/labels react to how many pts u have
 	#organize assets folder
 	#calc consts
-	#mod explanation hover window
+	#armomred mod bug
 	#next pm brd
 	#held pm brd
 	#shop remove
+	#working sp
+	#shop buttons/labels react to how many pts u have
 	#save file;notekeep unknown data in the save for potential future mod support
 	#more abils
 	#more mods
 	#test mods
+	#playtest
+	#niceify hover text
 	#main menu
 	
-	bag = Bag.load_bag_resource(Enums.BAG_PATHS[1], self)
-	
+	bag = Bag.load_bag_resource(Enums.BAG_PATHS[0], self)
 	abils_a.resize(max_abil_a_size)
-	abils_a.fill(null)
 	abils_p.resize(max_abil_p_size)
-	abils_p.fill(null)
 	
-	RNG.initialize(73884)
+	var test_seed := "0001209C"
+	RNG.set_seed(test_seed)
 	register_commands()
 	$HBoxContainer.add_child(score_board)
 	$HBoxContainer.add_child(abil_board)

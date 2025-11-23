@@ -161,7 +161,8 @@ func _stock_shop() -> void:
 		var pm := _add_polymino(
 			_get_random_pm(), 
 			_pm_pos(i), 
-			false
+			false,
+			true
 		)
 		
 		var price := _get_pm_price(pm.string)
