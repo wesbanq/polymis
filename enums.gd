@@ -34,7 +34,7 @@ const UI := {
 	"NORMAL_TEXT": Color("#ffffff"),
 	
 	"DOWNSIDE_TEXT": Color("#ff0000"),
-	"POSITIVE_TEXT": Color("#00ff00"),
+	"UPSIDE_TEXT": Color("#00ff00"),
 	"WARN_TEXT": Color("#ffff00"),
 	
 	

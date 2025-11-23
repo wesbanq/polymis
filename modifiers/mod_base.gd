@@ -2,12 +2,21 @@ extends Resource
 class_name Modifier
 
 @export var display_name: String
-@export_multiline var description: String
+@export_multiline var description: String:
+	set(v): description = _format_desc(v)
 @export var shader_path: String = fallback_shader_path
-const fallback_shader_path := "res://modifiers/shaders/fallback.gdshader"
-
+@export var display_name_color: Color = Color(1, 1, 1)
 @export var mod_price := 1
 @export var weight := 1.0
+
+const fallback_shader_path := "res://modifiers/shaders/fallback.gdshader"
+var format_dict: Dictionary[String, String]
+var preproccess_format_dict := {
+	"end": Enums.UI.END, 
+	"upside": "[color=#%s]" % Enums.UI.UPSIDE_TEXT.to_html(false), 
+	"downside": "[color=#%s]" % Enums.UI.DOWNSIDE_TEXT.to_html(false), 
+	"warn": "[color=#%s]" % Enums.UI.WARN_TEXT.to_html(false),
+}
 
 var block: Block:
 	set = new_parent
@@ -52,6 +61,19 @@ func get_from_prototype(val: String) -> Variant:
 	else:
 		push_error("no block")
 	return null
+
+func _format_desc(desc: String) -> String:
+	var new_desc := desc.format(preproccess_format_dict)
+	var n = []
+	for s in new_desc.split("{"):
+		n.append_array(s.split("}"))
+	for i in n.size():
+		if i % 2 == 1:
+			var prop = get(n[i])
+			if prop:
+				n[i] = str(prop)
+	#print(n)
+	return "".join(n)
 
 func setup(game: GameMain = null) -> void:
 	_game = game
