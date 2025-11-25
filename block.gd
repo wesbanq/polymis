@@ -17,17 +17,9 @@ var default_shader_path = preload("res://block.gdshader")
 var info: BlockInfo
 
 var t
-var buyable := false
+var buyable: bool
 var ghost := false
-var _hover := false:
-	set(v): 
-		if _hover and not v: HoverManager.hide(self)
-		if v: HoverManager.show(self, 
-			modifier.display_name if modifier else _get_color_name(), 
-			modifier.description if modifier else "",
-			modifier.display_name_color if modifier else color,
-			buyable)
-		_hover = v
+var _hoverable: Hoverable = null
 
 func _get_color_name() -> String:
 	var i := Enums.COLORS.values().find(color)
@@ -53,7 +45,8 @@ func score() -> int:
 
 func destroy() -> void:
 	#potential modifier destroy trigger
-	queue_free()
+	if _hoverable: _hoverable.free()
+	free()
 	#if board.block_list[board_position.x][board_position.y] == self:
 		#board.block_list[board_position.x][board_position.y] = null
 
@@ -88,9 +81,18 @@ func _ready() -> void:
 		position = get_position_from_grid(board_position, board)
 		if board.game.show_block_position: t.text = "(%s, %s)" % [board_position.x, board_position.y]
 		else: t.text = ""
-		if not ghost: HoverManager.CheckHover.connect(func(pos: Vector2) -> void: _hover = click_within_block(pos))
+		if not ghost: 
+			_hoverable = Hoverable.new(
+				self,
+				click_within_block,
+				modifier.display_name if modifier else _get_color_name(), 
+				modifier.description if modifier else "",
+				modifier.display_name_color if modifier else color,
+				buyable
+			)
+			add_child(_hoverable)
 
-func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, idx: int = 0):
+func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, idx: int = 0, ghst: bool = false):
 	#deep duplicate to make it local to scene
 	#prevents bug with the shop changing blockinfo
 	info = b_i.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
@@ -98,6 +100,7 @@ func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, id
 	board = brd
 	board_position = b
 	modifier = info.modifier
+	ghost = ghst
 	
 	prototype_shape = prototype if prototype else PolyminoShape.new()
 	prototype_shape_idx = idx

@@ -236,6 +236,7 @@ func _ready() -> void:
 	
 	bag = Bag.load_bag_resource(Enums.BAG_PATHS[0], self)
 	abils_a.resize(max_abil_a_size)
+	abils_a.fill(Enums.ABILITIES_ACTIVE["noabil"].new(self))
 	abils_p.resize(max_abil_p_size)
 	
 	var test_seed := "0001209C"

@@ -5,6 +5,7 @@ var top: String
 var desc: String
 var top_color: Color
 var shop: bool
+var f: Callable
 
 var _master: Variant
 var _hover := false:
@@ -19,7 +20,12 @@ func _init(mst: Variant, chk_func: Callable, a: String, b: String, c: Color, d: 
 	desc = b
 	top_color = c
 	shop = d
+	f = chk_func
 	
 	HoverManager.CheckHover.connect(func(pos: Vector2) -> void:
-		_hover = chk_func.call(pos)
+		if not _master or not f:
+			free()
+			push_error("%s godot is a genuine piece of dogshit game engine. i unironically wish i learned unity instead" % top)
+			print([4][10])
+		else: _hover = f.call(pos)
 	)

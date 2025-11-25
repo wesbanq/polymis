@@ -68,3 +68,4 @@ text = "DESCRIPTION"
 fit_content = true
 scroll_active = false
 horizontal_alignment = 1
+vertical_alignment = 1
