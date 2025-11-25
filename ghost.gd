@@ -17,7 +17,7 @@ func _ready() -> void: pass
 
 func update() -> void:
 	var old = get_children()
-	copy_blocks(master_polymino)
+	copy_blocks(master_polymino, Vector2.ZERO, true)
 	for i in blocks.size():
 		if blocks[i] is Block and master_polymino.blocks[i] is Block:
 			blocks[i].board_position = master_polymino.blocks[i].board_position
