@@ -129,7 +129,7 @@ func calculate_bottom() -> Array[int]:
 				result[pos.x] = i
 	return result.filter(func(v): return v > -1)
 
-func copy_blocks(src: Variant, origin: Vector2i = Vector2i(0, 0)) -> void:
+func copy_blocks(src: Variant, origin: Vector2i = Vector2i(0, 0), ghst: bool = false) -> void:
 	#creates blocks in the blocks array but doesnt parent so the new blocks dont automatically appear
 	blocks = []
 	blocks.resize(16)
@@ -138,7 +138,7 @@ func copy_blocks(src: Variant, origin: Vector2i = Vector2i(0, 0)) -> void:
 		for i in src.shape_string.size():
 			var v = src.shape_string[i]
 			if v != null:
-				blocks[i] = Block.new(v, PolyminoShape.get_board_position_from_hex(i) + origin, game_board, src, i)
+				blocks[i] = Block.new(v, PolyminoShape.get_board_position_from_hex(i) + origin, game_board, src, i, ghst)
 	elif src is Polymino:
 		if not self is Ghost: push_warning("used pm not ghost") 
 		for i in src.blocks.size():
@@ -147,7 +147,7 @@ func copy_blocks(src: Variant, origin: Vector2i = Vector2i(0, 0)) -> void:
 				var v = src.blocks[i]
 				var new_info = v.info.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 				new_info.modifier = null
-				blocks[i] = Block.new(new_info, v.board_position, game_board, src.string, i)
+				blocks[i] = Block.new(new_info, v.board_position, game_board, src.string, i, ghst)
 	bottom = src.bottom
 	bottom2 = src.bottom2
 

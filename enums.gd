@@ -70,6 +70,7 @@ var BAG_PATHS := read_folder("res://preset_bags/")
 var ABILITIES_ACTIVE := {
 	"makestraight": MakeStraight,
 	"removelast": RemoveLast,
+	"noabil": NoAbility,
 }
 
 var ABILITIES_PASSIVE := {

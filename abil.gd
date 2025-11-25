@@ -16,8 +16,34 @@ var _cost_ctrl: RichTextLabel
 var active: bool = false:
 	set = _set_active
 var _a_name: String
+var ability: Ability
 var slot: int:
 	set(v): if _hotkey_ctrl: _hotkey_ctrl.text = "[%d]" % v; slot = v#; print("slot%d"%slot)
+
+var _hoverable: Hoverable
+
+func _update_hoverable() -> void:
+	if _hoverable: _hoverable.queue_free()
+	_hoverable = Hoverable.new(
+		self,
+		_click_within_block,
+		ability.display_name,
+		ability.description,
+		ability.display_name_color,
+		false
+	)
+
+func _click_within_block(clk: Vector2) -> bool:
+	@warning_ignore("integer_division")
+	var right_x = _icon_ctrl.global_position.x
+	@warning_ignore("integer_division")
+	var left_x = _icon_ctrl.global_position.x + _icon_ctrl.size.x
+	@warning_ignore("integer_division")
+	var up_y = _icon_ctrl.global_position.y
+	@warning_ignore("integer_division")
+	var down_y = _icon_ctrl.global_position.y + _icon_ctrl.size.x
+	
+	return clk.x < left_x and clk.x > right_x and clk.y > up_y and clk.y < down_y
 
 func _set_active(val: bool) -> void:
 	active = val
@@ -27,6 +53,7 @@ func _set_active(val: bool) -> void:
 		else Enums.UI.UNAVAIL_TEXT.to_html(), _a_name]
 
 func set_abil(abil: Ability) -> void:
+	ability = abil
 	_a_name = abil.display_name
 	
 	_name_ctrl.text = "[color=#%s]%s[/color]" % [Enums.UI.NORMAL_TEXT.to_html(false), _a_name]
@@ -40,6 +67,7 @@ func set_abil(abil: Ability) -> void:
 		_icon_ctrl.material.set_shader_parameter("tint", Enums.UI.ACTIVE_ABIL_ICON_P)
 		_icon_ctrl.material.set_shader_parameter("otint", Enums.UI.INACTIVE_ABIL_ICON_P)
 	_set_active(active)
+	_update_hoverable()
 
 func _init(slt: int, abil: Ability = null) -> void:
 	if abil is AbilityPassive:
