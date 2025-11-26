@@ -46,7 +46,7 @@ func score() -> int:
 func destroy() -> void:
 	#potential modifier destroy trigger
 	if _hoverable: _hoverable.free()
-	free()
+	queue_free()
 	#if board.block_list[board_position.x][board_position.y] == self:
 		#board.block_list[board_position.x][board_position.y] = null
 
@@ -99,7 +99,7 @@ func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, id
 	color = info.color
 	board = brd
 	board_position = b
-	modifier = info.modifier
+	modifier = load(info.modifier).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 	ghost = ghst
 	
 	prototype_shape = prototype if prototype else PolyminoShape.new()

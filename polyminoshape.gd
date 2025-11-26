@@ -38,14 +38,16 @@ func calculate_bottom() -> Array[int]:
 func create_polymino(board: Board, origin: Vector2i = Vector2i(0, 0), shop: bool = false) -> Polymino:
 	return Polymino.new(self, board, origin, shop)
 
-static func get_mod_name(name: String) -> Modifier:
-	return (Enums.MODIFIERS[name.to_lower()].new() if Enums.MODIFIERS.keys().find(name.to_lower()) != -1 else null)
+#static func get_mod_name(name: String) -> Modifier:
+	#return (Enums.MODIFIERS[name.to_lower()].new() if Enums.MODIFIERS.keys().find(name.to_lower()) != -1 else null)
+static func get_mod_name(name: String) -> String:
+	return Enums.MODIFIERS_PATHS[name] if Enums.MODIFIERS_PATHS.keys().find(name) != -1 else ""
 
 static func from_string(s: String, rc: Enums.ROTATION_CENTER) -> PolyminoShape:
 	var new_shape: Array[BlockInfo] = [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 	for blk in s.split(" "):
 		var new_pos := blk[0].hex_to_int()
-		var new_mod: Modifier = get_mod_name(blk.right(-1))
+		var new_mod := get_mod_name(blk.right(-1).to_lower())
 		var new_info := BlockInfo.new(Enums.COLORS.WHITE, new_mod)
 		new_shape[new_pos] = new_info
 	
