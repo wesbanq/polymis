@@ -12,12 +12,12 @@ signal IncreasedPMCount
 
 const PM_SIZE := 4
 
-@onready var _avail_pieces := Enums.read_folder(shape_path)
+@onready var _avail_pieces := Enums.read_folder_paths(shape_path)
 @onready var _ranges: Array[float] = _get_ranges(_avail_pieces)
 
 var _mod_chance: float = 15#:
 	#get: return game.round_num*1.5 + 10
-@onready var _avail_mod := Enums.read_folder(mod_path)
+@onready var _avail_mod := Enums.read_folder_paths(mod_path)
 @onready var _mod_ranges: Array[float] = _get_ranges(_avail_mod)
 
 var selling: Array

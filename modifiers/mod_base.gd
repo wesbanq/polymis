@@ -55,7 +55,8 @@ func trigger(_who: Variant = null) -> int:
 func get_from_prototype(val: String) -> Variant:
 	if block:
 		if block.prototype_shape.shape_string[block.prototype_shape_idx]:
-			return block.prototype_shape.shape_string[block.prototype_shape_idx].modifier.get(val)
+			#return block.prototype_shape.shape_string[block.prototype_shape_idx].modifier.get(val)
+			push_error("pls fix")
 		else:
 			push_error("no prototype")
 	else:

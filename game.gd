@@ -218,7 +218,6 @@ func _game_loop() -> Enums.BOARD_FINISH:
 
 func _ready() -> void:
 	#TODO
-	#organize assets folder
 	#calc consts
 	#armomred mod bug
 	#next pm brd
@@ -226,15 +225,15 @@ func _ready() -> void:
 	#shop remove
 	#working sp
 	#shop buttons/labels react to how many pts u have
-	#save file;notekeep unknown data in the save for potential future mod support
 	#more abils
 	#more mods
 	#test mods
 	#playtest
+	#save file;notekeep unknown data in the save for potential future mod support
 	#niceify hover text
 	#main menu
 	
-	bag = Bag.load_bag_resource(Enums.BAG_PATHS[0], self)
+	bag = Bag.load_bag_resource(Enums.BAG_PATHS[1], self)
 	abils_a.resize(max_abil_a_size)
 	abils_a.fill(Enums.ABILITIES_ACTIVE["noabil"].new(self))
 	abils_p.resize(max_abil_p_size)

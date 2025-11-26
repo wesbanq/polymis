@@ -4,11 +4,19 @@ extends Node
 func between(min: int, max: int, val: int) -> bool:
 	return min <= val and max >= val
 
-func read_folder(path: String) -> Array[String]:
+func read_folder_paths(path: String) -> Array[String]:
 	var result: Array[String] = []
 	for file_path in DirAccess.get_files_at(path):
 		result.append(path.path_join(file_path))
 	return result
+
+func read_folder_dict(path: String) -> Dictionary[String, String]:
+	var initial := read_folder_paths(path)
+	var dict: Dictionary[String, String]
+	for i in initial.size():
+		var v := initial[i]
+		dict[v.get_file().get_slice(".", 0)] = v
+	return dict
 
 @warning_ignore("shadowed_global_identifier")
 func shop_add_pm_price(round: int, current: int) -> int:
@@ -37,8 +45,6 @@ const UI := {
 	"UPSIDE_TEXT": Color("#00ff00"),
 	"WARN_TEXT": Color("#ffff00"),
 	
-	
-	
 	"TEXT_THEME": preload("res://text.tres"),
 	"INACTIVE_SHADER": preload("res://inactive.gdshader"),
 }
@@ -55,7 +61,11 @@ const COLORS := {
 	"MAGENTA": Color("#ff00ff"),
 }
 
-var BAG_PATHS := read_folder("res://preset_bags/")
+const MODIFIER_FOLDER_PATH := "res://modifiers/resources/"
+const BAGS_FOLDER := "res://preset_bags/"
+
+var MODIFIERS_PATHS := read_folder_dict(MODIFIER_FOLDER_PATH)
+var BAG_PATHS := read_folder_paths(BAGS_FOLDER)
 
 #var MODIFIERS := {
 	##"": null,

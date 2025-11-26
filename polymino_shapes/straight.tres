@@ -2,23 +2,26 @@
 
 [ext_resource type="Script" uid="uid://cruubg6nait1l" path="res://polyminoshape.gd" id="1_g5ko2"]
 [ext_resource type="Script" uid="uid://c8h0liekeyd2c" path="res://block_info.gd" id="2_sra7s"]
-[ext_resource type="Resource" uid="uid://bh0k7fjwl5lpj" path="res://modifiers/resources/glass.tres" id="3_sna8y"]
+[ext_resource type="Resource" uid="uid://cuqm477x3xx30" path="res://modifiers/resources/armored.tres" id="4_76x3e"]
 
 [sub_resource type="Resource" id="Resource_sna8y"]
 script = ExtResource("2_sra7s")
-modifier = ExtResource("3_sna8y")
+modifier = ExtResource("4_76x3e")
 metadata/_custom_type_script = "uid://c8h0liekeyd2c"
 
 [sub_resource type="Resource" id="Resource_rayyk"]
 script = ExtResource("2_sra7s")
+modifier = ExtResource("4_76x3e")
 metadata/_custom_type_script = "uid://c8h0liekeyd2c"
 
 [sub_resource type="Resource" id="Resource_76x3e"]
 script = ExtResource("2_sra7s")
+modifier = ExtResource("4_76x3e")
 metadata/_custom_type_script = "uid://c8h0liekeyd2c"
 
 [sub_resource type="Resource" id="Resource_j7lqb"]
 script = ExtResource("2_sra7s")
+modifier = ExtResource("4_76x3e")
 metadata/_custom_type_script = "uid://c8h0liekeyd2c"
 
 [resource]
