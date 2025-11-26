@@ -5,8 +5,9 @@
 [resource]
 script = ExtResource("1_xkh6b")
 display_name = "Gold"
-description = "Every line increases the amount of score this modifier gives by {positive}+{extra_score}{end}.
-Inherits bonus from neighbouring Gold modifiers."
+description = "Every line increases the amount of score this modifier gives 
+by {upside}+{extra_score}{end}. Inherits bonus from 
+neighbouring Gold modifiers."
 shader_path = "res://modifiers/shaders/gold.gdshader"
 display_name_color = Color(0.86708975, 0.86708975, 0, 1)
 mod_price = 5000

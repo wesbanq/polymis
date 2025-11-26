@@ -1,27 +1,36 @@
-[gd_resource type="Resource" script_class="PolyminoShape" load_steps=8 format=3 uid="uid://p7m6ph4dwen"]
+[gd_resource type="Resource" script_class="PolyminoShape" load_steps=9 format=3 uid="uid://p7m6ph4dwen"]
 
 [ext_resource type="Script" uid="uid://cruubg6nait1l" path="res://polyminoshape.gd" id="1_g5ko2"]
 [ext_resource type="Script" uid="uid://c8h0liekeyd2c" path="res://block_info.gd" id="2_sra7s"]
-[ext_resource type="Resource" uid="uid://cuqm477x3xx30" path="res://modifiers/resources/armored.tres" id="4_76x3e"]
+[ext_resource type="Script" uid="uid://c12pyi016mr0e" path="res://modifiers/armored.gd" id="3_sna8y"]
+
+[sub_resource type="Resource" id="Resource_fiewi"]
+script = ExtResource("3_sna8y")
+display_name = "Armored"
+description = "Stops the block from disappearing when a line is finished.Works once."
+shader_path = "res://modifiers/shaders/bonus.gdshader"
+display_name_color = Color(0, 1, 0, 1)
+mod_price = 800
+metadata/_custom_type_script = "uid://c12pyi016mr0e"
 
 [sub_resource type="Resource" id="Resource_sna8y"]
 script = ExtResource("2_sra7s")
-modifier = ExtResource("4_76x3e")
+modifier = SubResource("Resource_fiewi")
 metadata/_custom_type_script = "uid://c8h0liekeyd2c"
 
 [sub_resource type="Resource" id="Resource_rayyk"]
 script = ExtResource("2_sra7s")
-modifier = ExtResource("4_76x3e")
+modifier = SubResource("Resource_fiewi")
 metadata/_custom_type_script = "uid://c8h0liekeyd2c"
 
 [sub_resource type="Resource" id="Resource_76x3e"]
 script = ExtResource("2_sra7s")
-modifier = ExtResource("4_76x3e")
+modifier = SubResource("Resource_fiewi")
 metadata/_custom_type_script = "uid://c8h0liekeyd2c"
 
 [sub_resource type="Resource" id="Resource_j7lqb"]
 script = ExtResource("2_sra7s")
-modifier = ExtResource("4_76x3e")
+modifier = SubResource("Resource_fiewi")
 metadata/_custom_type_script = "uid://c8h0liekeyd2c"
 
 [resource]

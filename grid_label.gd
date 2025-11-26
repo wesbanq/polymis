@@ -25,6 +25,7 @@ func _init(g_p: Vector2i, txt: String, brd: Board) -> void:
 	#custom_minimum_size = Vector2(120, 120)
 	
 	#board.UpdatedBoardSize.connect(_rescale)
+	@warning_ignore("shadowed_variable_base_class")
 	board.ChangedAttr.connect(func(name: String, _val: Variant) -> void:
 		if name == "grid_size_px": _rescale()
 	)
