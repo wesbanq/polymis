@@ -37,7 +37,6 @@ var pts := 9999:
 
 var score_board := ScoreNumber.new()
 var abil_board := AbilityControl.new()
-var hover_window := Hover.new()
 
 var board: GameBoard
 var shop: ShopBoard

@@ -5,7 +5,9 @@
 [resource]
 script = ExtResource("1_liful")
 display_name = "Chain"
-description = "Triggers all modifiers in the column either below or above this block. Direction switches every polymino placed."
+description = "Triggers all modifiers in the column 
+either below or above this block. 
+Direction switches every polymino placed."
 shader_path = "res://modifiers/shaders/bonus.gdshader"
 display_name_color = Color(0.4862745, 0.48235294, 0.23529412, 1)
 mod_price = 3000
