@@ -99,7 +99,7 @@ func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, id
 	color = info.color
 	board = brd
 	board_position = b
-	modifier = load(info.modifier).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
+	modifier = info.modifier.duplicate_deep(Resource.DEEP_DUPLICATE_ALL) if info.modifier else null
 	ghost = ghst
 	
 	prototype_shape = prototype if prototype else PolyminoShape.new()

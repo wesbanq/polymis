@@ -47,7 +47,7 @@ static func from_string(s: String, rc: Enums.ROTATION_CENTER) -> PolyminoShape:
 	var new_shape: Array[BlockInfo] = [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 	for blk in s.split(" "):
 		var new_pos := blk[0].hex_to_int()
-		var new_mod := get_mod_name(blk.right(-1).to_lower())
+		var new_mod := load(get_mod_name(blk.right(-1).to_lower()))
 		var new_info := BlockInfo.new(Enums.COLORS.WHITE, new_mod)
 		new_shape[new_pos] = new_info
 	

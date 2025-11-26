@@ -5,7 +5,9 @@
 [resource]
 script = ExtResource("1_psb8t")
 display_name = "Armored"
-description = "Stops the block from disappearing when a line is finished.Works once."
+description = "Stops the block from disappearing 
+when a line is finished. 
+Works once."
 shader_path = "res://modifiers/shaders/bonus.gdshader"
 display_name_color = Color(0, 1, 0, 1)
 mod_price = 800

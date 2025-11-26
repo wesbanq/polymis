@@ -6,7 +6,9 @@
 script = ExtResource("1_gbciu")
 display_name = "Glass"
 description = "Multiplies the score by {mult}x. 
-After scoring {downside}removes this modifier from this polymino for the rest of the round{end}.
+After scoring {downside}
+removes this modifier from this polymino 
+for the rest of the round{end}.
 {warn}Will be destroyed if there are no block below it{end}."
 shader_path = "res://modifiers/shaders/glass.gdshader"
 mod_price = 6000
