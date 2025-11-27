@@ -182,9 +182,9 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		bag.reshuffle()
 		
 		#REMOVE L8R VVV dbg
-		board.special_points = 99999
+		#board.special_points = 99999
 		board.score_goal = 1
-		#board.pm_left = 20
+		board.pm_left = 4
 		#^^^
 		
 		state = Enums.GAME_STATE.GAME
@@ -217,22 +217,23 @@ func _game_loop() -> Enums.BOARD_FINISH:
 
 func _ready() -> void:
 	#TODO
-	#calc consts
-	#armomred mod bug
 	#next pm brd
 	#held pm brd
+	#fix hold mechanic
 	#shop remove
 	#working sp
 	#shop buttons/labels react to how many pts u have
+	#remove line after 10 armoredds
 	#more abils
 	#more mods
 	#test mods
-	#playtest
 	#save file;notekeep unknown data in the save for potential future mod support
+	#playtest
 	#niceify hover text
+	#fix rotations
 	#main menu
 	
-	bag = Bag.load_bag_resource(Enums.BAG_PATHS[1], self)
+	bag = Bag.load_bag_resource(Enums.BAG_PATHS[0], self)
 	abils_a.resize(max_abil_a_size)
 	abils_a.fill(Enums.ABILITIES_ACTIVE["noabil"].new(self))
 	abils_p.resize(max_abil_p_size)
@@ -248,7 +249,5 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(func() -> void:
 		default_grid_size_px = int(get_viewport_rect().size.length() * .015)
 	)
-	
-	#add_child(hover_window)
 	
 	_game_loop()

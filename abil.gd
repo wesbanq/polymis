@@ -32,6 +32,7 @@ func _update_hoverable() -> void:
 		ability.display_name_color,
 		false
 	)
+	add_child(_hoverable)
 
 func _click_within_block(clk: Vector2) -> bool:
 	@warning_ignore("integer_division")
