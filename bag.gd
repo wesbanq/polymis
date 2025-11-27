@@ -8,6 +8,9 @@ var next: PolyminoShape:
 
 var _shuffled: Array[PolyminoShape]
 
+func peek() -> PolyminoShape:
+	return _shuffled[0]
+
 func add_to_bag(ps: PolyminoShape) -> void:
 	shapes.append(ps)
 

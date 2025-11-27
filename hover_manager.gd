@@ -18,7 +18,7 @@ func show(who: Variant, top_name: String, desc_txt: String, top_color: Color, sh
 	
 	_hover_top_bg.get_theme_stylebox("panel").bg_color = top_color
 	_hover_top_txt.text = top_name
-	_hover_desc_txt.text = desc_txt + ("BUYABLE" if shop else "")
+	_hover_desc_txt.text = desc_txt + ("\n\nDOUBLE CLICK TO BUY." if shop else "")
 	_hover_ctrl.visible = true
 	_update_pos((get_viewport().get_screen_transform() * get_viewport().get_canvas_transform()).affine_inverse() * get_viewport().get_mouse_position())
 
