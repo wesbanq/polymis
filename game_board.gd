@@ -160,6 +160,7 @@ func _ready() -> void:
 		
 		var lines := get_scoring_lines()
 		if lines.size() > 0:
+			print("Scored: %d" % lines.size())
 			trigger(lines, true)
 			score_to_add = score_lines(lines)
 			trigger(lines, false)

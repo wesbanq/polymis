@@ -13,10 +13,17 @@ const _main_scene := preload("res://abil_ui.tscn")
 @onready var _sp_bar_ctrl := _main_ctrl.get_node("HBoxContainer/Bar")
 @onready var _sp_bar_lbl := _main_ctrl.get_node("HBoxContainer/Bar/RichTextLabel")
 @onready var _sp_bar_blks := _sp_bar_ctrl.get_node("Control/VBoxContainer")
-@onready var _a_abils_ctrl := _main_ctrl.get_node("HBoxContainer/ActiveAbils")
+@onready var _a_abils_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/ActiveAbils")
 @warning_ignore("unused_private_class_variable")
-@onready var _p_abils_ctrl := _main_ctrl.get_node("HBoxContainer/PassiveAbils")
+@onready var _p_abils_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/PassiveAbils")
 @onready var _sp_bar_blk_prefab := _main_ctrl.get_node("HBoxContainer/Bar/TextureRect")
+
+@onready var _board_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/HBoxContainer")
+var next_board: Board
+var hold_board: Board
+
+var held_pm: PolyminoShape
+var next_pms: Array[Polymino]
 
 var _a_abils_arr: Array[AbilUIElement] = []
 var _p_abils_arr: Array[AbilUIElement] = []
@@ -103,10 +110,14 @@ func _changed_attr_wrapper(name: String, val: Variant) -> void:
 		"height":
 			_rescale_bar()
 		"grid_size_px":
+			next_board.grid_size_px = val
+			hold_board.grid_size_px = val
 			_rescale_bar()
 
-#func _get_board_height() -> int:
-	#return _game.board.height if _game.board else _game.shop.height if _game.shop else -1
+func add_to_next(shape: PolyminoShape) -> void:
+	next_pms.pop_front()
+	next_pms.append(next_board._add_polymino(shape))
+	
 
 func _ready() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -117,3 +128,10 @@ func _ready() -> void:
 	ActivateAbility.connect(_set_active)
 	
 	add_child(_main_ctrl)
+	
+	hold_board = Board.new(4, 4)
+	next_board = Board.new(_game.next_size * 4 + _game.next_size - 1, 4)
+	next_pms.resize(_game.next_size)
+	
+	_board_ctrl.add_child(next_board)
+	_board_ctrl.add_child(hold_board)
