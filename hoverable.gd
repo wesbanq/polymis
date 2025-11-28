@@ -14,6 +14,9 @@ var _hover := false:
 		if v: HoverManager.show(self, top, desc, top_color, shop)
 		_hover = v
 
+func force_hide() -> void:
+	HoverManager.hide(self)
+
 func _init(mst: Variant, chk_func: Callable, a: String, b: String, c: Color, d: bool) -> void:
 	_master = mst
 	top = a

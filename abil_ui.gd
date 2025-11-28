@@ -18,11 +18,11 @@ const _main_scene := preload("res://abil_ui.tscn")
 @onready var _p_abils_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/PassiveAbils")
 @onready var _sp_bar_blk_prefab := _main_ctrl.get_node("HBoxContainer/Bar/TextureRect")
 
-@onready var _board_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/HBoxContainer")
+@onready var _board_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/VBoxContainer")
 var next_board: Board
 var hold_board: Board
 
-var held_pm: PolyminoShape
+var held_pm: Polymino
 var next_pms: Array[Polymino]
 
 var _a_abils_arr: Array[AbilUIElement] = []
@@ -68,13 +68,13 @@ func _update_bar() -> void:
 	c.reverse()
 	for blk in c:
 		if prog > 1:
-			blk.material.set_shader_parameter("progress", 0)
+			blk.material.set_shader_parameter("progress", 1)
 			prog -= 1
 		elif prog > 0:
 			blk.material.set_shader_parameter("progress", prog)
 			prog -= 1
 		else:
-			blk.material.set_shader_parameter("progress", 1)
+			blk.material.set_shader_parameter("progress", 0)
 
 @warning_ignore("unused_parameter")
 func _rescale_bar(brd: Board = null) -> void:
@@ -114,24 +114,48 @@ func _changed_attr_wrapper(name: String, val: Variant) -> void:
 			hold_board.grid_size_px = val
 			_rescale_bar()
 
-func add_to_next(shape: PolyminoShape) -> void:
-	next_pms.pop_front()
-	next_pms.append(next_board._add_polymino(shape))
-	
+func _add_to_next(shape: PolyminoShape) -> void:
+	if next_pms.size() == _game.next_size:
+		var pm: Polymino = next_pms.pop_front()
+		pm.destroy()
+	for p in next_pms:
+		if p is Polymino:
+			p.move(Vector2i(4,0))
+	next_pms.push_back(next_board._add_polymino(shape, Vector2i(0,0), false))
+
+func _add_to_hold(shape: PolyminoShape) -> void:
+	if held_pm: held_pm.destroy()
+	held_pm = hold_board._add_polymino(shape, Vector2i(hold_board.width - 5,0), false)
+
+func _setup_next() -> void:
+	for i in _game.next_size: _add_to_next(_game.bag.peek(i))
 
 func _ready() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	
 	_game.BoardChangedAttr.connect(_changed_attr_wrapper)
-	_game.NewBoard.connect(_rescale_bar)
+	_game.NewBoard.connect(func(brd: Board) -> void:
+		_progress = 0
+		_rescale_bar(brd)
+		while next_pms.size() > 0: next_pms.pop_front().destroy()
+		if held_pm: held_pm.destroy(); held_pm = null
+		if _game.state == Enums.GAME_STATE.GAME: _setup_next()
+	)
+	_game.HeldPolymino.connect(func() -> void:
+		_add_to_hold(_game.board._held_polyminos[0])
+	)
 	UpdateBar.connect(_update_bar)
 	ActivateAbility.connect(_set_active)
 	
 	add_child(_main_ctrl)
 	
-	hold_board = Board.new(4, 4)
+	#comment to disable next
+	hold_board = Board.new(_game.next_size * 4 + _game.next_size - 1, 4)
 	next_board = Board.new(_game.next_size * 4 + _game.next_size - 1, 4)
-	next_pms.resize(_game.next_size)
-	
-	_board_ctrl.add_child(next_board)
+	hold_board.size_flags_horizontal = Control.SIZE_SHRINK_END
+	next_board.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_board_ctrl.add_child(hold_board)
+	_board_ctrl.add_child(next_board)
+	#next_pms.resize(_game.next_size)
+	_game.PolyminoPlaced.connect(func(_v): _add_to_next(_game.bag.peek(2)))
+	_setup_next()
