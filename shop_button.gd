@@ -9,6 +9,8 @@ var grid_pos: Vector2i
 var active := true:
 	set(v): active = v; material.set_shader_parameter("active", active)
 
+var _hoverable: Hoverable
+
 func click_within_block(clk: Vector2) -> bool:
 	if not active: return false
 	@warning_ignore("integer_division")
@@ -30,14 +32,21 @@ func _rescale() -> void:
 	position = Block.get_position_from_grid(grid_pos, board)
 	size = Vector2(board.grid_size_px*2, board.grid_size_px*2)
 
+func hover(top: String, desc: String, top_color: Color = Color(1, 1, 1), shop: bool = false) -> void:
+	if _hoverable: _hoverable.force_hide(); _hoverable.free()
+	_hoverable = Hoverable.new(self, click_within_block, top, desc, top_color, shop)
+	add_child(_hoverable)
+
 func _init(img_path: String, brd: ShopBoard, g_p: Vector2i, act: bool = active) -> void:
 	asset_path = img_path
 	board = brd
 	grid_pos = g_p
 	blk = Block.new(BlockInfo.new(Enums.COLORS.WHITE), board._pm_pos(0, false), board, null)
 	
-	texture = load(img_path)
+	texture = load(asset_path)
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	#position = Block.get_position_from_grid(board._pm_pos(0, false), board)
+	
 	material = ShaderMaterial.new()
 	material.shader = Enums.UI.INACTIVE_SHADER
 	material.set_shader_parameter("itint", Enums.UI.UNAVAIL_TEXT)
