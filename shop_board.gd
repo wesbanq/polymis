@@ -151,7 +151,8 @@ func _input(event: InputEvent) -> void:
 
 func _pm_pos(i: int, a: bool = true) -> Vector2i:
 	@warning_ignore("integer_division")
-	return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1, height - height/3 if a else height/3)
+	return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1 if a else (2*i-1) + (i+1)*_grid_spacing + 2, 
+					height - height/3 if a else height/3)
 	#return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1, height/2)
 
 func _stock_shop() -> void:
@@ -172,24 +173,29 @@ func _stock_shop() -> void:
 		selling.append([pm, price, lbl])
 
 func _ready() -> void:
-	##spacing/pm/text+spacing/abil+text/spacing
-	
 	_stock_shop()
-	
 	extra_buttons.resize(5)
 	
 	var add_pm_button := ShopButton.new("res://shop_add_pm_icon.png", self, _pm_pos(0, false), game.max_pm < game.max_max_pm)
 	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM] = [Enums.shop_add_pm_price(game.round_num, game.max_pm), add_pm_button]
+	add_pm_button.hover("Add polymino", "Adds 1 to you max polymino count per round.", Color(1,1,1), true)
 	add_child(add_pm_button)
 	
 	var restock_button := ShopButton.new("res://restock.png", self, _pm_pos(1, false))
+	restock_button.hover("Restock", "Restock the shop.", Color(1,1,1), true)
 	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK] = [Enums.shop_restock_price(game.round_num, game.max_pm), restock_button]
 	add_child(restock_button)
 	
 	#if game.unlocked_abil_a < game.max_abil_a_size-1:
 	var abil_unlock_button := ShopButton.new("res://shop_unlock_abil.png", self, _pm_pos(2, false))
+	abil_unlock_button.hover("Unlock ability", "Unlocks new ability.", Color(1,1,1), true)
 	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL] = [Enums.shop_restock_price(game.round_num, game.max_pm), abil_unlock_button]
 	add_child(abil_unlock_button)
+	
+	var pm_remove_button := ShopButton.new("res://shop_remove_pm_icon.png", self, _pm_pos(3, false))
+	pm_remove_button.hover("Remove polymino", "Remove your chosen polymino from your bag.", Color(1,1,1), true)
+	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM] = [Enums.shop_restock_price(game.round_num, game.max_pm), pm_remove_button]
+	add_child(pm_remove_button)
 	
 	game.score_board.Continue.connect(func():
 		BoardClear.emit()

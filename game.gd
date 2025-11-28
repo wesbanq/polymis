@@ -225,19 +225,18 @@ func _game_loop() -> Enums.BOARD_FINISH:
 func _ready() -> void:
 	#TODO
 	#shop remove
-	#remove line if 10 armoredds
 	#shop buttons/labels react to how many pts u have
-	#save file;notekeep unknown data in the save for potential future mod support
 	#fix rotations
 	#formula calc
 	#combo system
+	#save file;notekeep unknown data in the save for potential future mod support
 	#content
 	#decide if after running oout pf pms if theres held pms use them
 	#polish hold/nxt brd
 	#polish hover text
 	#main menu
 	
-	bag = Bag.load_bag_resource(Enums.BAG_PATHS[0], self)
+	bag = Bag.load_bag_resource(Enums.BAG_PATHS[1], self)
 	abils_a.resize(max_abil_a_size)
 	abils_a.fill(Enums.ABILITIES_ACTIVE["noabil"].new(self))
 	abils_p.resize(max_abil_p_size)
