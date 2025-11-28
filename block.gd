@@ -45,7 +45,9 @@ func score() -> int:
 
 func destroy() -> void:
 	#potential modifier destroy trigger
-	if _hoverable: _hoverable.free()
+	if _hoverable: 
+		_hoverable.force_hide()
+		_hoverable.free()
 	queue_free()
 	#if board.block_list[board_position.x][board_position.y] == self:
 		#board.block_list[board_position.x][board_position.y] = null
@@ -61,7 +63,7 @@ static func get_position_from_grid(grid_pos: Vector2i, brd: Board) -> Vector2:
 	@warning_ignore("integer_division")
 	return Vector2(brd.board_size_px.x/2. + (brd.grid_size_px * (grid_pos.x-(brd.width/2))), \
 				   brd.board_size_px.y/2. - (brd.grid_size_px * (grid_pos.y-(brd.height/2)))) + \
-			Vector2(brd.grid_size_px/2., -brd.grid_size_px/2.)
+		   Vector2(brd.grid_size_px/2., -brd.grid_size_px/2.)
 
 func click_within_block(clk: Vector2) -> bool:
 	@warning_ignore("integer_division")

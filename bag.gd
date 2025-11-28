@@ -3,29 +3,34 @@ class_name Bag
 
 @export var shapes: Array[PolyminoShape]
 
+var next_size: int = 3
 var next: PolyminoShape: 
 	get = _get_next
 
 var _shuffled: Array[PolyminoShape]
 
-func peek() -> PolyminoShape:
-	return _shuffled[0]
+func peek(n: int = 0) -> PolyminoShape:
+	if _shuffled.size() <= next_size:
+		reshuffle()
+		print("reshuf")
+	return _shuffled[n]
+
+#func peek() -> Array[PolyminoShape]:
+	#return _shuffled.slice(0, next_size)
 
 func add_to_bag(ps: PolyminoShape) -> void:
 	shapes.append(ps)
 
-func reshuffle() -> void:
-	_shuffled = []
-	for v in RNG.shuffle(shapes.duplicate()):
-		_shuffled.append(v)
+func reshuffle(full: bool = false) -> void:
+	if full: _shuffled = []
+	while _shuffled.size() <= next_size:
+		_shuffled.append_array(RNG.shuffle(shapes.duplicate()))
 
 func _get_next() -> PolyminoShape:
-	var result: PolyminoShape = _shuffled.pop_front()
-	if result:
-		return result
-	else:
+	if _shuffled.size() <= next_size:
 		reshuffle()
-		return _shuffled.pop_front()
+		print("reshuf")
+	return _shuffled.pop_front()
 
 static func load_bag_resource(path: String, _game: GameMain) -> Bag:
 	var new_bag: Bag = load(path).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)

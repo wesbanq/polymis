@@ -30,6 +30,21 @@ func shop_restock_price(round: int, current: int) -> int:
 	@warning_ignore("narrowing_conversion")
 	return (c*current + c**2) * c**round
 
+func is_fail_reason(reason: Enums.BOARD_FINISH) -> bool: return reason >= 2
+
+func sp_from_lines(lines: Array[int], board: GameBoard) -> int:
+	var mod_n := 1
+	var mod_b := 1
+	
+	for y in lines:
+		for x in board.width:
+			if board.block_list[x][y].modifier:
+				mod_n += 1
+				mod_b += board.block_list[x][y].modifier.sp_bonus
+	
+	@warning_ignore("narrowing_conversion")
+	return board.width * mod_n * lines.size() * mod_b**2 * .25
+
 const UI := {
 	"END": "[/color]",
 	"SP": Color("#c8c800"),
@@ -115,6 +130,7 @@ enum BOARD_FINISH {
 	WIN_PM_LEFT,
 	LOSE_PM_LEFT,
 	LOSE_NO_SPACE,
+	LOSE_BAG_EMPTY,
 }
 
 enum GAME_STATE {

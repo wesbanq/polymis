@@ -2,13 +2,15 @@ extends Control
 class_name GameMain
 
 @warning_ignore("unused_signal")
-signal PolyminoPlaced(pm: Polymino)
-signal NewBoard(new: Board)
-signal ChangedState(new: Enums.GAME_STATE)
-signal PtsChanged(new: int)
+signal PolyminoPlaced(Polymino)
+signal NewBoard(Board)
+signal ChangedState(int)
+signal PtsChanged(int)
 signal GameOver
-signal TriggeredAbility(idx: int)
-signal BoardChangedAttr(name: String, val: Variant)
+signal HeldPolymino
+signal TriggeredAbility(int)
+signal BoardChangedAttr(String, Variant)
+signal SPAdd(int)
 
 var max_pm := 20:
 	set(v): max_pm = clampi(v, 1, max_max_pm)
@@ -48,9 +50,11 @@ var state: Enums.GAME_STATE = Enums.GAME_STATE.SHOP:
 @onready var _game_board_container := $HBoxContainer/VBoxContainer/PanelContainer/CenterContainer
 @onready var _main_container := $HBoxContainer
 
+#cheats
 @export var show_block_position := false
 @export var show_bag := false
 @export var inf_sp := false
+@export var inf_pm := false
 
 func give_mod(x: int, y: int, mod: Modifier) -> void:
 	if board.block_list[x][y] is Block:
@@ -145,8 +149,9 @@ func register_commands() -> void:
 	LimboConsole.register_command(func() -> void: if board: LimboConsole.info("Current SP: %d" % board.special_points), "sp", "Prints the current amount of SP.")
 	LimboConsole.register_command(func(v: int) -> void: if board: board.special_points = v; LimboConsole.info("Set the SP counter to %d." % v), "ssp", "Sets the SP counter to <arg0>.")
 	LimboConsole.register_command(func(v: String) -> void: RNG.set_seed(v), "seed", "Sets the game's seed to <arg0>.")
-
-static func is_fail_reason(reason: Enums.BOARD_FINISH) -> bool: return reason >= 2
+	LimboConsole.register_command(func() -> void: inf_pm = not inf_pm, "infpm", "Gives infinite polymnos.")
+	LimboConsole.register_command(func(n: int) -> void: if board is GameBoard: board.pm_left += n, "apm", "Adds <arg0> to the current polymino left count.")
+	LimboConsole.register_command(func(n: int) -> void: if board is GameBoard: board.score_current += n, "score", "Adds <arg0> to the score count.")
 
 @warning_ignore("shadowed_variable_base_class")
 func _idk_what_to_call_this_function(name: String, val: Variant) -> void:
@@ -167,7 +172,7 @@ func trigger_ability(slot: int) -> void:
 func _game_loop() -> Enums.BOARD_FINISH:
 	var reason: Enums.BOARD_FINISH
 	while true:
-		##GAMEPLAY
+		#GAMEPLAY
 		board = GameBoard.new()
 		@warning_ignore("shadowed_variable_base_class")
 		board.ChangedAttr.connect(func(name: String, val: Variant) -> void: BoardChangedAttr.emit(name, val))
@@ -175,33 +180,34 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		_game_board_container.add_child(board)
 		board.spawn_polymino(bag.next)
 		board.pm_left -= 1
-		board.PolyminoPlaced.connect(func(_v):
+		board.HeldPolymino.connect(func() -> void: HeldPolymino.emit())
+		board.PolyminoPlaced.connect(func(pm) -> void:
 			board.spawn_polymino(bag.next)
 			board.pm_left -= 1
+			PolyminoPlaced.emit(pm)
 		)
-		bag.reshuffle()
 		
 		#REMOVE L8R VVV dbg
 		#board.special_points = 99999
 		board.score_goal = 1
-		board.pm_left = 4
+		#board.pm_left = 4
 		#^^^
 		
 		state = Enums.GAME_STATE.GAME
 		NewBoard.emit(board)
 		reason = await board.BoardCleared
-		print("over. %s" % Enums.BOARD_FINISH.keys()[reason])
+		print("IT'S OVER. %s" % Enums.BOARD_FINISH.keys()[reason])
 		board.queue_free()
-		##GAMEPLAY END
+		#GAMEPLAY END
 		
 		#check for loss
-		if is_fail_reason(reason):
+		if Enums.is_fail_reason(reason):
 			score_board.queue_free()
 			abil_board.queue_free()
 			GameOver.emit()
 			break
 		
-		##SHOP
+		#SHOP
 		shop = ShopBoard.new()
 		_game_board_container.add_child(shop)
 		state = Enums.GAME_STATE.SHOP
@@ -210,27 +216,25 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		shop.ChangedAttr.connect(func(name: String, val: Variant) -> void: BoardChangedAttr.emit(name, val))
 		await shop.BoardClear
 		shop.queue_free()
-		##SHOP END
+		bag.reshuffle(true)
+		#SHOP END
 		
 		round_num += 1
 	return reason
 
 func _ready() -> void:
 	#TODO
-	#next pm brd
-	#held pm brd
-	#fix hold mechanic
 	#shop remove
-	#working sp
+	#remove line if 10 armoredds
 	#shop buttons/labels react to how many pts u have
-	#remove line after 10 armoredds
-	#more abils
-	#more mods
-	#test mods
 	#save file;notekeep unknown data in the save for potential future mod support
-	#playtest
-	#niceify hover text
 	#fix rotations
+	#formula calc
+	#combo system
+	#content
+	#decide if after running oout pf pms if theres held pms use them
+	#polish hold/nxt brd
+	#polish hover text
 	#main menu
 	
 	bag = Bag.load_bag_resource(Enums.BAG_PATHS[0], self)

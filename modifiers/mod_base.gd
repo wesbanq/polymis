@@ -18,6 +18,7 @@ var preproccess_format_dict := {
 	"warn": "[color=#%s]" % Enums.UI.WARN_TEXT.to_html(false),
 }
 
+var sp_bonus := 0
 var block: Block:
 	set = new_parent
 var board: GameBoard:

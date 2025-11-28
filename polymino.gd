@@ -153,6 +153,9 @@ func copy_blocks(src: Variant, origin: Vector2i = Vector2i(0, 0), ghst: bool = f
 
 func destroy() -> void:
 	if ghost: ghost.queue_free()
+	for blk in blocks:
+		if blk is Block:
+			blk.destroy()
 	queue_free()
 
 func _init(ps: PolyminoShape, board: Board, origin: Vector2i = Vector2i(0, 0), shop: bool = false) -> void:
