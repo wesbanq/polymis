@@ -1,11 +1,13 @@
 extends Board
 class_name GameBoard
 
-signal PolyminoPlaced(pm: Polymino)
-signal Scored(added_score: int)
-signal LineFinished(y: int)
-signal BoardCleared(reason: Enums.BOARD_FINISH)
+signal PolyminoPlaced(Polymino)
+signal Scored(int)
+signal LineFinished(int)
+signal SPAdd(int)
+signal BoardCleared(int)
 signal ScoreChanged
+signal HeldPolymino
 
 var _controlled_polymino: Polymino
 var _down_timer: Timer
@@ -15,12 +17,17 @@ var _hold_cooldown: bool = false
 
 var score_to_add: int
 var score_current := 0:
-	set(v): score_current = v; ScoreChanged.emit()
+	set(v): 
+		score_current = v
+		ScoreChanged.emit()
+		game.score_board.ChangeNumber.emit(score_current, Enums.SCORE_BOARD.SCORE_CURRENT)
+		game.score_board.ChangeNumber.emit(max(pts_added, 0), Enums.SCORE_BOARD.PTS_ADDED)
 
 @onready var pm_left: int = game.max_pm: #TODO fomrula
 	set(v): pm_left = v; game.score_board.ChangeNumber.emit(pm_left, Enums.SCORE_BOARD.PM_LEFT)
-@onready var score_goal: int = game.round_num * (width*1000):
+@onready var score_goal: int = game.round_num * (width*100):
 	set(v): score_goal = v; game.score_board.ChangeNumber.emit(score_goal, Enums.SCORE_BOARD.SCORE_GOAL)
+
 var pts_added: int:
 	get: return (score_current - score_goal)/1000
 var goal_reached: bool:
@@ -31,7 +38,7 @@ var falling_speed: float:
 	get: return 1.59658/(1+exp(1)**(.556572*difficulty - 3.2994))
 
 var special_points := 0:
-	set(v): special_points = v; ChangedAttr.emit("special_points", v)
+	set(v): special_points = clampi(v, 0, 100); ChangedAttr.emit("special_points", v)
 
 @onready var next_board: Board = Board.new(4*game.next_size+max(game.next_size-1, 0), 4)
 @onready var hold_board: Board = Board.new(4*game.hold_size+max(game.hold_size-1, 0), 4)
@@ -63,7 +70,7 @@ func board_finish(reason: Enums.BOARD_FINISH) -> void:
 		_controlled_polymino.destroy()
 		_controlled_polymino = null
 	
-	if not GameMain.is_fail_reason(reason):
+	if not Enums.is_fail_reason(reason):
 		game.pts += pts_added
 
 func move_rows_down(from_y: int, amount: int = 1) -> void:
@@ -129,6 +136,7 @@ func hold_polymino() -> void:
 			_controlled_polymino = null
 			spawn_polymino(game.bag.next)
 		_hold_cooldown = true
+		HeldPolymino.emit()
 		print(_held_polyminos)
 
 func trigger_ability(idx: int) -> void:
@@ -155,11 +163,13 @@ func _ready() -> void:
 		_controlled_polymino = null
 		_hold_cooldown = false
 		
-		game.PolyminoPlaced.emit(pm)
+		#game.PolyminoPlaced.emit(pm)
 		#score_to_add = get_score()
 		
 		var lines := get_scoring_lines()
 		if lines.size() > 0:
+			var sp_to_add := Enums.sp_from_lines(lines, self)
+			special_points += sp_to_add
 			print("Scored: %d" % lines.size())
 			trigger(lines, true)
 			score_to_add = score_lines(lines)
@@ -167,8 +177,6 @@ func _ready() -> void:
 			
 			score_current += score_to_add
 			Scored.emit(score_to_add)
-			game.score_board.ChangeNumber.emit(score_current, Enums.SCORE_BOARD.SCORE_CURRENT)
-			game.score_board.ChangeNumber.emit(max(pts_added, 0), Enums.SCORE_BOARD.PTS_ADDED)
 			
 			destroy_lines(lines)
 			score_to_add = 0

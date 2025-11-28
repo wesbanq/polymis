@@ -29,7 +29,7 @@ grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 6
+size_flags_horizontal = 10
 
 [node name="ActiveAbils" type="VBoxContainer" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
@@ -39,7 +39,7 @@ size_flags_vertical = 2
 layout_mode = 2
 size_flags_vertical = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer"]
 layout_mode = 2
 
 [node name="Bar" type="BoxContainer" parent="HBoxContainer"]
