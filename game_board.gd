@@ -147,13 +147,8 @@ func setup_timer() -> void:
 	_down_timer.wait_time = falling_speed
 	_down_timer.start()
 
-func _ready() -> void:
-	#scale = Vector2(.5, .5) # remove l8r
-	height += 4 # for spawning polyminos
-	update_block_list()
-	update_position()
-	
-	PolyminoPlaced.connect(func(pm: Polymino) -> void:
+func _check_for_line_completions(pm: Polymino = null) -> void:
+	if pm: 
 		for v in pm.get_children():
 			v.reparent(self)
 		
@@ -162,25 +157,33 @@ func _ready() -> void:
 		pm.queue_free()
 		_controlled_polymino = null
 		_hold_cooldown = false
+	
+	#game.PolyminoPlaced.emit(pm)
+	#score_to_add = get_score()
+	
+	var lines := get_scoring_lines()
+	if lines.size() > 0:
+		var sp_to_add := Enums.sp_from_lines(lines, self)
+		special_points += sp_to_add
+		print("Scored: %d" % lines.size())
+		trigger(lines, true)
+		score_to_add = score_lines(lines)
+		trigger(lines, false)
 		
-		#game.PolyminoPlaced.emit(pm)
-		#score_to_add = get_score()
+		score_current += score_to_add
+		Scored.emit(score_to_add)
 		
-		var lines := get_scoring_lines()
-		if lines.size() > 0:
-			var sp_to_add := Enums.sp_from_lines(lines, self)
-			special_points += sp_to_add
-			print("Scored: %d" % lines.size())
-			trigger(lines, true)
-			score_to_add = score_lines(lines)
-			trigger(lines, false)
-			
-			score_current += score_to_add
-			Scored.emit(score_to_add)
-			
-			destroy_lines(lines)
-			score_to_add = 0
-	)
+		destroy_lines(lines)
+		score_to_add = 0
+		_check_for_line_completions(pm)
+
+func _ready() -> void:
+	#scale = Vector2(.5, .5) # remove l8r
+	height += 4 # for spawning polyminos
+	update_block_list()
+	update_position()
+	
+	PolyminoPlaced.connect(_check_for_line_completions)
 	
 	_down_timer = Timer.new()
 	_down_timer.timeout.connect(func():
