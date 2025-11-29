@@ -14,6 +14,16 @@ var _down_timer: Timer
 
 var _held_polyminos: Array[PolyminoShape]
 var _hold_cooldown: bool = false
+#var paused: bool = false:
+	#set(v): 
+		#paused = v
+		#if _down_timer: _down_timer.paused = v
+		#if _controlled_polymino:
+			#for
+		#for x in block_list:
+			#for blk in x:
+				#if blk is Block:
+					#blk.visible = not v
 
 var score_to_add: int
 var score_current := 0:
@@ -197,12 +207,29 @@ func _ready() -> void:
 	)
 	game.score_board.setup_score_board(self)
 	
+	game.PausedGame.connect(func(paused: bool) -> void:
+		if _down_timer: _down_timer.paused = paused
+		if _controlled_polymino:
+			for blk in _controlled_polymino.blocks:
+				if blk is Block:
+					if blk._hoverable: blk._hoverable.temp_hidden = paused
+					blk.visible = not paused
+			if _controlled_polymino.ghost:
+				for blk in _controlled_polymino.ghost.blocks:
+					if blk is Block:
+						blk.visible = not paused
+		for x in block_list:
+			for blk in x:
+				if blk is Block:
+					blk.visible = not paused
+	)
+	
 	_down_timer.autostart = true
 	add_child(_down_timer)
 	setup_timer()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event.is_echo() or event.is_released() or not _controlled_polymino: return
+	if event.is_echo() or event.is_released() or not _controlled_polymino or game.paused: return
 	
 	if event.is_action("snap_down"):
 		_controlled_polymino.snap_down()

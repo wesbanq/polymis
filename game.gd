@@ -11,6 +11,7 @@ signal HeldPolymino
 signal TriggeredAbility(int)
 signal BoardChangedAttr(String, Variant)
 signal SPAdd(int)
+signal PausedGame(bool)
 
 var max_pm := 20:
 	set(v): max_pm = clampi(v, 1, max_max_pm)
@@ -44,6 +45,9 @@ var board: GameBoard
 var shop: ShopBoard
 
 var round_num := 1
+var paused: bool = false:
+	set(v): paused = v; PausedGame.emit(v)
+
 var state: Enums.GAME_STATE = Enums.GAME_STATE.SHOP:
 	set(v): state = v; ChangedState.emit(state)
 
@@ -222,18 +226,30 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		round_num += 1
 	return reason
 
+func _input(event: InputEvent) -> void:
+	if event.is_pressed() and not event.is_echo():
+		if event.is_action("pause_menu"):
+			if board is GameBoard: paused = not paused
+		
+		if event.is_action("toggle_fullscreen"):
+			if DisplayServer.window_get_mode() != DisplayServer.WINDOW_MODE_FULLSCREEN:
+				DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+			else:
+				DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
 func _ready() -> void:
 	#TODO
 	#shop remove
 	#shop buttons/labels react to how many pts u have
-	#fix rotations
-	#formula calc
 	#combo system
 	#save file;notekeep unknown data in the save for potential future mod support
-	#content
+	#fix rotations
 	#decide if after running oout pf pms if theres held pms use them
+	#content
+	#formula calc
 	#polish hold/nxt brd
 	#polish hover text
+	#keybinds
 	#main menu
 	
 	bag = Bag.load_bag_resource(Enums.BAG_PATHS[1], self)

@@ -5,10 +5,10 @@
 [resource]
 script = ExtResource("1_nie26")
 display_name = "Bonus"
-description = "Gives {upside}+{added_score}{end} score, 
-gives additional {upside}+{additional_score}{end} score
+description = "Gives {upside}+{bonus_amount}{end} score, 
+gives additional {upside}+{sur_bonus_am}{end} score
 {warn}for each adjacent block with a modifier{end}. 
-Blocks give extra {upside}+{bonus_additional_score}{end} score 
+Blocks give extra {upside}+{sur_bonus_bonus_am}{end} score 
 {warn}if they have a Bonus modifier as well{end}."
 shader_path = "res://modifiers/shaders/bonus.gdshader"
 mod_price = 800

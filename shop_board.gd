@@ -26,6 +26,13 @@ var extra_buttons: Array
 const mod_path := "res://modifiers/resources/"
 const shape_path := "res://polymino_shapes/"
 
+var hover_args := {
+	Enums.SHOP_EXTRA_BUTTONS.ADD_PM: ["Add polymino", "Adds 1 to you max polymino count per round."],
+	Enums.SHOP_EXTRA_BUTTONS.RESTOCK: ["Restock", "Restock the shop."],
+	Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL: ["Unlock ability", "Unlocks new ability."],
+	Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM: ["Remove polymino", "Remove your chosen polymino from your bag."],
+}
+
 static func _get_ranges(weight_src: Array[Variant]) -> Array[float]:
 	var result: Array[float]
 	#create a list of ranges all corresponding to a polymino
@@ -93,6 +100,7 @@ func purchase(idx: Enums.SHOP_EXTRA_BUTTONS, blks: bool = true) -> void:
 						_pm_pos(Enums.SHOP_EXTRA_BUTTONS.ADD_PM, false),
 						game.max_pm < game.max_max_pm
 					)
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1].hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1], Color(1,1,1), true)
 					add_child(extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1])
 					#sends signal to score board to change pm value
 					#TODO crutch pls fix (mb not idk)
@@ -105,13 +113,15 @@ func purchase(idx: Enums.SHOP_EXTRA_BUTTONS, blks: bool = true) -> void:
 							selling[i][2].queue_free()
 					_stock_shop()
 					Restock.emit()
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1].destroy()
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1] = ShopButton.new(
 						"res://restock.png", 
 						self, 
 						_pm_pos(Enums.SHOP_EXTRA_BUTTONS.RESTOCK, false)
 					)
-					add_child(extra_buttons[1][1])
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1].hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1], Color(1,1,1), true)
+					add_child(extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1])
 				Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL:
 					game.unlocked_abil_a += 1
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1].destroy()
@@ -123,6 +133,7 @@ func purchase(idx: Enums.SHOP_EXTRA_BUTTONS, blks: bool = true) -> void:
 						_pm_pos(Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL, false), 
 						game.unlocked_abil_a < game.max_abil_a_size-1
 					)
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1].hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1], Color(1,1,1), true)
 					BoughtAbility.emit()
 					add_child(extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1])
 				Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM:
@@ -178,22 +189,22 @@ func _ready() -> void:
 	
 	var add_pm_button := ShopButton.new("res://shop_add_pm_icon.png", self, _pm_pos(0, false), game.max_pm < game.max_max_pm)
 	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM] = [Enums.shop_add_pm_price(game.round_num, game.max_pm), add_pm_button]
-	add_pm_button.hover("Add polymino", "Adds 1 to you max polymino count per round.", Color(1,1,1), true)
+	add_pm_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1], Color(1,1,1), true)
 	add_child(add_pm_button)
 	
 	var restock_button := ShopButton.new("res://restock.png", self, _pm_pos(1, false))
-	restock_button.hover("Restock", "Restock the shop.", Color(1,1,1), true)
+	restock_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1], Color(1,1,1), true)
 	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK] = [Enums.shop_restock_price(game.round_num, game.max_pm), restock_button]
 	add_child(restock_button)
 	
 	#if game.unlocked_abil_a < game.max_abil_a_size-1:
 	var abil_unlock_button := ShopButton.new("res://shop_unlock_abil.png", self, _pm_pos(2, false))
-	abil_unlock_button.hover("Unlock ability", "Unlocks new ability.", Color(1,1,1), true)
+	abil_unlock_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1], Color(1,1,1), true)
 	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL] = [Enums.shop_restock_price(game.round_num, game.max_pm), abil_unlock_button]
 	add_child(abil_unlock_button)
 	
 	var pm_remove_button := ShopButton.new("res://shop_remove_pm_icon.png", self, _pm_pos(3, false))
-	pm_remove_button.hover("Remove polymino", "Remove your chosen polymino from your bag.", Color(1,1,1), true)
+	pm_remove_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM][1], Color(1,1,1), true)
 	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM] = [Enums.shop_restock_price(game.round_num, game.max_pm), pm_remove_button]
 	add_child(pm_remove_button)
 	
