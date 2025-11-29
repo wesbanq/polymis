@@ -7,6 +7,8 @@ var top_color: Color
 var shop: bool
 var f: Callable
 
+var temp_hidden: bool = false:
+	set(v): temp_hidden = v; if v and _hover: force_hide()
 var _master: Variant
 var _hover := false:
 	set(v): 
@@ -15,7 +17,8 @@ var _hover := false:
 		_hover = v
 
 func force_hide() -> void:
-	HoverManager.hide(self)
+	_hover = false
+	#HoverManager.hide(self)
 
 func _init(mst: Variant, chk_func: Callable, a: String, b: String, c: Color = Color(1, 1, 1), d: bool = false) -> void:
 	_master = mst
@@ -30,5 +33,5 @@ func _init(mst: Variant, chk_func: Callable, a: String, b: String, c: Color = Co
 		if not _master or not f:
 			free()
 			push_error("%s godot is a genuine piece of dogshit game engine. i unironically wish i learned unity instead" % top)
-		else: _hover = f.call(pos)
+		elif not temp_hidden: _hover = f.call(pos)
 	)
