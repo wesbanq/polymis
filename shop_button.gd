@@ -26,6 +26,8 @@ func click_within_block(clk: Vector2) -> bool:
 
 func destroy() -> void:
 	lable.queue_free()
+	_hoverable.force_hide()
+	_hoverable.free()
 	queue_free()
 
 func _rescale() -> void:

@@ -7,7 +7,6 @@ class_name BonusModifier
 #TODO REDO THIS MODIFIER
 
 func get_shader() -> ShaderMaterial:
-	print(shader_path)
 	var shader = super()
 	shader.set_shader_parameter("e_tint", Color.hex(0x00b000))
 	return shader

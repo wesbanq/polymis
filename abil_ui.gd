@@ -22,8 +22,8 @@ const _main_scene := preload("res://abil_ui.tscn")
 var next_board: Board
 var hold_board: Board
 
-var held_pm: Polymino
-var next_pms: Array[Polymino]
+var _held_pm: Polymino
+var _next_pms: Array[Polymino]
 
 var _a_abils_arr: Array[AbilUIElement] = []
 var _p_abils_arr: Array[AbilUIElement] = []
@@ -115,17 +115,17 @@ func _changed_attr_wrapper(name: String, val: Variant) -> void:
 			_rescale_bar()
 
 func _add_to_next(shape: PolyminoShape) -> void:
-	if next_pms.size() == _game.next_size:
-		var pm: Polymino = next_pms.pop_front()
+	if _next_pms.size() == _game.next_size:
+		var pm: Polymino = _next_pms.pop_front()
 		pm.destroy()
-	for p in next_pms:
+	for p in _next_pms:
 		if p is Polymino:
 			p.move(Vector2i(4,0))
-	next_pms.push_back(next_board._add_polymino(shape, Vector2i(0,0), false))
+	_next_pms.push_back(next_board._add_polymino(shape, Vector2i(0,0), false))
 
 func _add_to_hold(shape: PolyminoShape) -> void:
-	if held_pm: held_pm.destroy()
-	held_pm = hold_board._add_polymino(shape, Vector2i(hold_board.width - 5,0), false)
+	if _held_pm: _held_pm.destroy()
+	_held_pm = hold_board._add_polymino(shape, Vector2i(hold_board.width - 5,0), false)
 
 func _setup_next() -> void:
 	for i in _game.next_size: _add_to_next(_game.bag.peek(i))
@@ -137,8 +137,8 @@ func _ready() -> void:
 	_game.NewBoard.connect(func(brd: Board) -> void:
 		_progress = 0
 		_rescale_bar(brd)
-		while next_pms.size() > 0: next_pms.pop_front().destroy()
-		if held_pm: held_pm.destroy(); held_pm = null
+		while _next_pms.size() > 0: _next_pms.pop_front().destroy()
+		if _held_pm: _held_pm.destroy(); _held_pm = null
 		if _game.state == Enums.GAME_STATE.GAME: _setup_next()
 	)
 	_game.HeldPolymino.connect(func() -> void:
@@ -146,6 +146,17 @@ func _ready() -> void:
 	)
 	UpdateBar.connect(_update_bar)
 	ActivateAbility.connect(_set_active)
+	_game.PausedGame.connect(func(paused: bool) -> void:
+		for pm in _next_pms:
+			if pm:
+				for blk in pm.blocks:
+					if blk is Block:
+						blk.visible = not paused
+		if _held_pm:
+			for blk in _held_pm.blocks:
+				if blk is Block:
+					blk.visible = not paused
+	)
 	
 	add_child(_main_ctrl)
 	
@@ -156,6 +167,6 @@ func _ready() -> void:
 	next_board.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_board_ctrl.add_child(hold_board)
 	_board_ctrl.add_child(next_board)
-	#next_pms.resize(_game.next_size)
+	#_next_pms.resize(_game.next_size)
 	_game.PolyminoPlaced.connect(func(_v): _add_to_next(_game.bag.peek(2)))
 	_setup_next()
