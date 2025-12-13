@@ -129,7 +129,7 @@ func purchase(idx: Enums.SHOP_EXTRA_BUTTONS, blks: bool = true) -> void:
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1] = ShopButton.new(
 						"res://shop_unlock_abil.png", 
-						self, 
+						self,
 						_pm_pos(Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL, false), 
 						game.unlocked_abil_a < game.max_abil_a_size-1
 					)
@@ -183,6 +183,14 @@ func _stock_shop() -> void:
 		
 		selling.append([pm, price, lbl])
 
+func _toggle_visibility(paused: bool) -> void:
+	for pm in selling:
+		if pm and pm[0]:
+			for blk in pm[0].blocks:
+				if blk is Block:
+					if blk._hoverable: blk._hoverable.temp_hidden = paused
+					blk.visible = not paused
+
 func _ready() -> void:
 	_stock_shop()
 	extra_buttons.resize(5)
@@ -212,6 +220,7 @@ func _ready() -> void:
 		BoardClear.emit()
 	)
 	game.score_board.setup_score_board(self)
+	game.PausedGame.connect(_toggle_visibility)
 	
 	update_block_list()
 	update_position()

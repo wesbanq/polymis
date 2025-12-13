@@ -156,6 +156,7 @@ func register_commands() -> void:
 	LimboConsole.register_command(func() -> void: inf_pm = not inf_pm, "infpm", "Gives infinite polymnos.")
 	LimboConsole.register_command(func(n: int) -> void: if board is GameBoard: board.pm_left += n, "apm", "Adds <arg0> to the current polymino left count.")
 	LimboConsole.register_command(func(n: int) -> void: if board is GameBoard: board.score_current += n, "score", "Adds <arg0> to the score count.")
+	LimboConsole.register_command(func(n: int) -> void: unlocked_abil_a = n, "unlock", "Unlocks ability")
 
 @warning_ignore("shadowed_variable_base_class")
 func _idk_what_to_call_this_function(name: String, val: Variant) -> void:
@@ -167,11 +168,13 @@ func _idk_what_to_call_this_function(name: String, val: Variant) -> void:
 				push_error("non int val given: %v+" % val)
 
 func trigger_ability(slot: int) -> void:
-	if board and slot <= unlocked_abil_a and abils_a.size() > slot and abils_a[slot] and board.special_points >= abils_a[slot].sp_cost:
+	if board and slot <= unlocked_abil_a and abils_a.size() > slot and abils_a[slot] and (board.special_points >= abils_a[slot].sp_cost or inf_sp):
 		if abils_a[slot].trigger():
 			if not inf_sp:
 				board.special_points -= abils_a[slot].sp_cost
 			TriggeredAbility.emit(slot)
+	else:
+		print("Not enough SP to trigger ability #%d" % slot)
 
 func _game_loop() -> Enums.BOARD_FINISH:
 	var reason: Enums.BOARD_FINISH
@@ -185,11 +188,7 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		board.spawn_polymino(bag.next)
 		board.pm_left -= 1
 		board.HeldPolymino.connect(func() -> void: HeldPolymino.emit())
-		board.PolyminoPlaced.connect(func(pm) -> void:
-			board.spawn_polymino(bag.next)
-			board.pm_left -= 1
-			PolyminoPlaced.emit(pm)
-		)
+		
 		
 		#REMOVE L8R VVV dbg
 		#board.special_points = 99999
@@ -267,6 +266,13 @@ func _ready() -> void:
 	
 	get_viewport().size_changed.connect(func() -> void:
 		default_grid_size_px = int(get_viewport_rect().size.length() * .015)
+	)
+	
+	PolyminoPlaced.connect(func(pm) -> void:
+		print(pm)
+		#PolyminoPlaced.emit(pm)
+		board.spawn_polymino(bag.next)
+		board.pm_left -= 1
 	)
 	
 	_game_loop()
