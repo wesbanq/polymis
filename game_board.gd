@@ -14,16 +14,6 @@ var _down_timer: Timer
 
 var _held_polyminos: Array[PolyminoShape]
 var _hold_cooldown: bool = false
-#var paused: bool = false:
-	#set(v): 
-		#paused = v
-		#if _down_timer: _down_timer.paused = v
-		#if _controlled_polymino:
-			#for
-		#for x in block_list:
-			#for blk in x:
-				#if blk is Block:
-					#blk.visible = not v
 
 var score_to_add: int
 var score_current := 0:
@@ -168,7 +158,7 @@ func _check_for_line_completions(pm: Polymino = null) -> void:
 		_controlled_polymino = null
 		_hold_cooldown = false
 	
-	#game.PolyminoPlaced.emit(pm)
+		#game.PolyminoPlaced.emit(pm)
 	#score_to_add = get_score()
 	
 	var lines := get_scoring_lines()
@@ -185,7 +175,32 @@ func _check_for_line_completions(pm: Polymino = null) -> void:
 		
 		destroy_lines(lines)
 		score_to_add = 0
-		_check_for_line_completions(pm)
+		#print(pm)
+		_check_for_line_completions()
+	if pm: game.PolyminoPlaced.emit(pm)
+
+func _toggle_visibility(paused: bool) -> void:
+	if _down_timer: _down_timer.paused = paused
+	if _controlled_polymino:
+		for blk in _controlled_polymino.blocks:
+			if blk is Block:
+				if blk._hoverable: blk._hoverable.temp_hidden = paused
+				blk.visible = not paused
+		if _controlled_polymino.ghost:
+			for blk in _controlled_polymino.ghost.blocks:
+				if blk is Block:
+					blk.visible = not paused
+	for x in block_list:
+		for blk in x:
+			if blk is Block:
+				blk.visible = not paused
+
+func destroy_block_at(pos: Vector2i) -> void:
+	if block_list[pos.x][pos.y]:
+		block_list[pos.x][pos.y].destroy()
+		block_list[pos.x][pos.y] = null
+		if _controlled_polymino.ghost:
+			_controlled_polymino.ghost.UpdateGhost.emit()
 
 func _ready() -> void:
 	#scale = Vector2(.5, .5) # remove l8r
@@ -206,23 +221,7 @@ func _ready() -> void:
 			board_finish(Enums.BOARD_FINISH.WIN_CONTINUE)
 	)
 	game.score_board.setup_score_board(self)
-	
-	game.PausedGame.connect(func(paused: bool) -> void:
-		if _down_timer: _down_timer.paused = paused
-		if _controlled_polymino:
-			for blk in _controlled_polymino.blocks:
-				if blk is Block:
-					if blk._hoverable: blk._hoverable.temp_hidden = paused
-					blk.visible = not paused
-			if _controlled_polymino.ghost:
-				for blk in _controlled_polymino.ghost.blocks:
-					if blk is Block:
-						blk.visible = not paused
-		for x in block_list:
-			for blk in x:
-				if blk is Block:
-					blk.visible = not paused
-	)
+	game.PausedGame.connect(_toggle_visibility)
 	
 	_down_timer.autostart = true
 	add_child(_down_timer)
@@ -233,6 +232,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	
 	if event.is_action("snap_down"):
 		_controlled_polymino.snap_down()
+		#var send := _controlled_polymino.duplicate()
+		#_check_for_line_completions(_controlled_polymino)
+		#PolyminoPlaced.emit(send)
 		PolyminoPlaced.emit(_controlled_polymino)
 	
 	if event.is_action("hold"):
