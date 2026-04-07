@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="PolyminoShape" load_steps=7 format=3 uid="uid://p7m6ph4dwen"]
+[gd_resource type="Resource" script_class="PolyminoShape" format=3 uid="uid://p7m6ph4dwen"]
 
 [ext_resource type="Script" uid="uid://cruubg6nait1l" path="res://polyminoshape.gd" id="1_g5ko2"]
 [ext_resource type="Script" uid="uid://c8h0liekeyd2c" path="res://block_info.gd" id="2_sra7s"]

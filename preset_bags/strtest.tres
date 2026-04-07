@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="Bag" load_steps=10 format=3 uid="uid://bpkfd0icbucf6"]
+[gd_resource type="Resource" script_class="Bag" format=3 uid="uid://bpkfd0icbucf6"]
 
 [ext_resource type="Script" uid="uid://b0uuh8aing25x" path="res://bag.gd" id="1_v08eo"]
 [ext_resource type="Script" uid="uid://cruubg6nait1l" path="res://polyminoshape.gd" id="2_tk7do"]

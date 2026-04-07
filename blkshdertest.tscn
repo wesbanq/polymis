@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://byikmfihkqbrk"]
+[gd_scene format=3 uid="uid://byikmfihkqbrk"]
 
 [ext_resource type="Shader" uid="uid://dy12s3su30yjr" path="res://abil_ui.gdshader" id="1_nd754"]
 [ext_resource type="Texture2D" uid="uid://owkavabbglxn" path="res://block.png" id="2_cyxcx"]
@@ -10,7 +10,7 @@ shader_parameter/tint = Vector4(3.34, 1.57, 0, 1)
 shader_parameter/otint = Vector4(0.3, 0.3, 0.3, 1)
 shader_parameter/progress = 0.0
 
-[node name="Block" type="Sprite2D"]
+[node name="Block" type="Sprite2D" unique_id=404040361]
 texture_filter = 1
 texture_repeat = 1
 material = SubResource("ShaderMaterial_a1ehi")

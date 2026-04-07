@@ -83,7 +83,7 @@ var MODIFIERS_PATHS := read_folder_dict(MODIFIER_FOLDER_PATH)
 var BAG_PATHS := read_folder_paths(BAGS_FOLDER)
 
 #var MODIFIERS := {
-	##"": null,
+	#"": null,
 	#"random": RandomModifier,
 	#"bonus": BonusModifier,
 	#"chain": ChainModifier,
