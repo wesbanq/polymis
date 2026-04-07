@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dxjtlkd8pilqi"]
+[gd_scene format=3 uid="uid://dxjtlkd8pilqi"]
 
 [ext_resource type="Theme" uid="uid://bsow2mqhludnw" path="res://text.tres" id="1_2dm7u"]
 [ext_resource type="Shader" uid="uid://bi25rufc411k6" path="res://abil_ico.gdshader" id="2_nar8i"]
@@ -14,13 +14,13 @@ shader_parameter/tint = Vector3(1, 1, 1)
 shader_parameter/otint = Vector3(0.4, 0.4, 0.4)
 shader_parameter/active = false
 
-[node name="Abil" type="HBoxContainer"]
+[node name="Abil" type="HBoxContainer" unique_id=1690276612]
 offset_right = 200.0
 offset_bottom = 46.0
 size_flags_vertical = 3
 script = SubResource("GDScript_2dm7u")
 
-[node name="Hotkey" type="RichTextLabel" parent="."]
+[node name="Hotkey" type="RichTextLabel" parent="." unique_id=1052316683]
 custom_minimum_size = Vector2(30, 20)
 layout_mode = 2
 size_flags_horizontal = 2
@@ -32,7 +32,7 @@ text = "[1]"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="AbilIcon" type="TextureRect" parent="."]
+[node name="AbilIcon" type="TextureRect" parent="." unique_id=2131792612]
 material = SubResource("ShaderMaterial_n1ojr")
 layout_mode = 2
 size_flags_horizontal = 0
@@ -40,14 +40,14 @@ size_flags_vertical = 4
 texture = ExtResource("3_n6kge")
 stretch_mode = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1338972733]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 size_flags_stretch_ratio = 20.0
 
-[node name="AbilName" type="RichTextLabel" parent="VBoxContainer"]
+[node name="AbilName" type="RichTextLabel" parent="VBoxContainer" unique_id=1810972788]
 layout_mode = 2
 size_flags_vertical = 0
 theme = ExtResource("1_2dm7u")
@@ -57,12 +57,12 @@ text = "Name"
 fit_content = true
 scroll_active = false
 
-[node name="AbilCost" type="RichTextLabel" parent="VBoxContainer"]
+[node name="AbilCost" type="RichTextLabel" parent="VBoxContainer" unique_id=1309598280]
 layout_mode = 2
 size_flags_vertical = 0
 theme = ExtResource("1_2dm7u")
 theme_override_font_sizes/normal_font_size = 20
 bbcode_enabled = true
-text = "69%"
+text = "42%"
 fit_content = true
 scroll_active = false

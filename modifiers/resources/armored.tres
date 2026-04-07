@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ArmoredModifier" load_steps=2 format=3 uid="uid://cuqm477x3xx30"]
+[gd_resource type="Resource" script_class="ArmoredModifier" format=3 uid="uid://cuqm477x3xx30"]
 
 [ext_resource type="Script" uid="uid://c12pyi016mr0e" path="res://modifiers/armored.gd" id="1_psb8t"]
 
