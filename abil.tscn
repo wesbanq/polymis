@@ -3,6 +3,7 @@
 [ext_resource type="Theme" uid="uid://bsow2mqhludnw" path="res://text.tres" id="1_2dm7u"]
 [ext_resource type="Shader" uid="uid://bi25rufc411k6" path="res://abil_ico.gdshader" id="2_nar8i"]
 [ext_resource type="Texture2D" uid="uid://qxrfqn7wfy48" path="res://abils/active/icons/gen_abil.png" id="3_n6kge"]
+[ext_resource type="Theme" uid="uid://bpmmloatsv626" path="res://abil_text.tres" id="4_nar8i"]
 
 [sub_resource type="GDScript" id="GDScript_2dm7u"]
 script/source = "extends HBoxContainer
@@ -50,8 +51,7 @@ size_flags_stretch_ratio = 20.0
 [node name="AbilName" type="RichTextLabel" parent="VBoxContainer" unique_id=1810972788]
 layout_mode = 2
 size_flags_vertical = 0
-theme = ExtResource("1_2dm7u")
-theme_override_font_sizes/normal_font_size = 20
+theme = ExtResource("4_nar8i")
 bbcode_enabled = true
 text = "Name"
 fit_content = true
@@ -60,8 +60,7 @@ scroll_active = false
 [node name="AbilCost" type="RichTextLabel" parent="VBoxContainer" unique_id=1309598280]
 layout_mode = 2
 size_flags_vertical = 0
-theme = ExtResource("1_2dm7u")
-theme_override_font_sizes/normal_font_size = 20
+theme = ExtResource("4_nar8i")
 bbcode_enabled = true
 text = "42%"
 fit_content = true

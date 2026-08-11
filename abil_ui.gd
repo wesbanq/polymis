@@ -13,9 +13,9 @@ const _main_scene := preload("res://abil_ui.tscn")
 @onready var _sp_bar_ctrl := _main_ctrl.get_node("HBoxContainer/Bar")
 @onready var _sp_bar_lbl := _main_ctrl.get_node("HBoxContainer/Bar/RichTextLabel")
 @onready var _sp_bar_blks := _sp_bar_ctrl.get_node("Control/VBoxContainer")
-@onready var _a_abils_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/ActiveAbils")
+@onready var _a_abils_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/ActiveAbilsContainer/ActiveAbils")
 @warning_ignore("unused_private_class_variable")
-@onready var _p_abils_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/PassiveAbils")
+@onready var _p_abils_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/PassiveAbilsContainer/PassiveAbils")
 @onready var _sp_bar_blk_prefab := _main_ctrl.get_node("HBoxContainer/Bar/TextureRect")
 
 @onready var _board_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/VBoxContainer")
@@ -44,6 +44,7 @@ func set_abils_from_arr(abils_a: Array[AbilityActive], abils_p: Array[AbilityPas
 			_a_abils_arr.append(AbilUIElement.new(i+1, abils_a[i]))
 			_a_abils_ctrl.add_child(_a_abils_arr[-1])
 	
+	#unused passive abils code
 	#for i in abils_p.size():
 		##if abils_p[i] is AbilityPassive:
 			#_p_abils_arr.append(AbilUIElement.new(i+1, abils_p[i]))
@@ -93,6 +94,7 @@ func _rescale_bar(brd: Board = null) -> void:
 		#_sp_bar_blks.position = Vector2(-cb.grid_size_px, 0)
 	else:
 		push_error("no board to inherit arguments from")
+	
 	_update_bar()
 
 func _set_active(slot: int, abil_type_active: bool) -> void:
@@ -125,7 +127,7 @@ func _add_to_next(shape: PolyminoShape) -> void:
 
 func _add_to_hold(shape: PolyminoShape) -> void:
 	if _held_pm: _held_pm.destroy()
-	_held_pm = hold_board._add_polymino(shape, Vector2i(hold_board.width - 5,0), false)
+	_held_pm = hold_board._add_polymino(shape, Vector2i(0, 0), false)
 
 func _setup_next() -> void:
 	for i in _game.next_size: _add_to_next(_game.bag.peek(i))
@@ -161,12 +163,13 @@ func _ready() -> void:
 	add_child(_main_ctrl)
 	
 	#comment to disable next
-	hold_board = Board.new(_game.next_size * 4 + _game.next_size - 1, 4)
+	#is there even a need to make this resizable??
+	hold_board = Board.new(_game.hold_size * 4 + _game.hold_size - 1, 4)
 	next_board = Board.new(_game.next_size * 4 + _game.next_size - 1, 4)
 	hold_board.size_flags_horizontal = Control.SIZE_SHRINK_END
 	next_board.size_flags_horizontal = Control.SIZE_SHRINK_END
-	_board_ctrl.add_child(hold_board)
-	_board_ctrl.add_child(next_board)
+	_board_ctrl.get_node("HBoxContainer/HoldContainer/CenterContainer").add_child(hold_board)
+	_board_ctrl.get_node("HBoxContainer2/NextContainer/CenterContainer").add_child(next_board)
 	#_next_pms.resize(_game.next_size)
 	_game.PolyminoPlaced.connect(func(_v): _add_to_next(_game.bag.peek(2)))
 	_setup_next()

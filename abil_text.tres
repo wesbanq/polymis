@@ -1,0 +1,10 @@
+[gd_resource type="Theme" format=3 uid="uid://bpmmloatsv626"]
+
+[ext_resource type="FontFile" uid="uid://dq14ciin4h7jk" path="res://fonts/code_new_roman/Code New Roman.otf" id="1_crskl"]
+
+[resource]
+default_font = ExtResource("1_crskl")
+default_font_size = 20
+/colors/font_outline_color = Color(0, 0, 0, 1)
+/constants/outline_size = 32
+RichTextLabel/constants/outline_size = 6

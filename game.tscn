@@ -1,25 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://bluw2acn7gjra"]
+[gd_scene format=3 uid="uid://bluw2acn7gjra"]
 
 [ext_resource type="Script" uid="uid://btxgk7svd1pc" path="res://game.gd" id="1_80nbo"]
+[ext_resource type="StyleBox" uid="uid://kkffquuhkuql" path="res://ui_window_style.tres" id="2_e2o6t"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_80nbo"]
-bg_color = Color(0, 0, 0, 0)
-border_width_left = 6
-border_width_top = 6
-border_width_right = 6
-border_width_bottom = 6
-border_color = Color(1, 1, 1, 1)
-border_blend = true
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-corner_detail = 20
-shadow_color = Color(0, 0, 0, 0.19215687)
-shadow_size = 20
-anti_aliasing_size = 2.0
-
-[node name="GameMain" type="Control"]
+[node name="GameMain" type="Control" unique_id=443221615]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -28,7 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_80nbo")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1421967838]
 layout_mode = 1
 anchors_preset = 14
 anchor_top = 0.5
@@ -40,13 +24,13 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 32
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=561896314]
 layout_mode = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer/VBoxContainer" unique_id=336771289]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_80nbo")
+theme_override_styles/panel = ExtResource("2_e2o6t")
 
-[node name="CenterContainer" type="CenterContainer" parent="HBoxContainer/VBoxContainer/PanelContainer"]
+[node name="CenterContainer" type="CenterContainer" parent="HBoxContainer/VBoxContainer/PanelContainer" unique_id=287316602]
 layout_mode = 2
