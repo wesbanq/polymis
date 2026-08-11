@@ -32,7 +32,7 @@ var bought_abils_p := 0
 var hold_size: int = 1
 var next_size: int = 3
 
-@onready var default_grid_size_px := int(get_viewport_rect().size.length() * 0.015):
+@onready var default_grid_size_px := int(get_viewport_rect().size.length() * 0.017):
 	set(v): default_grid_size_px = v; set_grid_scale(v)
 var bag: Bag
 var pts := 9999:
@@ -238,20 +238,17 @@ func _input(event: InputEvent) -> void:
 
 func _ready() -> void:
 	#TODO
-	#shop remove
 	#shop buttons/labels react to how many pts u have
 	#combo system
-	#save file;notekeep unknown data in the save for potential future mod support
 	#fix rotations
 	#decide if after running oout pf pms if theres held pms use them
-	#content
-	#formula calc
 	#polish hold/nxt brd
 	#polish hover text
+	#save file;notekeep unknown data in the save for potential future mod support
 	#keybinds
-	#main menu
+	#content
 	
-	bag = Bag.load_bag_resource(Enums.BAG_PATHS[1], self)
+	bag = Bag.load_bag_resource(Enums.BAG_PATHS[0], self)
 	abils_a.resize(max_abil_a_size)
 	abils_a.fill(Enums.ABILITIES_ACTIVE["noabil"].new(self))
 	abils_p.resize(max_abil_p_size)
@@ -265,7 +262,7 @@ func _ready() -> void:
 	abil_board.set_abils_from_arr(abils_a, abils_p)
 	
 	get_viewport().size_changed.connect(func() -> void:
-		default_grid_size_px = int(get_viewport_rect().size.length() * .015)
+		default_grid_size_px = int(get_viewport_rect().size.length() * .016)
 	)
 	
 	PolyminoPlaced.connect(func(pm) -> void:
@@ -275,4 +272,7 @@ func _ready() -> void:
 		board.pm_left -= 1
 	)
 	
+	Bg.activate()
+	#to trigger auto scaling (mb fix idk it works so who gives a shit)
+	get_viewport().size_changed.emit()
 	_game_loop()

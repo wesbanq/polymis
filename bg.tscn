@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://3c2tp244v6ts"]
+
+[ext_resource type="Texture2D" uid="uid://lmxxpnb0bi3t" path="res://grid.png" id="1_t4gw0"]
+[ext_resource type="Script" uid="uid://couquy7cu6q7r" path="res://bg.gd" id="1_tuaf8"]
+[ext_resource type="Shader" uid="uid://cje2u4ck8awtk" path="res://bg.gdshader" id="2_e8j8q"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_36ycx"]
+shader = ExtResource("2_e8j8q")
+shader_parameter/tint = Vector4(0, 0, 0, 0)
+shader_parameter/direction = Vector2(0, 0)
+shader_parameter/offset = Vector2(0, 0)
+shader_parameter/speed = 0.0
+shader_parameter/scale = Vector2(0, 0)
+shader_parameter/blur_size = Vector2(0.5, 0.5)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_plmvg"]
+shader = ExtResource("2_e8j8q")
+shader_parameter/tint = Vector4(0, 0, 0, 0.545)
+shader_parameter/direction = Vector2(1, 0)
+shader_parameter/offset = Vector2(0, 0)
+shader_parameter/speed = 0.0
+shader_parameter/scale = Vector2(0.25, 0.25)
+shader_parameter/blur_size = Vector2(4.39, 4.62)
+
+[node name="BG" type="Control" unique_id=686722756]
+texture_filter = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tuaf8")
+bg_dist_mult = 1.87
+speed = 0.745
+direction = Vector2(-0.5, -0.2)
+bg_pos_offset = Vector2(0.52, 3.065)
+grid_color = Color(0, 0.7, 0, 1)
+bg_color_darkened = 0.625
+bg_transparency = 0.185
+bg_grid_scale_mult = 3.967
+grid_scale = 0.21
+
+[node name="Background" type="TextureRect" parent="." unique_id=2085770198]
+texture_filter = 3
+material = SubResource("ShaderMaterial_36ycx")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_t4gw0")
+stretch_mode = 1
+
+[node name="Foreground" type="TextureRect" parent="." unique_id=877175326]
+material = SubResource("ShaderMaterial_plmvg")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_t4gw0")
+stretch_mode = 1

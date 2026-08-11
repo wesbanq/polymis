@@ -11,14 +11,14 @@ signal Continue
 var _scene := preload("res://score_ui.tscn")
 @onready var _sign := _scene.instantiate()
 
-@onready var _continue_button_ctrl := _sign.get_node("VBoxContainer/ContinueButton")
-@onready var _continue_button_text_ctrl := _sign.get_node("VBoxContainer/ContinueButton/RichTextLabel")
+@onready var _continue_button_ctrl := _sign.get_node("VBoxContainer/PanelContainer2/ColorRect")
+@onready var _continue_button_text_ctrl := _sign.get_node("VBoxContainer/PanelContainer2/RichTextLabel")
 
-@onready var _round_num_ctrl := _sign.get_node("VBoxContainer/HBoxContainer/RoundNum")
-@onready var _pm_left_ctrl := _sign.get_node("VBoxContainer/HBoxContainer/PMsLeft")
-@onready var _pts_added_ctrl := _sign.get_node("VBoxContainer/PtsAdded")
-@onready var _score_cur_ctrl := _sign.get_node("VBoxContainer/ScoreCurrent")
-@onready var _score_goal_ctrl := _sign.get_node("VBoxContainer/ScoreGoal")
+@onready var _round_num_ctrl := _sign.get_node("VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer/RoundNum")
+@onready var _pm_left_ctrl := _sign.get_node("VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer/PMsLeft")
+@onready var _pts_added_ctrl := _sign.get_node("VBoxContainer/PanelContainer/VBoxContainer/PtsAdded")
+@onready var _score_cur_ctrl := _sign.get_node("VBoxContainer/PanelContainer/VBoxContainer/ScoreCurrent")
+@onready var _score_goal_ctrl := _sign.get_node("VBoxContainer/PanelContainer/VBoxContainer/ScoreGoal")
 
 var right: bool = true
 var max_digits: int = 11
