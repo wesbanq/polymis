@@ -102,6 +102,7 @@ func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, id
 	board = brd
 	board_position = b
 	modifier = info.modifier.duplicate_deep(Resource.DEEP_DUPLICATE_ALL) if info.modifier else null
+	z_index = 5
 	ghost = ghst
 	
 	prototype_shape = prototype if prototype else PolyminoShape.new()
@@ -121,6 +122,7 @@ func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, id
 	else:
 		material = ShaderMaterial.new()
 		material.shader = default_shader_path
+		material.next_pass
 	
 	material.set_shader_parameter("tint", Vector4(color.r, color.g, color.b, 1))
 	#position = Vector2(board_position.x * board.grid_size_px + board_position.x * board.grid_padding_px, -board_position.y * board.grid_size_px - board_position.y * board.grid_padding_px)

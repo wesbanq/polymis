@@ -22,6 +22,7 @@ func update() -> void:
 		if blocks[i] is Block and master_polymino.blocks[i] is Block:
 			blocks[i].board_position = master_polymino.blocks[i].board_position
 			blocks[i].material.set_shader_parameter("tint", get_shader_args(blocks[i]))
+			blocks[i].z_index = 1
 	for v in old: v.queue_free()
 	snap_down()
 	for v in blocks: if v is Block: add_child(v)
