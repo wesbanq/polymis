@@ -5,6 +5,7 @@ signal ActivateAbility(slot: int)
 signal UpdateBar(new: int)
 
 const _main_scene := preload("res://abil_ui.tscn")
+const _pm_padding := 1
 
 @onready var _game: GameMain = get_parent().get_parent()
 @onready var _main_ctrl := _main_scene.instantiate()
@@ -122,7 +123,7 @@ func _add_to_next(shape: PolyminoShape) -> void:
 		pm.destroy()
 	for p in _next_pms:
 		if p is Polymino:
-			p.move(Vector2i(4,0))
+			p.move(Vector2i(4 + _pm_padding, 0))
 	_next_pms.push_back(next_board._add_polymino(shape, Vector2i(0,0), false))
 
 func _add_to_hold(shape: PolyminoShape) -> void:
@@ -130,7 +131,8 @@ func _add_to_hold(shape: PolyminoShape) -> void:
 	_held_pm = hold_board._add_polymino(shape, Vector2i(0, 0), false)
 
 func _setup_next() -> void:
-	for i in _game.next_size: _add_to_next(_game.bag.peek(i))
+	for i in _game.next_size: 
+		_add_to_next(_game.bag.peek(i))
 
 func _ready() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -144,8 +146,12 @@ func _ready() -> void:
 		if _game.state == Enums.GAME_STATE.GAME: _setup_next()
 	)
 	_game.HeldPolymino.connect(func() -> void:
+		if not _held_pm:
+			_add_to_next(_game.bag.peek(2))
+		#resiasnsdfoinsdgoisdngvosDM
 		_add_to_hold(_game.board._held_polyminos[0])
 	)
+	_game.PolyminoPlaced.connect(func(_v): _add_to_next(_game.bag.peek(2)))
 	UpdateBar.connect(_update_bar)
 	ActivateAbility.connect(_set_active)
 	_game.PausedGame.connect(func(paused: bool) -> void:
@@ -164,12 +170,9 @@ func _ready() -> void:
 	
 	#comment to disable next
 	#is there even a need to make this resizable??
-	hold_board = Board.new(_game.hold_size * 4 + _game.hold_size - 1, 4)
-	next_board = Board.new(_game.next_size * 4 + _game.next_size - 1, 4)
+	hold_board = Board.new(_game.hold_size * 4 + _pm_padding * (_game.hold_size - 1), 4)
+	next_board = Board.new(_game.next_size * 4 + _pm_padding * (_game.next_size - 1), 4)
 	hold_board.size_flags_horizontal = Control.SIZE_SHRINK_END
 	next_board.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_board_ctrl.get_node("HBoxContainer/HoldContainer/CenterContainer").add_child(hold_board)
 	_board_ctrl.get_node("HBoxContainer2/NextContainer/CenterContainer").add_child(next_board)
-	#_next_pms.resize(_game.next_size)
-	_game.PolyminoPlaced.connect(func(_v): _add_to_next(_game.bag.peek(2)))
-	_setup_next()

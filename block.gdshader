@@ -4,7 +4,7 @@ uniform vec4 tint;
 
 void fragment() {
 	vec4 rgba = texture(TEXTURE, UV);
-	COLOR = vec4(rgba.r * tint.r, rgba.g * tint.g, rgba.b * tint.b, tint.a);
+	COLOR = vec4(rgba.r * tint.r, rgba.g * tint.g, rgba.b * tint.b, rgba.a);
 }
 
 //void light() {
