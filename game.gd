@@ -185,10 +185,15 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		board.ChangedAttr.connect(func(name: String, val: Variant) -> void: BoardChangedAttr.emit(name, val))
 		board.ChangedAttr.connect(_idk_what_to_call_this_function)
 		_game_board_container.add_child(board)
-		board.spawn_polymino(bag.next)
+		board.spawn_polymino(bag.get_next())
 		board.pm_left -= 1
 		board.HeldPolymino.connect(func() -> void: HeldPolymino.emit())
-		
+		board.PolyminoPlaced.connect(func(pm) -> void:
+			print(pm)
+			board.spawn_polymino(bag.get_next())
+			board.pm_left -= 1
+			PolyminoPlaced.emit(pm)
+		)
 		
 		#REMOVE L8R VVV dbg
 		#board.special_points = 99999
@@ -263,13 +268,6 @@ func _ready() -> void:
 	
 	get_viewport().size_changed.connect(func() -> void:
 		default_grid_size_px = int(get_viewport_rect().size.length() * .016)
-	)
-	
-	PolyminoPlaced.connect(func(pm) -> void:
-		print(pm)
-		#PolyminoPlaced.emit(pm)
-		board.spawn_polymino(bag.next)
-		board.pm_left -= 1
 	)
 	
 	Bg.activate()

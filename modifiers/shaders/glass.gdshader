@@ -12,6 +12,6 @@ void fragment() {
 	if (abs(UV.x - (UV.y - w())) <= band_width) {
 		COLOR = vec4(1., 1., 1., rgba.a);
 	} else {
-		COLOR = rgba * tint;
+		COLOR = vec4(rgba.r * tint.r, rgba.g * tint.g, rgba.b * tint.b, rgba.a);
 	}
 }

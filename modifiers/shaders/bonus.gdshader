@@ -9,5 +9,5 @@ float w() {
 
 void fragment() {
 	vec4 rgba = texture(TEXTURE, UV);
-	COLOR = vec4(tint.r * w() + et.r * (1.0-w()), tint.g * w() + et.g * (1.0-w()), tint.b * w() + et.b * (1.0-w()), tint.a);
+	COLOR = vec4(tint.r * w() + et.r * (1.0-w()), tint.g * w() + et.g * (1.0-w()), tint.b * w() + et.b * (1.0-w()), rgba.a);
 }

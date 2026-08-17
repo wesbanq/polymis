@@ -134,7 +134,7 @@ func hold_polymino() -> void:
 			_held_polyminos.append(_controlled_polymino.string)
 			_controlled_polymino.destroy()
 			_controlled_polymino = null
-			spawn_polymino(game.bag.next)
+			spawn_polymino(game.bag.get_next())
 		_hold_cooldown = true
 		HeldPolymino.emit()
 		print(_held_polyminos)
@@ -177,7 +177,7 @@ func _check_for_line_completions(pm: Polymino = null) -> void:
 		score_to_add = 0
 		#print(pm)
 		_check_for_line_completions()
-	if pm: game.PolyminoPlaced.emit(pm)
+	#if pm: game.PolyminoPlaced.emit(pm)
 
 func _toggle_visibility(paused: bool) -> void:
 	if _down_timer: _down_timer.paused = paused
