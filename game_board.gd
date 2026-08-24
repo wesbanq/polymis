@@ -1,11 +1,11 @@
 extends Board
 class_name GameBoard
 
-signal PolyminoPlaced(Polymino)
-signal Scored(int)
-signal LineFinished(int)
-signal SPAdd(int)
-signal BoardCleared(int)
+signal PolyminoPlaced(pm: Polymino)
+signal Scored(amount: int)
+signal LineFinished(amount: int)
+signal SPAdd(amount: int)
+signal BoardCleared(reason: int)
 signal ScoreChanged
 signal HeldPolymino
 
@@ -14,6 +14,11 @@ var _down_timer: Timer
 
 var _held_polyminos: Array[PolyminoShape]
 var _hold_cooldown: bool = false
+
+var paused_input := false:
+	set(v):
+		if _down_timer: _down_timer.paused = v
+		paused_input = v
 
 var score_to_add: int
 var score_current := 0:
@@ -44,14 +49,6 @@ var special_points := 0:
 @onready var hold_board: Board = Board.new(4*game.hold_size+max(game.hold_size-1, 0), 4)
 
 func spawn_polymino(ps: PolyminoShape, origin: Vector2i = Vector2i(int(width/2.0 - 2)+1, height-4)) -> void:
-	if pm_left <= 0:
-		pm_left += 1
-		if goal_reached:
-			board_finish(Enums.BOARD_FINISH.WIN_PM_LEFT)
-		else:
-			board_finish(Enums.BOARD_FINISH.LOSE_PM_LEFT)
-		return
-	
 	if _controlled_polymino != null:
 		push_error("spwaned pm while thers a pm active")
 		_controlled_polymino.destroy()
@@ -65,13 +62,11 @@ func spawn_polymino(ps: PolyminoShape, origin: Vector2i = Vector2i(int(width/2.0
 		return
 
 func board_finish(reason: Enums.BOARD_FINISH) -> void:
-	BoardCleared.emit(reason)
 	if _controlled_polymino != null:
 		_controlled_polymino.destroy()
 		_controlled_polymino = null
 	
-	if not Enums.is_fail_reason(reason):
-		game.pts += pts_added
+	BoardCleared.emit(reason)
 
 func move_rows_down(from_y: int, amount: int = 1) -> void:
 	for y in range(from_y, height-1):
@@ -87,10 +82,11 @@ func score_lines(lines: Array[int]) -> int:
 	var scored = 0
 	for y in lines:
 		for x in width:
-			scored += block_list[x][y].score()
-			#block_list[x][y] = null
+			var score: int = block_list[x][y].score()
+			#gradually speed up the flash time
+			block_list[x][y].flash_with_number(score)
+			scored += score
 		update_block_list()
-		#move_rows_down(y+1)
 	return scored
 
 func trigger(lines: Array[int], pre: bool) -> void:
@@ -123,18 +119,20 @@ func get_scoring_lines() -> Array[int]:
 	return lines
 
 func hold_polymino() -> void:
-	if not _hold_cooldown: 
+	#dont allow holding last piece unless switching betweenkojsgn
+	if not _hold_cooldown and (pm_left > 0 or (pm_left == 0 and _held_polyminos.size() > 0)): 
 		if _held_polyminos.size() >= game.hold_size:
 			var new_polymino = _held_polyminos.pop_front()
-			_held_polyminos.append(_controlled_polymino.string)
-			_controlled_polymino.destroy()
-			_controlled_polymino = null
+			if _controlled_polymino:
+				_held_polyminos.append(_controlled_polymino.string)
+				_controlled_polymino.destroy()
+				_controlled_polymino = null
 			spawn_polymino(new_polymino)
 		else:
 			_held_polyminos.append(_controlled_polymino.string)
 			_controlled_polymino.destroy()
 			_controlled_polymino = null
-			spawn_polymino(game.bag.get_next())
+			spawn_next_pm(game.bag)
 		_hold_cooldown = true
 		HeldPolymino.emit()
 		print(_held_polyminos)
@@ -145,6 +143,7 @@ func trigger_ability(idx: int) -> void:
 func setup_timer() -> void:
 	#print(falling_speed)
 	_down_timer.wait_time = falling_speed
+	_down_timer.paused = paused_input
 	_down_timer.start()
 
 func _check_for_line_completions(pm: Polymino = null) -> void:
@@ -180,7 +179,7 @@ func _check_for_line_completions(pm: Polymino = null) -> void:
 	#if pm: game.PolyminoPlaced.emit(pm)
 
 func _toggle_visibility(paused: bool) -> void:
-	if _down_timer: _down_timer.paused = paused
+	if _down_timer: _down_timer.paused = paused or paused_input
 	if _controlled_polymino:
 		for blk in _controlled_polymino.blocks:
 			if blk is Block:
@@ -201,6 +200,20 @@ func destroy_block_at(pos: Vector2i) -> void:
 		block_list[pos.x][pos.y] = null
 		if _controlled_polymino.ghost:
 			_controlled_polymino.ghost.UpdateGhost.emit()
+
+func spawn_next_pm(bag: Bag) -> void:
+	if pm_left <= 0:
+		if _held_polyminos.size() > 0:
+			spawn_polymino(_held_polyminos.pop_front())
+			HeldPolymino.emit()
+		else:
+			if goal_reached:
+				board_finish(Enums.BOARD_FINISH.WIN_PM_LEFT)
+			else:
+				board_finish(Enums.BOARD_FINISH.LOSE_PM_LEFT)
+	else:
+		spawn_polymino(bag.get_next())
+		pm_left -= 1
 
 func _ready() -> void:
 	#scale = Vector2(.5, .5) # remove l8r
@@ -228,13 +241,14 @@ func _ready() -> void:
 	setup_timer()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event.is_echo() or event.is_released() or not _controlled_polymino or game.paused: return
+	if event.is_echo() or \
+	event.is_released() or \
+	not _controlled_polymino or \
+	game.paused or paused_input: 
+		return
 	
 	if event.is_action("snap_down"):
 		_controlled_polymino.snap_down()
-		#var send := _controlled_polymino.duplicate()
-		#_check_for_line_completions(_controlled_polymino)
-		#PolyminoPlaced.emit(send)
 		PolyminoPlaced.emit(_controlled_polymino)
 	
 	if event.is_action("hold"):

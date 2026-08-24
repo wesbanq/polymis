@@ -6,6 +6,9 @@ extends Node
 @onready var style2: Theme = load("res://abil_text.tres")
 @onready var _size2: int = style2.default_font_size
 
+@onready var style3: Theme = load("res://score_text.tres")
+@onready var _size3: int = style3.default_font_size
+
 static var _viewport: Viewport
 const _BASE_RECT := Vector2i(1152, 648)
 
@@ -17,4 +20,5 @@ func _ready() -> void:
 	_viewport.size_changed.connect(func():
 		style.default_font_size = _get_new_size(_size)
 		style2.default_font_size = _get_new_size(_size2)
+		style3.default_font_size = _get_new_size(_size3)
 	)

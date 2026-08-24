@@ -7,7 +7,9 @@ var board_position: Vector2i
 var color: Color
 var score_amount: int = 100
 var modifier: Modifier: # null = no modifier
-	set(new): modifier = new; if modifier: modifier.block = self
+	set(new): 
+		modifier = new
+		if modifier: modifier.block = self
 
 var prototype_shape: PolyminoShape
 var prototype_shape_idx: int
@@ -77,6 +79,26 @@ func click_within_block(clk: Vector2) -> bool:
 	
 	return clk.x > left_x and clk.x < right_x and clk.y < up_y and clk.y > down_y
 
+#full scoring effect: block always highlights when scoring, mod highlights whtv extra sht
+#mb mandate that when flasing the board hgas 2 b paused?
+const TEXT_DISTANCE := 16
+func flash_with_number(number: int = 0, number_ms: float = 0.2, flash_time_ms: float = 0.08, flash_color: Color = Color(1, 1, 1)) -> void:
+	var txt: RichTextLabel = null
+	if number != 0:
+		txt = RichTextLabel.new()
+		txt.text = ("+" if number < 0 else "") + str(number)
+		add_child(txt)
+		var tween := txt.create_tween()
+		tween.tween_property(txt, "position", txt.position + Vector2(0, -TEXT_DISTANCE), number_ms)
+		tween.tween_callback(txt.queue_free)
+	
+	var tween := create_tween().bind_node(self).set_loops()
+	var original_tint: Vector4 = material.get_shader_parameter("tint")
+	tween.tween_property(self, "material/shader/tint", flash_color, flash_time_ms/2)
+	tween.tween_property(self, "material/shader/tint", original_tint, flash_time_ms/2)
+	
+	tween.kill()
+
 func _ready() -> void:
 	if board:
 		scale = Vector2(board.grid_size_px/32., board.grid_size_px/32.)
@@ -122,7 +144,6 @@ func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, id
 	else:
 		material = ShaderMaterial.new()
 		material.shader = default_shader_path
-		material.next_pass
 	
 	material.set_shader_parameter("tint", Vector4(color.r, color.g, color.b, 1))
 	#position = Vector2(board_position.x * board.grid_size_px + board_position.x * board.grid_padding_px, -board_position.y * board.grid_size_px - board_position.y * board.grid_padding_px)
