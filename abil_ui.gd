@@ -148,8 +148,12 @@ func _ready() -> void:
 	_game.HeldPolymino.connect(func() -> void:
 		if not _held_pm:
 			_add_to_next(_game.bag.peek(2))
-		#resiasnsdfoinsdgoisdngvosDM
-		_add_to_hold(_game.board._held_polyminos[0])
+		#assume the size is always 1 whtv, its not like im gonna actually change
+		#im not even sure why i made that a possility in the first place tbqh
+		if _game.board._held_polyminos.size() == 0:
+			if _held_pm: _held_pm.destroy()
+		else:
+			_add_to_hold(_game.board._held_polyminos[0])
 	)
 	_game.PolyminoPlaced.connect(func(_v): _add_to_next(_game.bag.peek(2)))
 	UpdateBar.connect(_update_bar)

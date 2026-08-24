@@ -185,28 +185,24 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		board.ChangedAttr.connect(func(name: String, val: Variant) -> void: BoardChangedAttr.emit(name, val))
 		board.ChangedAttr.connect(_idk_what_to_call_this_function)
 		_game_board_container.add_child(board)
-		board.spawn_polymino(bag.get_next())
-		board.pm_left -= 1
+		board.spawn_next_pm(bag)
 		board.HeldPolymino.connect(func() -> void: HeldPolymino.emit())
 		board.PolyminoPlaced.connect(func(pm) -> void:
 			print(pm)
-			board.spawn_polymino(bag.get_next())
-			board.pm_left -= 1
+			board.spawn_next_pm(bag)
 			PolyminoPlaced.emit(pm)
 		)
 		
 		#REMOVE L8R VVV dbg
 		#board.special_points = 99999
 		board.score_goal = 1
-		#board.pm_left = 4
+		board.pm_left = 3
 		#^^^
 		
 		state = Enums.GAME_STATE.GAME
 		NewBoard.emit(board)
 		reason = await board.BoardCleared
 		print("IT'S OVER. %s" % Enums.BOARD_FINISH.keys()[reason])
-		board.queue_free()
-		#GAMEPLAY END
 		
 		#check for loss
 		if Enums.is_fail_reason(reason):
@@ -214,6 +210,11 @@ func _game_loop() -> Enums.BOARD_FINISH:
 			abil_board.queue_free()
 			GameOver.emit()
 			break
+		else:
+			pts += board.pts_added
+		
+		board.queue_free()
+		#GAMEPLAY END
 		
 		#SHOP
 		shop = ShopBoard.new()

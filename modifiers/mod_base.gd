@@ -41,15 +41,15 @@ func new_parent(new: Block) -> void:
 
 #trigger functions run sequentially for blocks from left to right in a completed line
 
-#runs for each block before the trigger function
+##runs for each block before the trigger function
 func pre_trigger() -> void:
 	pass
 
-#runs for each block after all the lines have been triggered
+##runs for each block after all the lines have been triggered
 func post_trigger() -> void:
 	pass
 
-#returns the amount of extra score that should be added to the lines score
+##returns the amount of extra score that should be added to the lines score
 func trigger(_who: Variant = null) -> int:
 	return 0
 	#return 67

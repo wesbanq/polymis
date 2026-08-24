@@ -4,6 +4,7 @@
 [ext_resource type="Theme" uid="uid://bsow2mqhludnw" path="res://text.tres" id="1_iqr5w"]
 [ext_resource type="Texture2D" uid="uid://bj845u06847h7" path="res://cncl_button.png" id="2_4kkff"]
 [ext_resource type="Shader" uid="uid://cog161kx2x7lo" path="res://cont_button.gdshader" id="2_40uty"]
+[ext_resource type="Theme" uid="uid://fjjkmnicv8i2" path="res://score_text.tres" id="3_ptaqf"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_a0jxu"]
 shader = ExtResource("2_40uty")
@@ -25,20 +26,22 @@ grow_vertical = 2
 metadata/_custom_type_script = "uid://c8ufa4sct4jls"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1534165359]
-layout_mode = 0
-offset_right = 313.0
-offset_bottom = 340.0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.85
+anchor_bottom = 1.0
 
 [node name="PanelContainer" type="PanelContainer" parent="VBoxContainer" unique_id=214833021]
 layout_mode = 2
+size_flags_vertical = 3
 theme_override_styles/panel = ExtResource("1_a0jxu")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/PanelContainer" unique_id=1190295689]
 layout_mode = 2
-theme_override_constants/separation = 24
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/PanelContainer/VBoxContainer" unique_id=270979584]
 layout_mode = 2
+size_flags_vertical = 3
 
 [node name="RoundNum" type="RichTextLabel" parent="VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer" unique_id=1209741448]
 clip_contents = false
@@ -62,7 +65,8 @@ horizontal_alignment = 2
 
 [node name="ScoreGoal" type="RichTextLabel" parent="VBoxContainer/PanelContainer/VBoxContainer" unique_id=2144477279]
 layout_mode = 2
-theme = ExtResource("1_iqr5w")
+size_flags_vertical = 3
+theme = ExtResource("3_ptaqf")
 bbcode_enabled = true
 text = "00123456789"
 fit_content = true
@@ -70,7 +74,8 @@ scroll_active = false
 
 [node name="ScoreCurrent" type="RichTextLabel" parent="VBoxContainer/PanelContainer/VBoxContainer" unique_id=1973385827]
 layout_mode = 2
-theme = ExtResource("1_iqr5w")
+size_flags_vertical = 3
+theme = ExtResource("3_ptaqf")
 bbcode_enabled = true
 text = "00123456789"
 fit_content = true
@@ -78,19 +83,15 @@ scroll_active = false
 
 [node name="PtsAdded" type="RichTextLabel" parent="VBoxContainer/PanelContainer/VBoxContainer" unique_id=2072086283]
 layout_mode = 2
-theme = ExtResource("1_iqr5w")
+theme = ExtResource("3_ptaqf")
 bbcode_enabled = true
 text = "00123456789"
 fit_content = true
 scroll_active = false
 
-[node name="Spacer" type="Control" parent="VBoxContainer" unique_id=2036193259]
-layout_mode = 2
-size_flags_vertical = 3
-
 [node name="PanelContainer2" type="PanelContainer" parent="VBoxContainer" unique_id=1683275026]
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_vertical = 10
 theme_override_styles/panel = ExtResource("1_a0jxu")
 
 [node name="ContinueButton" type="TextureRect" parent="VBoxContainer/PanelContainer2" unique_id=1245485757]
@@ -98,6 +99,7 @@ material = SubResource("ShaderMaterial_a0jxu")
 layout_mode = 2
 texture = ExtResource("2_4kkff")
 expand_mode = 5
+stretch_mode = 4
 
 [node name="ColorRect" type="ColorRect" parent="VBoxContainer/PanelContainer2" unique_id=1557684911]
 material = SubResource("ShaderMaterial_a0jxu")
