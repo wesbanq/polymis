@@ -155,7 +155,7 @@ func _ready() -> void:
 		else:
 			_add_to_hold(_game.board._held_polyminos[0])
 	)
-	_game.PolyminoPlaced.connect(func(_v): _add_to_next(_game.bag.peek(2)))
+	_game.PolyminoPlaced.connect(func(): _add_to_next(_game.bag.peek(2)))
 	UpdateBar.connect(_update_bar)
 	ActivateAbility.connect(_set_active)
 	_game.PausedGame.connect(func(paused: bool) -> void:

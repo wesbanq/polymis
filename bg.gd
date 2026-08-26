@@ -50,6 +50,9 @@ var _bg_calc_mult: float
 		grid_scale = v
 		_update_scale()
 
+var _paused: bool = false
+var _saved_time: float = 0.
+
 func _update_scale() -> void:
 	if is_node_ready():
 		bg.material.set_shader_parameter("scale", 
@@ -86,6 +89,15 @@ func unactivate() -> void:
 	if not _active: return
 	_active = false
 	hide()
+
+#func tgl_pause() -> void:
+	#_paused = not _paused
+	#if _paused:
+		#bg.material.set_shader_parameter("saved_time", _saved_time)
+		#fg.material.set_shader_parameter("saved_time", _saved_time)
+	#else:
+		#bg.material.set_shader_parameter("saved_time", 0.)
+		#fg.material.set_shader_parameter("saved_time", 0.)
 
 func _ready() -> void:
 	unactivate()

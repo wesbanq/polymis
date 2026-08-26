@@ -57,6 +57,7 @@ func spawn_polymino(ps: PolyminoShape, origin: Vector2i = Vector2i(int(width/2.0
 		_controlled_polymino = null
 	
 	_controlled_polymino = _add_polymino(ps, origin)
+	_controlled_polymino.PolyminoPlaced.connect(_polymino_placed)
 	
 	#check gameover
 	if _controlled_polymino.check_collision(Vector2i(0, -1)):
@@ -150,17 +151,19 @@ func setup_timer() -> void:
 	_down_timer.paused = paused_input
 	_down_timer.start()
 
-func _check_for_line_completions(pm: Polymino = null) -> void:
-	if pm: 
-		for v in pm.get_children():
+func _remove_controlled_pm() -> void:
+	if _controlled_polymino:
+		for v in _controlled_polymino.get_children():
 			v.reparent(self)
-		
 		update_block_list()
-		if pm.ghost: pm.ghost.queue_free()
-		pm.queue_free()
+		
+		if _controlled_polymino.ghost: 
+			_controlled_polymino.ghost.queue_free()
+		_controlled_polymino.queue_free()
 		_controlled_polymino = null
 		_hold_cooldown = false
-	
+
+func _check_for_line_completions() -> void:
 	var lines := get_scoring_lines()
 	if lines.size() > 0:
 		paused_input += 1
@@ -193,6 +196,7 @@ func _check_for_line_completions(pm: Polymino = null) -> void:
 
 func _toggle_visibility(paused: bool) -> void:
 	if _down_timer: _down_timer.paused = paused or paused_input
+	
 	if _controlled_polymino:
 		for blk in _controlled_polymino.blocks:
 			if blk is Block:
@@ -219,11 +223,8 @@ func spawn_next_pm(bag: Bag) -> void:
 		if _held_polyminos.size() > 0:
 			spawn_polymino(_held_polyminos.pop_front())
 			HeldPolymino.emit()
-		else:
-			if goal_reached:
-				board_finish(Enums.BOARD_FINISH.WIN_PM_LEFT)
-			else:
-				board_finish(Enums.BOARD_FINISH.LOSE_PM_LEFT)
+		#else:
+			#push_error("no pm left.")
 	else:
 		spawn_polymino(bag.get_next())
 		pm_left -= 1
@@ -233,8 +234,6 @@ func _ready() -> void:
 	height += 4 # for spawning polyminos
 	update_block_list()
 	update_position()
-	
-	PolyminoPlaced.connect(_check_for_line_completions)
 	
 	_down_timer = Timer.new()
 	_down_timer.timeout.connect(func():
@@ -253,6 +252,20 @@ func _ready() -> void:
 	add_child(_down_timer)
 	setup_timer()
 
+func _check_loss() -> void:
+	if pm_left <= 0 and _held_polyminos.size() == 0:
+		if goal_reached:
+			board_finish(Enums.BOARD_FINISH.WIN_PM_LEFT)
+		else:
+			board_finish(Enums.BOARD_FINISH.LOSE_PM_LEFT)
+
+func _polymino_placed() -> void:
+	_remove_controlled_pm()
+	await _check_for_line_completions()
+	_check_loss()
+	
+	PolyminoPlaced.emit()
+
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_echo() or \
 	event.is_released() or \
@@ -262,7 +275,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	
 	if event.is_action("snap_down"):
 		_controlled_polymino.snap_down()
-		PolyminoPlaced.emit(_controlled_polymino)
+		_polymino_placed()
 	
 	if event.is_action("hold"):
 		hold_polymino()
