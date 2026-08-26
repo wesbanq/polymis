@@ -18,6 +18,7 @@ static func _get_new_size(size: int) -> float:
 func _ready() -> void:
 	_viewport = get_viewport()
 	_viewport.size_changed.connect(func():
+		@warning_ignore_start("narrowing_conversion")
 		style.default_font_size = _get_new_size(_size)
 		style2.default_font_size = _get_new_size(_size2)
 		style3.default_font_size = _get_new_size(_size3)

@@ -11,7 +11,6 @@ shader_parameter/direction = Vector2(0, 0)
 shader_parameter/offset = Vector2(0, 0)
 shader_parameter/speed = 0.0
 shader_parameter/scale = Vector2(0, 0)
-shader_parameter/blur_size = Vector2(0.5, 0.5)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_plmvg"]
 shader = ExtResource("2_e8j8q")
@@ -20,7 +19,6 @@ shader_parameter/direction = Vector2(1, 0)
 shader_parameter/offset = Vector2(0, 0)
 shader_parameter/speed = 0.0
 shader_parameter/scale = Vector2(0.25, 0.25)
-shader_parameter/blur_size = Vector2(4.39, 4.62)
 
 [node name="BG" type="Control" unique_id=686722756]
 texture_filter = 1
@@ -35,13 +33,14 @@ bg_dist_mult = 1.87
 speed = 0.745
 direction = Vector2(-0.5, -0.2)
 bg_pos_offset = Vector2(0.52, 3.065)
-grid_color = Color(0, 0.7, 0, 1)
-bg_color_darkened = 0.625
-bg_transparency = 0.185
+grid_color = Color(0.060000002, 0.25, 0.11066666, 1)
+bg_color_darkened = 0.53
+bg_transparency = 1.0
 bg_grid_scale_mult = 3.967
 grid_scale = 0.21
 
 [node name="Background" type="TextureRect" parent="." unique_id=2085770198]
+visibility_layer = 2
 texture_filter = 3
 material = SubResource("ShaderMaterial_36ycx")
 layout_mode = 1

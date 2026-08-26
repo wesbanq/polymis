@@ -73,5 +73,7 @@ func _init(master: Polymino = null) -> void:
 			#v.material.set_shader_parameter("tint", Vector4(1, 1, 1, .8))
 	
 	UpdateGhost.connect(update)
+	master_polymino.game_board.UpdatedBlockList.connect(update)
+	
 	#game_board.Scored.connect(func(_n): update())
 	master_polymino.game_board.add_child(self)

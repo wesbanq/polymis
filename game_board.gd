@@ -4,7 +4,6 @@ class_name GameBoard
 signal PolyminoPlaced(pm: Polymino)
 signal Scored(amount: int)
 signal LineFinished(amount: int)
-signal SPAdd(amount: int)
 signal BoardCleared(reason: int)
 signal ScoreChanged
 signal HeldPolymino
@@ -15,10 +14,10 @@ var _down_timer: Timer
 var _held_polyminos: Array[PolyminoShape]
 var _hold_cooldown: bool = false
 
-var paused_input := false:
+var paused_input := 0:
 	set(v):
-		if _down_timer: _down_timer.paused = v
 		paused_input = v
+		if _down_timer: _down_timer.paused = paused_input > 0
 
 var score_to_add: int
 var score_current := 0:
@@ -34,9 +33,12 @@ var score_current := 0:
 	set(v): score_goal = v; game.score_board.ChangeNumber.emit(score_goal, Enums.SCORE_BOARD.SCORE_GOAL)
 
 var pts_added: int:
-	get: return (score_current - score_goal)/1000
+	get: 
+		@warning_ignore("integer_division")
+		return (score_current - score_goal)/1000
 var goal_reached: bool:
-	get: return score_current >= score_goal
+	get: 
+		return score_current >= score_goal
 
 var difficulty: float = 1.0
 var falling_speed: float:
@@ -65,42 +67,44 @@ func board_finish(reason: Enums.BOARD_FINISH) -> void:
 	if _controlled_polymino != null:
 		_controlled_polymino.destroy()
 		_controlled_polymino = null
-	
 	BoardCleared.emit(reason)
 
+const SHIFT_LINE_DELAY := 0.4
 func move_rows_down(from_y: int, amount: int = 1) -> void:
 	for y in range(from_y, height-1):
 		for x in width:
-			#print("%s, x: %s, y: %s" % [block_list[x][y], x, y])
 			if block_list[x][y] is Block and not block_list[x][y-amount] is Block:
 				block_list[x][y].board_position.y -= amount
 				block_list[x][y-amount] = block_list[x][y]
 				block_list[x][y] = null
 	update_block_list()
 
-func score_lines(lines: Array[int]) -> int:
+func score_line(line: int) -> int:
 	var scored = 0
-	for y in lines:
-		for x in width:
-			var score: int = block_list[x][y].score()
-			#gradually speed up the flash time
-			block_list[x][y].flash_with_number(score)
-			scored += score
-		update_block_list()
+	
+	for x in width:
+		var score: int = block_list[x][line].score()
+		#gradually speed up the flash time
+		#block_list[x][y].flash_with_number(score)
+		await block_list[x][line].effect(score)
+		scored += score
+	update_block_list()
+	
 	return scored
 
-func trigger(lines: Array[int], pre: bool) -> void:
-	for y in lines:
-		for x in width:
-			if pre: block_list[x][y].pre_trigger()
-			else: block_list[x][y].post_trigger()
+func trigger(line: int, pre: bool) -> void:
+	for x in width:
+		if pre: block_list[x][line].pre_trigger()
+		else: block_list[x][line].post_trigger()
 
-func destroy_lines(lines: Array[int]) -> void:
-	for y in lines:
-		for x in width:
-			block_list[x][y].destroy()
-		update_block_list()
-		move_rows_down(y+1)
+func _destroy_line(line: int) -> void:
+	paused_input += 1
+	#for x in line: block_list[x][line].flash_with_number()
+	for x in width: block_list[x][line].destroy()
+	update_block_list()
+	await get_tree().create_timer(SHIFT_LINE_DELAY).timeout
+	move_rows_down(line+1)
+	paused_input -= 1
 
 func get_scoring_lines() -> Array[int]:
 	#var score := 0
@@ -157,26 +161,35 @@ func _check_for_line_completions(pm: Polymino = null) -> void:
 		_controlled_polymino = null
 		_hold_cooldown = false
 	
-		#game.PolyminoPlaced.emit(pm)
-	#score_to_add = get_score()
-	
 	var lines := get_scoring_lines()
 	if lines.size() > 0:
+		paused_input += 1
 		var sp_to_add := Enums.sp_from_lines(lines, self)
 		special_points += sp_to_add
 		print("Scored: %d" % lines.size())
-		trigger(lines, true)
-		score_to_add = score_lines(lines)
-		trigger(lines, false)
+		
+		for line in lines:
+			trigger(line, true)
+			score_to_add += await score_line(line)
+			trigger(line, false)
+			ScorePopup.create(
+				self, 
+				score_to_add, 
+				0.3, 
+				1.25, 
+				grid_size_px * (line-height+3),
+				-grid_size_px * (width-1) / 2.
+			)
+			for x in width-1: block_list[x][line].flash_with_number()
+			await block_list[width-1][line].flash_with_number()
+			_destroy_line(line)
 		
 		score_current += score_to_add
 		Scored.emit(score_to_add)
 		
-		destroy_lines(lines)
 		score_to_add = 0
-		#print(pm)
-		_check_for_line_completions()
-	#if pm: game.PolyminoPlaced.emit(pm)
+		paused_input -= 1
+		#await _check_for_line_completions()
 
 func _toggle_visibility(paused: bool) -> void:
 	if _down_timer: _down_timer.paused = paused or paused_input
@@ -244,7 +257,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_echo() or \
 	event.is_released() or \
 	not _controlled_polymino or \
-	game.paused or paused_input: 
+	game.paused or paused_input > 0: 
 		return
 	
 	if event.is_action("snap_down"):

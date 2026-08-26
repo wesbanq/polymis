@@ -26,6 +26,18 @@ func reshuffle(full: bool = false) -> void:
 	while _shuffled.size() <= next_size:
 		_shuffled.append_array(RNG.shuffle(shapes.duplicate()))
 
+#TODO
+func temp_remove(idx: int) -> void:
+	pass
+
+#TODO
+func temp_add(pm: PolyminoShape) -> void:
+	pass
+
+#TODO
+func undo_temp() -> void:
+	pass
+
 func get_next() -> PolyminoShape:
 	_ensure_size()
 	return _shuffled.pop_front()
