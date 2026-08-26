@@ -39,7 +39,7 @@ func post_trigger() -> void:
 		modifier.post_trigger()
 
 func score() -> int:
-	#possible bug gna leave it cuz it might lead to intnrsng tech
+	#possible bug where multiple triggers increase score_amount gna leave it cuz it might lead to intnrsng tech
 	if modifier: score_amount += modifier.trigger()
 	return score_amount
 	#fix VVV
@@ -53,6 +53,14 @@ func destroy() -> void:
 	queue_free()
 	#if board.block_list[board_position.x][board_position.y] == self:
 		#board.block_list[board_position.x][board_position.y] = null
+
+func effect(number: int = 0, number_s: float = 0.3, flash_time_s: float = 0.3, flash_color: Color = Color(1, 1, 1)) -> void:
+	if modifier:
+		await modifier.effect(number, number_s, flash_time_s, flash_color)
+	else:
+		board.paused_input += 1
+		await flash_with_number(number, number_s, flash_time_s, flash_color)
+		board.paused_input -= 1
 
 func _process(_delta: float) -> void:
 	if board:
@@ -81,23 +89,28 @@ func click_within_block(clk: Vector2) -> bool:
 
 #full scoring effect: block always highlights when scoring, mod highlights whtv extra sht
 #mb mandate that when flasing the board hgas 2 b paused?
-const TEXT_DISTANCE := 16
-func flash_with_number(number: int = 0, number_ms: float = 0.2, flash_time_ms: float = 0.08, flash_color: Color = Color(1, 1, 1)) -> void:
-	var txt: RichTextLabel = null
+func flash_with_number(
+	number: int = 0, 
+	number_s: float = 0.2, 
+	flash_time_s: float = 0.2, 
+	flash_color: Color = Color(1, 1, 1)
+	) -> void:
 	if number != 0:
-		txt = RichTextLabel.new()
-		txt.text = ("+" if number < 0 else "") + str(number)
-		add_child(txt)
-		var tween := txt.create_tween()
-		tween.tween_property(txt, "position", txt.position + Vector2(0, -TEXT_DISTANCE), number_ms)
-		tween.tween_callback(txt.queue_free)
+		ScorePopup.create(self, number, number_s, 1.1, board.grid_size_px * 2)
 	
-	var tween := create_tween().bind_node(self).set_loops()
+	var tween := create_tween()
 	var original_tint: Vector4 = material.get_shader_parameter("tint")
-	tween.tween_property(self, "material/shader/tint", flash_color, flash_time_ms/2)
-	tween.tween_property(self, "material/shader/tint", original_tint, flash_time_ms/2)
+	var clr := Vector4(flash_color.r, flash_color.g, flash_color.b, 1)
+	material.set_shader_parameter("override", true)
+	tween.tween_property(self, "material:shader_parameter/tint", clr, flash_time_s/2)
+	tween.tween_property(self, "material:shader_parameter/tint", original_tint, flash_time_s/2)
+	tween.tween_callback(func():
+		tween.kill()
+		material.set_shader_parameter("override", false)
+	)
+	tween.play()
 	
-	tween.kill()
+	await tween.finished
 
 func _ready() -> void:
 	if board:

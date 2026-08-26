@@ -10,7 +10,6 @@ signal GameOver
 signal HeldPolymino
 signal TriggeredAbility(int)
 signal BoardChangedAttr(String, Variant)
-signal SPAdd(int)
 signal PausedGame(bool)
 
 var max_pm := 20:
@@ -179,7 +178,6 @@ func trigger_ability(slot: int) -> void:
 func _game_loop() -> Enums.BOARD_FINISH:
 	var reason: Enums.BOARD_FINISH
 	while true:
-		#GAMEPLAY
 		board = GameBoard.new()
 		@warning_ignore("shadowed_variable_base_class")
 		board.ChangedAttr.connect(func(name: String, val: Variant) -> void: BoardChangedAttr.emit(name, val))
@@ -196,7 +194,7 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		#REMOVE L8R VVV dbg
 		#board.special_points = 99999
 		board.score_goal = 1
-		board.pm_left = 3
+		#board.pm_left = 3
 		#^^^
 		
 		state = Enums.GAME_STATE.GAME

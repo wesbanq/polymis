@@ -1,13 +1,13 @@
 shader_type canvas_item;
 
 uniform vec4 tint;
+uniform bool override = false;
 
 void fragment() {
 	vec4 rgba = texture(TEXTURE, UV);
-	COLOR = vec4(rgba.r * tint.r, rgba.g * tint.g, rgba.b * tint.b, rgba.a);
+	if (override) {
+		COLOR = vec4(tint.r, tint.g, tint.b, rgba.a);
+	} else {
+		COLOR = vec4(rgba.r * tint.r, rgba.g * tint.g, rgba.b * tint.b, rgba.a);
+	}
 }
-
-//void light() {
-//	// Called for every pixel for every light affecting the CanvasItem.
-//	// Uncomment to replace the default light processing function with this one.
-//}

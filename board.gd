@@ -6,6 +6,7 @@ class_name Board
 @warning_ignore("unused_signal")
 signal UpdatedBoardSize(size: Vector2)
 signal ChangedAttr(name: String, new: Variant)
+signal UpdatedBlockList
 
 @onready var game: GameMain = $/root/GameMain
 @onready var container := get_parent()
@@ -39,6 +40,7 @@ func update_block_list() -> void:
 		if not v.is_queued_for_deletion() and v is Block:
 			#print("%s, x: %s, y: %s" % [v, v.board_position.x, v.board_position.y])
 			block_list[v.board_position.x][v.board_position.y] = v
+	UpdatedBlockList.emit()
 
 func get_surrounding(pos: Vector2i) -> Array[Block]:
 	return [
