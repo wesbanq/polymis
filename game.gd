@@ -1,8 +1,7 @@
 extends Control
 class_name GameMain
 
-@warning_ignore("unused_signal")
-signal PolyminoPlaced(Polymino)
+signal PolyminoPlaced()
 signal NewBoard(Board)
 signal ChangedState(int)
 signal PtsChanged(int)
@@ -185,17 +184,15 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		_game_board_container.add_child(board)
 		board.spawn_next_pm(bag)
 		board.HeldPolymino.connect(func() -> void: HeldPolymino.emit())
-		board.PolyminoPlaced.connect(func(pm) -> void:
-			print(pm)
+		board.PolyminoPlaced.connect(func() -> void:
 			board.spawn_next_pm(bag)
-			PolyminoPlaced.emit(pm)
+			PolyminoPlaced.emit()
 		)
 		
 		#REMOVE L8R VVV dbg
 		#board.special_points = 99999
 		board.score_goal = 1
-		#board.pm_left = 3
-		#^^^
+		board.pm_left = 3
 		
 		state = Enums.GAME_STATE.GAME
 		NewBoard.emit(board)
@@ -232,7 +229,10 @@ func _game_loop() -> Enums.BOARD_FINISH:
 func _input(event: InputEvent) -> void:
 	if event.is_pressed() and not event.is_echo():
 		if event.is_action("pause_menu"):
-			if board is GameBoard: paused = not paused
+			if board: 
+				paused = not paused
+				Engine.time_scale = 0 if paused else 1
+				#Bg.tgl_pause()
 		
 		if event.is_action("toggle_fullscreen"):
 			if DisplayServer.window_get_mode() != DisplayServer.WINDOW_MODE_FULLSCREEN:
@@ -241,17 +241,6 @@ func _input(event: InputEvent) -> void:
 				DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
 func _ready() -> void:
-	#TODO
-	#shop buttons/labels react to how many pts u have
-	#combo system
-	#fix rotations
-	#decide if after running oout pf pms if theres held pms use them
-	#polish hold/nxt brd
-	#polish hover text
-	#save file;notekeep unknown data in the save for potential future mod support
-	#keybinds
-	#content
-	
 	bag = Bag.load_bag_resource(Enums.BAG_PATHS[0], self)
 	abils_a.resize(max_abil_a_size)
 	abils_a.fill(Enums.ABILITIES_ACTIVE["noabil"].new(self))

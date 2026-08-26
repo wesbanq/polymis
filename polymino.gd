@@ -14,6 +14,7 @@ var string: PolyminoShape
 var buyable := false
 var enable_ghost: bool = true
 
+signal PolyminoPlaced
 signal DownTimer
 
 func check_collision(direction: Vector2i, all: bool = true) -> bool:
@@ -93,14 +94,15 @@ func move(direction: Vector2i) -> void:
 		if ghost: ghost.UpdateGhost.emit()
 	elif not (abs(direction.x) > 0):
 		if ghost: ghost.queue_free()
-		game_board.PolyminoPlaced.emit(self)
+		PolyminoPlaced.emit()
 
 func snap_down():
 	@warning_ignore("shadowed_global_identifier")
 	var max = blocks[bottom2].board_position.y
 	for Z in bottom:
 		var v = blocks[Z]
-		var i = game_board.block_list[v.board_position.x].rfind_custom(func(e): return e is Block, v.board_position.y)
+		var i = game_board.block_list[v.board_position.x].rfind_custom(func(e): 
+			return e is Block, v.board_position.y)
 		if i == -1: continue
 		var n = v.board_position.y - game_board.block_list[v.board_position.x][i].board_position.y - 1
 		#print("%s, %s" % [i, n])

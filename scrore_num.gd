@@ -30,7 +30,7 @@ var max_digits: int = 11
 
 var _tweening_to := [-1, -1, -1, -1, -1]
 
-@onready var _game: Control = $"../.."
+@onready var _game: GameMain = $"../.."
 
 @warning_ignore("shadowed_global_identifier")
 static func zfill(str: String, n: int, text_color: Color = Color(1, 1, 1)) -> String:
@@ -82,6 +82,9 @@ func _get_d(w: bool) -> int:
 	_tweening_to[Enums.SCORE_BOARD.PTS_ADDED] - int(_pts_added_ctrl.text.rstrip("[/color]").split("]")[-1])
 
 func _process(delta: float) -> void:
+	#stop counting up when paused
+	#if _game.paused: return
+	
 	if not _continue_timer.is_stopped():
 		#TODO nisnifsa
 		#if _continue_timer.wait_time == continue_hold_time:
