@@ -56,15 +56,16 @@ func destroy() -> void:
 
 func effect(
 	number: int = 0, 
-	flash_time_s: float = 0.3, 
+	flash_time_s: float = 0.3,
+	pitch: float = 1.0,
 	number_s: float = 0.3, 
 	flash_color: Color = Color(1, 1, 1)
 	) -> void:
 	if modifier:
-		await modifier.effect(number, number_s, flash_time_s, flash_color)
+		await modifier.effect(number, flash_time_s, pitch, number_s, flash_color)
 	else:
 		board.paused_input += 1
-		await flash_with_number(number, number_s, flash_time_s, flash_color)
+		await flash_with_number(number, number_s, flash_time_s, flash_color, pitch)
 		board.paused_input -= 1
 
 func _process(_delta: float) -> void:
@@ -98,12 +99,13 @@ func flash_with_number(
 	number: int = 0, 
 	number_s: float = 0.2, 
 	flash_time_s: float = 0.2, 
-	flash_color: Color = Color(1, 1, 1)
+	flash_color: Color = Color(1, 1, 1),
+	pitch: float = 1.0
 	) -> void:
 	if number != 0:
 		ScorePopup.create(self, number, number_s, 1.1, board.grid_size_px * 2)
 		#formula
-		SFX.play_score()
+		SFX.play_score(pitch)
 	
 	var tween := create_tween()
 	var original_tint: Vector4 = material.get_shader_parameter("tint")
