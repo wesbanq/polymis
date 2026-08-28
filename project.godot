@@ -32,6 +32,7 @@ LimboConsole="*uid://dyxornv8vwibg"
 HoverManager="*res://hover_manager.gd"
 Formula="*res://formula.gd"
 FontSizer="*uid://3abe3k6wcjgo"
+SFX="*uid://dg74fa8wfq5k7"
 
 [editor]
 

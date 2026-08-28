@@ -54,7 +54,12 @@ func destroy() -> void:
 	#if board.block_list[board_position.x][board_position.y] == self:
 		#board.block_list[board_position.x][board_position.y] = null
 
-func effect(number: int = 0, number_s: float = 0.3, flash_time_s: float = 0.3, flash_color: Color = Color(1, 1, 1)) -> void:
+func effect(
+	number: int = 0, 
+	flash_time_s: float = 0.3, 
+	number_s: float = 0.3, 
+	flash_color: Color = Color(1, 1, 1)
+	) -> void:
 	if modifier:
 		await modifier.effect(number, number_s, flash_time_s, flash_color)
 	else:
@@ -97,13 +102,15 @@ func flash_with_number(
 	) -> void:
 	if number != 0:
 		ScorePopup.create(self, number, number_s, 1.1, board.grid_size_px * 2)
+		#formula
+		SFX.play_score()
 	
 	var tween := create_tween()
 	var original_tint: Vector4 = material.get_shader_parameter("tint")
 	var clr := Vector4(flash_color.r, flash_color.g, flash_color.b, 1)
 	material.set_shader_parameter("override", true)
-	tween.tween_property(self, "material:shader_parameter/tint", clr, flash_time_s/2)
-	tween.tween_property(self, "material:shader_parameter/tint", original_tint, flash_time_s/2)
+	tween.tween_property(self, "material:shader_parameter/tint", clr, flash_time_s/2.)
+	tween.tween_property(self, "material:shader_parameter/tint", original_tint, flash_time_s/2.)
 	tween.tween_callback(func():
 		tween.kill()
 		material.set_shader_parameter("override", false)

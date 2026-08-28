@@ -192,7 +192,7 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		#REMOVE L8R VVV dbg
 		#board.special_points = 99999
 		board.score_goal = 1
-		board.pm_left = 3
+		#board.pm_left = 3
 		
 		state = Enums.GAME_STATE.GAME
 		NewBoard.emit(board)
