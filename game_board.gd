@@ -80,14 +80,20 @@ func move_rows_down(from_y: int, amount: int = 1) -> void:
 				block_list[x][y] = null
 	update_block_list()
 
-func score_line(line: int) -> int:
+static func _calc_flash_time(line_complete: int, block: int) -> float:
+	var r := clampf(0.9 ** (3.05*(line_complete + block)), 0.05, 0.8)
+	#print("spd: ", r)
+	return r
+
+func score_line(line: int, completed: int = 0) -> int:
 	var scored = 0
 	
 	for x in width:
 		var score: int = block_list[x][line].score()
 		#gradually speed up the flash time
 		#block_list[x][y].flash_with_number(score)
-		await block_list[x][line].effect(score)
+		await block_list[x][line].effect(score, _calc_flash_time(completed, x))
+		print("asd")
 		scored += score
 	update_block_list()
 	
@@ -140,7 +146,6 @@ func hold_polymino() -> void:
 			spawn_next_pm(game.bag)
 		_hold_cooldown = true
 		HeldPolymino.emit()
-		print(_held_polyminos)
 
 func trigger_ability(idx: int) -> void:
 	game.trigger_ability(idx)
@@ -168,9 +173,9 @@ func _check_for_line_completions() -> void:
 	if lines.size() > 0:
 		paused_input += 1
 		var sp_to_add := Enums.sp_from_lines(lines, self)
-		special_points += sp_to_add
 		print("Scored: %d" % lines.size())
 		
+		var i := 0
 		for line in lines:
 			trigger(line, true)
 			score_to_add += await score_line(line)
@@ -183,14 +188,18 @@ func _check_for_line_completions() -> void:
 				grid_size_px * (line-height+3),
 				-grid_size_px * (width-1) / 2.
 			)
-			for x in width-1: block_list[x][line].flash_with_number()
-			await block_list[width-1][line].flash_with_number()
+			SFX.play_line()
+			for x in width-1: block_list[x][line].flash_with_number(0, _calc_flash_time(i, x))
+			await block_list[width-1][line].flash_with_number(0, _calc_flash_time(i, width-1))
 			_destroy_line(line)
+			
+			i += 1
 		
 		score_current += score_to_add
 		Scored.emit(score_to_add)
 		
 		score_to_add = 0
+		special_points += sp_to_add
 		paused_input -= 1
 		#await _check_for_line_completions()
 
@@ -230,7 +239,6 @@ func spawn_next_pm(bag: Bag) -> void:
 		pm_left -= 1
 
 func _ready() -> void:
-	#scale = Vector2(.5, .5) # remove l8r
 	height += 4 # for spawning polyminos
 	update_block_list()
 	update_position()
