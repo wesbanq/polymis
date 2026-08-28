@@ -204,6 +204,7 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		if Enums.is_fail_reason(reason):
 			score_board.queue_free()
 			abil_board.queue_free()
+			board.queue_free()
 			GameOver.emit()
 			break
 		else:

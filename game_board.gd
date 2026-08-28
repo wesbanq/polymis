@@ -87,11 +87,10 @@ static func _calc_flash_time(line_complete: int, block: int) -> float:
 
 @warning_ignore("shadowed_variable_base_class")
 static func _calc_pitch(line_complete: int, block: int, width: int) -> float:
-	@warning_ignore("integer_division", "static_called_on_instance")
 	var r2 := floori((block+line_complete*width)*.1)
 	@warning_ignore("static_called_on_instance")
 	var r := SFX.calc_pentatonic_pitch(r2)
-	print("spd: ", r, "ps: ", r2)
+	#print("spd: ", r, "ps: ", r2)
 	return r
 
 func score_line(line: int, completed: int) -> int:
