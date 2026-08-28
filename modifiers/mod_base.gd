@@ -39,9 +39,15 @@ func new_parent(new: Block) -> void:
 	#print(new, self)
 	block = new
 
-func effect(number: int = 0, number_s: float = 0.3, flash_time_s: float = 0.3, flash_color: Color = Color(1, 1, 1)) -> void:
+func effect(
+	number: int = 0, 
+	flash_time_s: float = 0.3,
+	pitch: float = 1.0,
+	number_s: float = 0.3, 
+	flash_color: Color = Color(1, 1, 1)
+	) -> void:
 	board.paused_input += 1
-	block.flash_with_number(number, number_s, flash_time_s, flash_color)
+	block.flash_with_number(number, number_s, flash_time_s, flash_color, pitch)
 	board.paused_input -= 1
 
 #trigger functions run sequentially for blocks from left to right in a completed line

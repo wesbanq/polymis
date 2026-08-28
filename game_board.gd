@@ -35,7 +35,7 @@ var score_current := 0:
 var pts_added: int:
 	get: 
 		@warning_ignore("integer_division")
-		return (score_current - score_goal)/1000
+		return (score_current - score_goal) / 1000
 var goal_reached: bool:
 	get: 
 		return score_current >= score_goal
@@ -70,7 +70,7 @@ func board_finish(reason: Enums.BOARD_FINISH) -> void:
 		_controlled_polymino = null
 	BoardCleared.emit(reason)
 
-const SHIFT_LINE_DELAY := 0.4
+const SHIFT_LINE_DELAY := 0.3
 func move_rows_down(from_y: int, amount: int = 1) -> void:
 	for y in range(from_y, height-1):
 		for x in width:
@@ -85,15 +85,23 @@ static func _calc_flash_time(line_complete: int, block: int) -> float:
 	#print("spd: ", r)
 	return r
 
-func score_line(line: int, completed: int = 0) -> int:
+@warning_ignore("shadowed_variable_base_class")
+static func _calc_pitch(line_complete: int, block: int, width: int) -> float:
+	@warning_ignore("integer_division", "static_called_on_instance")
+	var r2 := floori((block+line_complete*width)*.1)
+	@warning_ignore("static_called_on_instance")
+	var r := SFX.calc_pentatonic_pitch(r2)
+	print("spd: ", r, "ps: ", r2)
+	return r
+
+func score_line(line: int, completed: int) -> int:
 	var scored = 0
 	
 	for x in width:
 		var score: int = block_list[x][line].score()
 		#gradually speed up the flash time
 		#block_list[x][y].flash_with_number(score)
-		await block_list[x][line].effect(score, _calc_flash_time(completed, x))
-		print("asd")
+		await block_list[x][line].effect(score, _calc_flash_time(completed, x), _calc_pitch(completed, x, width))
 		scored += score
 	update_block_list()
 	
@@ -178,7 +186,7 @@ func _check_for_line_completions() -> void:
 		var i := 0
 		for line in lines:
 			trigger(line, true)
-			score_to_add += await score_line(line)
+			score_to_add += await score_line(line, i)
 			trigger(line, false)
 			ScorePopup.create(
 				self, 
