@@ -6,8 +6,7 @@ var board: ShopBoard
 var blk: Block
 var lable: GridLabel
 var grid_pos: Vector2i
-var active := true:
-	set(v): active = v; material.set_shader_parameter("active", active)
+var active := true
 
 var _hoverable: Hoverable
 
@@ -24,10 +23,18 @@ func click_within_block(clk: Vector2) -> bool:
 	
 	return clk.x < left_x and clk.x > right_x and clk.y > up_y and clk.y < down_y
 
-func tgl_visibility(visible_: bool) -> void:
+func set_visibility(visible_: bool) -> void:
 	visible = visible_
-	active = visible_
+	#active = visible_
 	lable.visible = visible_
+
+func set_active(v: bool) -> void:
+	active = v
+	lable.change_color(Enums.UI.NORMAL_TEXT if active else Enums.UI.UNAVAIL_TEXT)
+	material.set_shader_parameter("tint", Enums.UI.NORMAL_TEXT if active else Enums.UI.UNAVAIL_TEXT)
+
+func change_color(color: Color) -> void:
+	material.set_shader_parameter("tint", color)
 
 func destroy() -> void:
 	lable.queue_free()
@@ -55,8 +62,8 @@ func _init(img_path: String, brd: ShopBoard, g_p: Vector2i, act: bool = active) 
 	#position = Block.get_position_from_grid(board._pm_pos(0, false), board)
 	
 	material = ShaderMaterial.new()
-	material.shader = Enums.UI.INACTIVE_SHADER
-	material.set_shader_parameter("itint", Enums.UI.UNAVAIL_TEXT)
+	material.shader = preload("res://block.gdshader")
+	material.set_shader_parameter("tint", Enums.UI.NORMAL_TEXT)
 	size = Vector2(board.grid_size_px*2, board.grid_size_px*2)
 	active = act
 	

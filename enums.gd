@@ -52,6 +52,7 @@ const UI := {
 	"INACTIVE_ABIL_ICON_P": Color("#1e664c"),
 	"ACTIVE_ABIL_ICON_A": Color("#ffffff"),
 	"INACTIVE_ABIL_ICON_A": Color("#595959"),
+	"REMOVING_SHOP_BUTTON": Color("#ff0000"),
 	
 	"UNAVAIL_TEXT": Color("#595959"),
 	"NORMAL_TEXT": Color("#ffffff"),
