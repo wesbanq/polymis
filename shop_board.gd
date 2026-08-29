@@ -20,8 +20,9 @@ var _mod_chance: float = 15#:
 @onready var _avail_mod := Enums.read_folder_paths(mod_path)
 @onready var _mod_ranges: Array[float] = _get_ranges(_avail_mod)
 
-var selling: Array
-var extra_buttons: Array
+var selling: Array[SellingPM]
+var extra_buttons: Array[SellingButton]
+var removing: bool = false
 
 const mod_path := "res://modifiers/resources/"
 const shape_path := "res://polymino_shapes/"
@@ -32,6 +33,24 @@ var hover_args := {
 	Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL: ["Unlock ability", "Unlocks new ability."],
 	Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM: ["Remove polymino", "Remove your chosen polymino from your bag."],
 }
+
+class SellingPM:
+	var price: int
+	var lbl: GridLabel
+	var pm: Polymino
+	
+	func _init(pm_: Polymino, price_: int, lbl_: GridLabel) -> void:
+		price = price_
+		lbl = lbl_
+		pm = pm_
+
+class SellingButton:
+	var button: ShopButton
+	var price: int
+	
+	func _init(price_: int, button_: ShopButton) -> void:
+		button = button_
+		price = price_
 
 static func _get_ranges(weight_src: Array[Variant]) -> Array[float]:
 	var result: Array[float]
@@ -74,34 +93,33 @@ func _get_pm_price(ps: PolyminoShape) -> int:
 
 func purchase(idx: Enums.SHOP_EXTRA_BUTTONS, blks: bool = true) -> void:
 	if blks:
-		if game.pts >= selling[idx][1]:
-			game.pts -= selling[idx][1]
-			game.bag.add_to_bag(selling[idx][0].string.duplicate_deep(Resource.DEEP_DUPLICATE_ALL))
-			BoughtPolymino.emit(selling[idx][0].string)
-			selling[idx][0].destroy()
-			selling[idx][2].queue_free()
+		if game.pts >= selling[idx].price:
+			game.pts -= selling[idx].price
+			game.bag.add(selling[idx].pm.string.duplicate_deep(Resource.DEEP_DUPLICATE_ALL))
+			BoughtPolymino.emit(selling[idx].pm.string)
+			selling[idx].pm.destroy()
+			selling[idx].lbl.queue_free()
 			selling[idx] = null
 		else:
-			print("player has: %d, cost: %d" % [game.pts, selling[idx][1]])
+			print("player has: %d, cost: %d" % [game.pts, selling[idx].price])
 	else:
-		if game.pts >= extra_buttons[idx][0]:
-			game.pts -= extra_buttons[idx][0]
+		if game.pts >= extra_buttons[idx].price:
 			match idx:
 				Enums.SHOP_EXTRA_BUTTONS.ADD_PM:
 					game.max_pm += 1
 					IncreasedPMCount.emit()
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1].destroy()
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM].button.destroy()
 					
 					#if game.max_pm < game.max_max_pm:
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1] = ShopButton.new(
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM].price = Enums.shop_add_pm_price(game.round_num, game.max_pm)
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM].button = ShopButton.new(
 						"res://shop_add_pm_icon.png", 
 						self, 
 						_pm_pos(Enums.SHOP_EXTRA_BUTTONS.ADD_PM, false),
 						game.max_pm < game.max_max_pm
 					)
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1].hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1], Color(1,1,1), true)
-					add_child(extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1])
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM].button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1], Color(1,1,1), true)
+					add_child(extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM].button)
 					#sends signal to score board to change pm value
 					#TODO crutch pls fix (mb not idk)
 					if game.score_board:
@@ -109,55 +127,85 @@ func purchase(idx: Enums.SHOP_EXTRA_BUTTONS, blks: bool = true) -> void:
 				Enums.SHOP_EXTRA_BUTTONS.RESTOCK:
 					for i in selling.size():
 						if selling[i]:
-							selling[i][0].destroy()
-							selling[i][2].queue_free()
+							selling[i].pm.destroy()
+							selling[i].lbl.queue_free()
 					_stock_shop()
 					Restock.emit()
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1].destroy()
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1] = ShopButton.new(
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK].button.destroy()
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK].price = Enums.shop_add_pm_price(game.round_num, game.max_pm)
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK].button = ShopButton.new(
 						"res://restock.png", 
 						self, 
 						_pm_pos(Enums.SHOP_EXTRA_BUTTONS.RESTOCK, false)
 					)
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1].hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1], Color(1,1,1), true)
-					add_child(extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1])
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK].button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1], Color(1,1,1), true)
+					add_child(extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK].button)
 				Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL:
 					game.unlocked_abil_a += 1
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1].destroy()
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL].button.destroy()
 					#if game.unlocked_abil_a < game.max_abil_a_size-1:
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][0] = Enums.shop_add_pm_price(game.round_num, game.max_pm)
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1] = ShopButton.new(
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL].price = Enums.shop_add_pm_price(game.round_num, game.max_pm)
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL].button = ShopButton.new(
 						"res://shop_unlock_abil.png", 
 						self,
 						_pm_pos(Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL, false), 
 						game.unlocked_abil_a < game.max_abil_a_size-1
 					)
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1].hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1], Color(1,1,1), true)
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL].button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1], Color(1,1,1), true)
 					BoughtAbility.emit()
-					add_child(extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1])
+					add_child(extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL].button)
 				Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM:
-					pass
+					if game.bag.size() == 1: 
+						removing = false
+						return
+					if removing:
+						extra_buttons[idx].button.change_color(Enums.UI.NORMAL_TEXT)
+					else:
+						extra_buttons[idx].button.change_color(Enums.UI.REMOVING_SHOP_BUTTON)
+					removing = not removing
+					return
 				Enums.SHOP_EXTRA_BUTTONS.UNLOCK_PASSIVE_ABIL:
 					pass
 				_:
-					push_error("unknodwn: %d" % idx)
+					push_error("unknodwn: ", idx)
+			
+			game.pts -= extra_buttons[idx].price
 		else:
-			print("player has: %d, cost: %d" % [game.pts, selling[idx][1]])
+			print("player has: %d, cost: %d" % [game.pts, selling[idx].price])
+
+static func _check_inside_pm(pos: Vector2, pm: Polymino) -> bool:
+	for blk in pm.blocks:
+		if blk is Block and blk.click_within_block(pos):
+			return true
+	return false
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.double_click and event.pressed and event.button_index == 1:
-		var world_pos = (get_viewport().get_screen_transform() * get_viewport().get_canvas_transform()).affine_inverse() * event.position
+		var world_pos: Vector2 = (get_viewport().get_screen_transform() * get_viewport().get_canvas_transform()).affine_inverse() * event.position
 		for i in _selling_amount:
 			var pm = selling[i]
-			if pm is Array and pm[0] is Polymino:
-				for blk in pm[0].blocks:
-					if blk is Block and blk.click_within_block(world_pos):
-						purchase(i)
+			if pm and _check_inside_pm(world_pos, pm.pm):
+				purchase(i)
+				return
+		
+		if removing:
+			if game.abil_board._next_pms:
+				for pm in game.abil_board._next_pms:
+					if game.pts >= extra_buttons[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM].price and _check_inside_pm(world_pos, pm):
+						game.bag.remove(pm.string)
+						game.pts -= extra_buttons[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM].price
+						purchase(Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM, false)
 						return
+			if game.abil_board._held_pm:
+				if game.pts >= extra_buttons[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM].price and _check_inside_pm(world_pos, game.abil_board._held_pm):
+					game.bag.remove(game.abil_board._held_pm.string)
+					game.held_polyminos.erase(game.abil_board._held_pm.string)
+					game.pts -= extra_buttons[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM].price
+					purchase(Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM, false)
+					return
 		
 		for key in Enums.SHOP_EXTRA_BUTTONS:
-			if extra_buttons[Enums.SHOP_EXTRA_BUTTONS[key]] and extra_buttons[Enums.SHOP_EXTRA_BUTTONS[key]][1].click_within_block(world_pos):
+			if extra_buttons[Enums.SHOP_EXTRA_BUTTONS[key]] and extra_buttons[Enums.SHOP_EXTRA_BUTTONS[key]].button.click_within_block(world_pos):
 				purchase(Enums.SHOP_EXTRA_BUTTONS[key], false)
 
 func _pm_pos(i: int, a: bool = true) -> Vector2i:
@@ -181,52 +229,64 @@ func _stock_shop() -> void:
 		var lbl := GridLabel.new(_pm_pos(i) + Vector2i(0, -1), str(price), self)
 		add_child(lbl)
 		
-		selling.append([pm, price, lbl])
+		selling.append(SellingPM.new(pm, price, lbl))
 
 func _tgl_visibility(paused: bool) -> void:
 	for pm in selling:
-		if pm and pm[0] and pm[2]:
-			for blk in pm[0].blocks:
+		if pm:
+			for blk in pm.pm.blocks:
 				if blk is Block:
 					if blk._hoverable: blk._hoverable.temp_hidden = paused
 					blk.visible = not paused
-			pm[2].visible = not paused
+			pm.lbl.visible = not paused
 	
 	for arr in extra_buttons:
-		if arr and arr.size() >= 2 and arr[1] is ShopButton:
-			arr[1].tgl_visibility(not paused)
+		if arr:
+			arr.button.set_visibility(not paused)
 		
+
+func _check_eligible(_score: int) -> void:
+	for button in extra_buttons:
+		if button:
+			button.button.set_active(button.price < game.pts)
+	if game.bag.size() == 1:
+		extra_buttons[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM].button.set_active(false)
+	for pm in selling:
+		if pm:
+			if pm.price > game.pts:
+				pm.lbl.change_color(Enums.UI.UNAVAIL_TEXT)
+			else:
+				pm.lbl.change_color(Enums.UI.NORMAL_TEXT)
 
 func _ready() -> void:
 	_stock_shop()
 	extra_buttons.resize(5)
 	
 	var add_pm_button := ShopButton.new("res://shop_add_pm_icon.png", self, _pm_pos(0, false), game.max_pm < game.max_max_pm)
-	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM] = [Enums.shop_add_pm_price(game.round_num, game.max_pm), add_pm_button]
+	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM] = SellingButton.new(Enums.shop_add_pm_price(game.round_num, game.max_pm), add_pm_button)
 	add_pm_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1], Color(1,1,1), true)
 	add_child(add_pm_button)
 	
 	var restock_button := ShopButton.new("res://restock.png", self, _pm_pos(1, false))
 	restock_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1], Color(1,1,1), true)
-	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK] = [Enums.shop_restock_price(game.round_num, game.max_pm), restock_button]
+	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK] = SellingButton.new(Enums.shop_restock_price(game.round_num, game.max_pm), restock_button)
 	add_child(restock_button)
 	
 	#if game.unlocked_abil_a < game.max_abil_a_size-1:
 	var abil_unlock_button := ShopButton.new("res://shop_unlock_abil.png", self, _pm_pos(2, false))
 	abil_unlock_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1], Color(1,1,1), true)
-	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL] = [Enums.shop_restock_price(game.round_num, game.max_pm), abil_unlock_button]
+	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL] = SellingButton.new(Enums.shop_restock_price(game.round_num, game.max_pm), abil_unlock_button)
 	add_child(abil_unlock_button)
 	
 	var pm_remove_button := ShopButton.new("res://shop_remove_pm_icon.png", self, _pm_pos(3, false))
 	pm_remove_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM][1], Color(1,1,1), true)
-	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM] = [Enums.shop_restock_price(game.round_num, game.max_pm), pm_remove_button]
+	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM] = SellingButton.new(Enums.shop_restock_price(game.round_num, game.max_pm), pm_remove_button)
 	add_child(pm_remove_button)
 	
-	game.score_board.Continue.connect(func():
-		BoardClear.emit()
-	)
+	game.score_board.Continue.connect(BoardClear.emit)
 	game.score_board.setup_score_board(self)
 	game.PausedGame.connect(_tgl_visibility)
+	game.PtsChanged.connect(_check_eligible)
 	
 	update_block_list()
 	update_position()

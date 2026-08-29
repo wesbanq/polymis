@@ -61,7 +61,7 @@ var state: Enums.GAME_STATE = Enums.GAME_STATE.SHOP:
 @export var inf_pm := false
 
 func give_mod(x: int, y: int, mod: Modifier) -> void:
-	if board.block_list[x][y] is Block:
+	if board and board.block_list[x][y] is Block:
 		board.block_list[x][y].modifier = mod
 	else:
 		push_error("couldnt find block at position (x:%d, y:%d)" % [x, y])
@@ -105,6 +105,7 @@ func set_mod(x: int, y: int, mod: String) -> void:
 			LimboConsole.info("No block found at position (%d, %d)." % [x, y])
 
 func make_line() -> void:
+	if not board: return
 	for i in board.width:
 		if board.block_list[i][0] is not Block:
 			var b = Block.new(BlockInfo.new(), Vector2i(i, 0), board, null)
@@ -154,8 +155,8 @@ func register_commands() -> void:
 	LimboConsole.register_command(func(v: int) -> void: if board: board.special_points = v; LimboConsole.info("Set the SP counter to %d." % v), "ssp", "Sets the SP counter to <arg0>.")
 	LimboConsole.register_command(func(v: String) -> void: RNG.set_seed(v), "seed", "Sets the game's seed to <arg0>.")
 	LimboConsole.register_command(func() -> void: inf_pm = not inf_pm, "infpm", "Gives infinite polymnos.")
-	LimboConsole.register_command(func(n: int) -> void: if board is GameBoard: board.pm_left += n, "apm", "Adds <arg0> to the current polymino left count.")
-	LimboConsole.register_command(func(n: int) -> void: if board is GameBoard: board.score_current += n, "score", "Adds <arg0> to the score count.")
+	LimboConsole.register_command(func(n: int) -> void: if board and board is GameBoard: board.pm_left += n, "apm", "Adds <arg0> to the current polymino left count.")
+	LimboConsole.register_command(func(n: int) -> void: if board and board is GameBoard: board.score_current += n, "score", "Adds <arg0> to the score count.")
 	LimboConsole.register_command(func(n: int) -> void: unlocked_abil_a = n, "unlock", "Unlocks ability")
 
 @warning_ignore("shadowed_variable_base_class")

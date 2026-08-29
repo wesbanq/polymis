@@ -3,7 +3,6 @@ class_name Bag
 
 @export var shapes: Array[PolyminoShape]
 
-var next_size: int = 3
 var _shuffled: Array[PolyminoShape]
 
 signal BagUpdated
@@ -17,8 +16,26 @@ func _ensure_size(n: int) -> void:
 		print("reshuf")
 		BagUpdated.emit()
 
-func add_to_bag(ps: PolyminoShape) -> void:
+func add(ps: PolyminoShape) -> void:
 	shapes.append(ps)
+	BagUpdated.emit()
+
+func size() -> int:
+	return shapes.size()
+
+static func _erase(arr: Array[PolyminoShape], ps: PolyminoShape) -> int:
+	var removed := 0
+	var idx := arr.find(ps)
+	while idx != -1:
+		arr.remove_at(idx)
+		removed += 1
+		idx = arr.find(ps)
+	return removed
+
+func remove(ps: PolyminoShape) -> void:
+	_erase(shapes, ps)
+	var n := _erase(_shuffled, ps)
+	_ensure_size(n)
 	BagUpdated.emit()
 
 func peek(n: int = 0) -> PolyminoShape:
@@ -35,7 +52,8 @@ func get_next_n(n: int) -> Array[PolyminoShape]:
 	_ensure_size(n)
 	return _shuffled.slice(0, n)
 
-func reshuffle(full: bool = false, n: int = next_size) -> void:
+const _NEXT_SIZE := 3
+func reshuffle(full: bool = false, n: int = _NEXT_SIZE) -> void:
 	if full: _shuffled = []
 	while _shuffled.size() <= n:
 		_shuffled.append_array(RNG.shuffle(shapes.duplicate()))
