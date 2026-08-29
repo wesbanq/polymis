@@ -117,45 +117,46 @@ func _changed_attr_wrapper(name: String, val: Variant) -> void:
 			hold_board.grid_size_px = val
 			_rescale_bar()
 
-func _add_to_next(shape: PolyminoShape) -> void:
-	if _next_pms.size() == _game.next_size:
-		var pm: Polymino = _next_pms.pop_front()
+#func _add_to_next(shape: PolyminoShape) -> void:
+	#if _next_pms.size() == _game.next_size:
+		#var pm: Polymino = _next_pms.pop_front()
+		#pm.destroy()
+	#for p in _next_pms:
+		#if p is Polymino:
+			#p.move(Vector2i(PolyminoShape.POLYMINO_SIZE + _pm_padding, 0))
+	#_next_pms.push_back(next_board._add_polymino(shape, Vector2i(0,0), false))
+
+func _update_next() -> void:
+	var nxt := _game.bag.get_next_n(_game.next_size)
+	nxt.reverse()
+	for pm in _next_pms:
 		pm.destroy()
-	for p in _next_pms:
-		if p is Polymino:
-			p.move(Vector2i(4 + _pm_padding, 0))
-	_next_pms.push_back(next_board._add_polymino(shape, Vector2i(0,0), false))
+	_next_pms = []
+	for i in _game.next_size:
+		var pm := nxt[i]
+		_next_pms.push_back(next_board._add_polymino(pm, Vector2i(i*PolyminoShape.POLYMINO_SIZE + i*_pm_padding, 0), false))
 
 func _add_to_hold(shape: PolyminoShape) -> void:
 	if _held_pm: _held_pm.destroy()
 	_held_pm = hold_board._add_polymino(shape, Vector2i(0, 0), false)
 
-func _setup_next() -> void:
-	for i in _game.next_size: 
-		_add_to_next(_game.bag.peek(i))
-
 func _ready() -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	
 	_game.BoardChangedAttr.connect(_changed_attr_wrapper)
-	_game.NewBoard.connect(func(brd: Board) -> void:
-		_progress = 0
-		_rescale_bar(brd)
-		while _next_pms.size() > 0: _next_pms.pop_front().destroy()
-		if _held_pm: _held_pm.destroy(); _held_pm = null
-		if _game.state == Enums.GAME_STATE.GAME: _setup_next()
-	)
 	_game.HeldPolymino.connect(func() -> void:
 		if not _held_pm:
-			_add_to_next(_game.bag.peek(2))
+			_update_next()
 		#assume the size is always 1 whtv, its not like im gonna actually change
 		#im not even sure why i made that a possility in the first place tbqh
-		if _game.board._held_polyminos.size() == 0:
+		if _game.held_polyminos.size() == 0:
 			if _held_pm: _held_pm.destroy()
 		else:
-			_add_to_hold(_game.board._held_polyminos[0])
+			_add_to_hold(_game.held_polyminos[0])
 	)
-	_game.PolyminoPlaced.connect(func(): _add_to_next(_game.bag.peek(2)))
+	#_game.bag.BagUpdated.connect(func(): _add_to_next(_game.bag.peek(2)))
+	_game.PolyminoPlaced.connect(_update_next)
+	_game.NewBoard.connect(func(_v): _update_next())
 	UpdateBar.connect(_update_bar)
 	ActivateAbility.connect(_set_active)
 	_game.PausedGame.connect(func(paused: bool) -> void:
@@ -164,6 +165,8 @@ func _ready() -> void:
 				for blk in pm.blocks:
 					if blk is Block:
 						blk.visible = not paused
+						if blk._hoverable: blk._hoverable.temp_hidden = paused
+
 		if _held_pm:
 			for blk in _held_pm.blocks:
 				if blk is Block:

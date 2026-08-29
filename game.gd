@@ -30,6 +30,8 @@ var bought_abils_p := 0
 var hold_size: int = 1
 var next_size: int = 3
 
+var held_polyminos: Array[PolyminoShape] = []
+
 @onready var default_grid_size_px := int(get_viewport_rect().size.length() * 0.017):
 	set(v): default_grid_size_px = v; set_grid_scale(v)
 var bag: Bag
@@ -222,16 +224,18 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		shop.ChangedAttr.connect(func(name: String, val: Variant) -> void: BoardChangedAttr.emit(name, val))
 		await shop.BoardClear
 		shop.queue_free()
-		bag.reshuffle(true)
 		#SHOP END
 		
 		round_num += 1
 	return reason
 
+func _prep_loop() -> void:
+	bag.reshuffle(true)
+
 func _input(event: InputEvent) -> void:
 	if event.is_pressed() and not event.is_echo():
 		if event.is_action("pause_menu"):
-			if board: 
+			if board or shop: 
 				paused = not paused
 				Engine.time_scale = 0 if paused else 1
 				#Bg.tgl_pause()
@@ -263,4 +267,5 @@ func _ready() -> void:
 	Bg.activate()
 	#to trigger auto scaling (mb fix idk it works so who gives a shit)
 	get_viewport().size_changed.emit()
+	_prep_loop()
 	_game_loop()

@@ -10,8 +10,6 @@ signal HeldPolymino
 
 var _controlled_polymino: Polymino
 var _down_timer: Timer
-
-var _held_polyminos: Array[PolyminoShape]
 var _hold_cooldown: bool = false
 
 var paused_input := 0:
@@ -81,7 +79,7 @@ func move_rows_down(from_y: int, amount: int = 1) -> void:
 	update_block_list()
 
 static func _calc_flash_time(line_complete: int, block: int) -> float:
-	var r := clampf(0.9 ** (3.05*(line_complete + block)), 0.05, 0.8)
+	var r := clampf(0.9 ** (3.05*(line_complete + block)), 0.05, 0.5)
 	#print("spd: ", r)
 	return r
 
@@ -93,14 +91,15 @@ static func _calc_pitch(line_complete: int, block: int, width: int) -> float:
 	#print("spd: ", r, "ps: ", r2)
 	return r
 
-func score_line(line: int, completed: int) -> int:
+func score_line(line: int, completed: int, play_effect: bool) -> int:
 	var scored = 0
 	
 	for x in width:
 		var score: int = block_list[x][line].score()
 		#gradually speed up the flash time
 		#block_list[x][y].flash_with_number(score)
-		await block_list[x][line].effect(score, _calc_flash_time(completed, x), _calc_pitch(completed, x, width))
+		if play_effect:
+			await block_list[x][line].effect(score, _calc_flash_time(completed, x), _calc_pitch(completed, x, width))
 		scored += score
 	update_block_list()
 	
@@ -138,16 +137,16 @@ func get_scoring_lines() -> Array[int]:
 
 func hold_polymino() -> void:
 	#dont allow holding last piece unless switching betweenkojsgn
-	if not _hold_cooldown and (pm_left > 0 or (pm_left == 0 and _held_polyminos.size() > 0)): 
-		if _held_polyminos.size() >= game.hold_size:
-			var new_polymino = _held_polyminos.pop_front()
+	if not _hold_cooldown and (pm_left > 0 or (pm_left == 0 and game.held_polyminos.size() > 0)): 
+		if game.held_polyminos.size() >= game.hold_size:
+			var new_polymino = game.held_polyminos.pop_front()
 			if _controlled_polymino:
-				_held_polyminos.append(_controlled_polymino.string)
+				game.held_polyminos.append(_controlled_polymino.string)
 				_controlled_polymino.destroy()
 				_controlled_polymino = null
 			spawn_polymino(new_polymino)
 		else:
-			_held_polyminos.append(_controlled_polymino.string)
+			game.held_polyminos.append(_controlled_polymino.string)
 			_controlled_polymino.destroy()
 			_controlled_polymino = null
 			spawn_next_pm(game.bag)
@@ -184,8 +183,14 @@ func _check_for_line_completions() -> void:
 		
 		var i := 0
 		for line in lines:
+			var eff := false
+			for x in width: 
+				if block_list[x][line].modifier:
+					eff = true
+					break
+			
 			trigger(line, true)
-			score_to_add += await score_line(line, i)
+			score_to_add += await score_line(line, i, eff)
 			trigger(line, false)
 			ScorePopup.create(
 				self, 
@@ -196,8 +201,9 @@ func _check_for_line_completions() -> void:
 				-grid_size_px * (width-1) / 2.
 			)
 			SFX.play_line()
-			for x in width-1: block_list[x][line].flash_with_number(0, _calc_flash_time(i, x))
-			await block_list[width-1][line].flash_with_number(0, _calc_flash_time(i, width-1))
+			for x in width: 
+				block_list[x][line].flash_with_number(0, _calc_flash_time(i, x))
+			#await block_list[width-1][line].flash_with_number(0, _calc_flash_time(i, width-1))
 			_destroy_line(line)
 			
 			i += 1
@@ -236,8 +242,8 @@ func destroy_block_at(pos: Vector2i) -> void:
 
 func spawn_next_pm(bag: Bag) -> void:
 	if pm_left <= 0:
-		if _held_polyminos.size() > 0:
-			spawn_polymino(_held_polyminos.pop_front())
+		if game.held_polyminos.size() > 0:
+			spawn_polymino(game.held_polyminos.pop_front())
 			HeldPolymino.emit()
 		#else:
 			#push_error("no pm left.")
@@ -268,7 +274,7 @@ func _ready() -> void:
 	setup_timer()
 
 func _check_loss() -> void:
-	if pm_left <= 0 and _held_polyminos.size() == 0:
+	if pm_left <= 0 and game.held_polyminos.size() == 0:
 		if goal_reached:
 			board_finish(Enums.BOARD_FINISH.WIN_PM_LEFT)
 		else:
