@@ -24,6 +24,11 @@ func click_within_block(clk: Vector2) -> bool:
 	
 	return clk.x < left_x and clk.x > right_x and clk.y > up_y and clk.y < down_y
 
+func tgl_visibility(visible_: bool) -> void:
+	visible = visible_
+	active = visible_
+	lable.visible = visible_
+
 func destroy() -> void:
 	lable.queue_free()
 	_hoverable.force_hide()

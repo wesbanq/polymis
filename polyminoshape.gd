@@ -5,6 +5,8 @@ class_name PolyminoShape
 @export var shape_string: Array[BlockInfo] = [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 @export var rotation_center: Enums.ROTATION_CENTER = Enums.ROTATION_CENTER.FOUR
 
+const POLYMINO_SIZE := 4
+
 var bottom2: int:
 	get: return bottom2 if bottom2 else calculate_bottom().min()
 var bottom: Array[int]:

@@ -183,13 +183,19 @@ func _stock_shop() -> void:
 		
 		selling.append([pm, price, lbl])
 
-func _toggle_visibility(paused: bool) -> void:
+func _tgl_visibility(paused: bool) -> void:
 	for pm in selling:
-		if pm and pm[0]:
+		if pm and pm[0] and pm[2]:
 			for blk in pm[0].blocks:
 				if blk is Block:
 					if blk._hoverable: blk._hoverable.temp_hidden = paused
 					blk.visible = not paused
+			pm[2].visible = not paused
+	
+	for arr in extra_buttons:
+		if arr and arr.size() >= 2 and arr[1] is ShopButton:
+			arr[1].tgl_visibility(not paused)
+		
 
 func _ready() -> void:
 	_stock_shop()
@@ -220,7 +226,7 @@ func _ready() -> void:
 		BoardClear.emit()
 	)
 	game.score_board.setup_score_board(self)
-	game.PausedGame.connect(_toggle_visibility)
+	game.PausedGame.connect(_tgl_visibility)
 	
 	update_block_list()
 	update_position()
