@@ -11,15 +11,15 @@ const _pm_padding := 1
 @onready var _main_ctrl := _main_scene.instantiate()
 
 @warning_ignore("unused_private_class_variable")
-@onready var _sp_bar_ctrl := _main_ctrl.get_node("HBoxContainer/Bar")
-@onready var _sp_bar_lbl := _main_ctrl.get_node("HBoxContainer/Bar/RichTextLabel")
-@onready var _sp_bar_blks := _sp_bar_ctrl.get_node("Control/VBoxContainer")
-@onready var _a_abils_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/ActiveAbilsContainer/ActiveAbils")
+@onready var _sp_bar_ctrl := _main_ctrl.get_node("BoxContainer/HBoxContainer/HBoxContainer/Bar")
+@onready var _sp_bar_lbl := _main_ctrl.get_node("BoxContainer/HBoxContainer/HBoxContainer/RichTextLabel")
+@onready var _sp_bar_blks: VBoxContainer = _sp_bar_ctrl.get_node("Control/VBoxContainer")
+@onready var _a_abils_ctrl := _main_ctrl.get_node("BoxContainer/HBoxContainer/VBoxContainer/ActiveAbilsContainer/ActiveAbils")
 @warning_ignore("unused_private_class_variable")
-@onready var _p_abils_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/PassiveAbilsContainer/PassiveAbils")
-@onready var _sp_bar_blk_prefab := _main_ctrl.get_node("HBoxContainer/Bar/TextureRect")
+@onready var _p_abils_ctrl := _main_ctrl.get_node("BoxContainer/HBoxContainer/VBoxContainer/PassiveAbilsContainer/PassiveAbils")
+@onready var _sp_bar_blk_prefab := _main_ctrl.get_node("BoxContainer/HBoxContainer/HBoxContainer/Bar/TextureRect")
 
-@onready var _board_ctrl := _main_ctrl.get_node("HBoxContainer/VBoxContainer/VBoxContainer")
+@onready var _board_ctrl := _main_ctrl.get_node("BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer")
 var next_board: Board
 var hold_board: Board
 
@@ -35,6 +35,13 @@ var block_size_px: int
 @warning_ignore("unused_private_class_variable")
 var _progress: int:
 	set(v): _progress = v; _update_bar()
+
+func get_ctrl_size() -> Vector2:
+	return _main_ctrl.get_node("BoxContainer/HBoxContainer").size
+
+func set_ctrl_size(size: Vector2) -> void:
+	_main_ctrl.get_node("BoxContainer/HBoxContainer").custom_minimum_size = size
+	#_main_ctrl.get_node("BoxContainer/HBoxContainer").custom_maximum_size = size
 
 @warning_ignore("unused_parameter")
 func set_abils_from_arr(abils_a: Array[AbilityActive], abils_p: Array[AbilityPassive], bsp: int = 32) -> void:
@@ -154,6 +161,7 @@ func _ready() -> void:
 		else:
 			_add_to_hold(_game.held_polyminos[0])
 	)
+	
 	_game.bag.BagUpdated.connect(_update_next)
 	_game.PolyminoPlaced.connect(_update_next)
 	_game.NewBoard.connect(func(_v): _update_next())

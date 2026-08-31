@@ -8,20 +8,21 @@ signal Continue
 
 @onready var _continue_timer := Timer.new()
 
-var _scene := preload("res://score_ui.tscn")
+const _scene := preload("res://score_ui.tscn")
 @onready var _sign := _scene.instantiate()
 
-@onready var _continue_button_ctrl := _sign.get_node("VBoxContainer/PanelContainer2/ColorRect")
-@onready var _continue_button_text_ctrl := _sign.get_node("VBoxContainer/PanelContainer2/RichTextLabel")
+@onready var _vbox_ctrl := _sign.get_node("BoxContainer/VBoxContainer")
+@onready var _continue_button_ctrl := _sign.get_node("BoxContainer/VBoxContainer/AspectRatioContainer/PanelContainer2/ColorRect")
+@onready var _continue_button_text_ctrl := _sign.get_node("BoxContainer/VBoxContainer/AspectRatioContainer/PanelContainer2/RichTextLabel")
 
-@onready var _round_num_ctrl := _sign.get_node("VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer/RoundNum")
-@onready var _pm_left_ctrl := _sign.get_node("VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer/PMsLeft")
-@onready var _pts_added_ctrl := _sign.get_node("VBoxContainer/PanelContainer/VBoxContainer/PtsAdded")
-@onready var _score_cur_ctrl := _sign.get_node("VBoxContainer/PanelContainer/VBoxContainer/ScoreCurrent")
-@onready var _score_goal_ctrl := _sign.get_node("VBoxContainer/PanelContainer/VBoxContainer/ScoreGoal")
+@onready var _round_num_ctrl := _sign.get_node("BoxContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer/RoundNum")
+@onready var _pm_left_ctrl := _sign.get_node("BoxContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer/PMsLeft")
+@onready var _pts_added_ctrl := _sign.get_node("BoxContainer/VBoxContainer/PanelContainer/VBoxContainer/PtsAdded")
+@onready var _score_cur_ctrl := _sign.get_node("BoxContainer/VBoxContainer/PanelContainer/VBoxContainer/ScoreCurrent")
+@onready var _score_goal_ctrl := _sign.get_node("BoxContainer/VBoxContainer/PanelContainer/VBoxContainer/ScoreGoal")
 
 var right: bool = true
-var max_digits: int = 11
+var max_digits: int = 13
 
 @export var tween_limit := 10
 @export var tween_mult := 16
@@ -139,6 +140,13 @@ func _update_button(new: Enums.GAME_STATE) -> void:
 		_continue_button_ctrl.material.set_shader_parameter("avail", true)
 		_continue_button_text_ctrl.text = _continue_button_text_ctrl.text.lstrip("[color=#808080]").replace("[/color]", "")
 
+func get_ctrl_size() -> Vector2:
+	return _sign.get_node("BoxContainer/VBoxContainer").size
+
+func set_ctrl_size(size: Vector2) -> void:
+	_sign.get_node("BoxContainer/VBoxContainer").custom_minimum_size = size
+	#_sign.get_node("BoxContainer/VBoxContainer").custom_maximum_size = size
+
 func _ready() -> void:
 	add_child(_sign)
 	
@@ -160,7 +168,7 @@ func _ready() -> void:
 	
 	reset_score_board()
 
-func _init(_m: Board = null, r: bool = true, m_d: int = 11) -> void:
+func _init(_m: Board = null, r: bool = true, m_d: int = max_digits) -> void:
 	right = r
 	max_digits = m_d
 	

@@ -74,7 +74,7 @@ func _init(img_path: String, brd: ShopBoard, g_p: Vector2i, act: bool = active) 
 	
 	lable = GridLabel.new(
 		grid_pos + Vector2i(0, -2), 
-		str(Enums.shop_add_pm_price(board.game.round_num, board.game.max_pm)), 
+		str(Tuner.shop.add_pm_price(board.game.round_num, board.game.max_pm)), 
 		board)
 	board.add_child(lable)
 	_rescale()

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EffectTuning" format=3 uid="uid://t5ka676m87ng"]
+
+[ext_resource type="Script" uid="uid://b6j5hrlv8oedy" path="res://effect_tune.gd" id="1_yi3ad"]
+
+[sub_resource type="Curve" id="Curve_yi3ad"]
+_limits = [0.05, 0.5, 0.0, 1.0]
+bake_resolution = 500
+_data = [Vector2(0, 0.5), 0.0, -0.08904824, 0, 0, Vector2(0.41543028, 0.40725195), -0.8053111, -1.5986367, 0, 0, Vector2(1, 0.05), -0.25725213, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_07nm6"]
+
+[resource]
+script = ExtResource("1_yi3ad")
+flash_curve = SubResource("Curve_yi3ad")
+pitch_curve = SubResource("Curve_07nm6")
+metadata/_custom_type_script = "uid://b6j5hrlv8oedy"

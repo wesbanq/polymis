@@ -14,53 +14,59 @@ shader_parameter/progress = 1.0
 
 [node name="Control" type="Control" unique_id=915218262]
 layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1613908519]
+[node name="BoxContainer" type="BoxContainer" parent="." unique_id=14559441]
 layout_mode = 1
-anchors_preset = -1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 16
+alignment = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=1717232261]
+[node name="HBoxContainer" type="HBoxContainer" parent="BoxContainer" unique_id=1613908519]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BoxContainer/HBoxContainer" unique_id=1717232261]
 layout_mode = 2
 size_flags_horizontal = 10
 
-[node name="ActiveAbilsContainer" type="PanelContainer" parent="HBoxContainer/VBoxContainer" unique_id=166847266]
+[node name="ActiveAbilsContainer" type="PanelContainer" parent="BoxContainer/HBoxContainer/VBoxContainer" unique_id=166847266]
 layout_mode = 2
 theme_override_styles/panel = ExtResource("1_7ikuu")
 
-[node name="ActiveAbils" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/ActiveAbilsContainer" unique_id=358763643]
+[node name="ActiveAbils" type="VBoxContainer" parent="BoxContainer/HBoxContainer/VBoxContainer/ActiveAbilsContainer" unique_id=358763643]
 layout_mode = 2
 size_flags_vertical = 2
 
-[node name="PassiveAbilsContainer" type="PanelContainer" parent="HBoxContainer/VBoxContainer" unique_id=1750490740]
+[node name="PassiveAbilsContainer" type="PanelContainer" parent="BoxContainer/HBoxContainer/VBoxContainer" unique_id=1750490740]
 visible = false
 layout_mode = 2
 theme_override_styles/panel = ExtResource("1_7ikuu")
 
-[node name="PassiveAbils" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/PassiveAbilsContainer" unique_id=1741016869]
+[node name="PassiveAbils" type="VBoxContainer" parent="BoxContainer/HBoxContainer/VBoxContainer/PassiveAbilsContainer" unique_id=1741016869]
 layout_mode = 2
 size_flags_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer" unique_id=1006320902]
+[node name="VBoxContainer" type="VBoxContainer" parent="BoxContainer/HBoxContainer/VBoxContainer" unique_id=1006320902]
 layout_mode = 2
 size_flags_vertical = 10
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/VBoxContainer" unique_id=1341322996]
+[node name="HBoxContainer" type="HBoxContainer" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer" unique_id=1341322996]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer" unique_id=1897400656]
+[node name="VBoxContainer" type="VBoxContainer" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer" unique_id=1897400656]
 layout_mode = 2
 theme_override_constants/separation = -2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=457543363]
+[node name="RichTextLabel" type="RichTextLabel" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=457543363]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 7
@@ -74,7 +80,7 @@ scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RichTextLabel2" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=894428869]
+[node name="RichTextLabel2" type="RichTextLabel" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=894428869]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 7
@@ -88,7 +94,7 @@ scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RichTextLabel3" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1803873491]
+[node name="RichTextLabel3" type="RichTextLabel" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1803873491]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 7
@@ -102,7 +108,7 @@ scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RichTextLabel4" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1442544368]
+[node name="RichTextLabel4" type="RichTextLabel" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1442544368]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 7
@@ -116,26 +122,26 @@ scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HoldContainer" type="PanelContainer" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer" unique_id=715937593]
+[node name="HoldContainer" type="PanelContainer" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer" unique_id=715937593]
 layout_mode = 2
 theme_override_styles/panel = ExtResource("1_7ikuu")
 
-[node name="CenterContainer" type="CenterContainer" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HoldContainer" unique_id=316238837]
+[node name="CenterContainer" type="CenterContainer" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer/HoldContainer" unique_id=316238837]
 layout_mode = 2
 
-[node name="Spacer" type="Control" parent="HBoxContainer/VBoxContainer/VBoxContainer" unique_id=1869134905]
+[node name="Spacer" type="Control" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer" unique_id=1869134905]
 custom_minimum_size = Vector2(0, 6.35)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/VBoxContainer" unique_id=1175175632]
+[node name="HBoxContainer2" type="HBoxContainer" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer" unique_id=1175175632]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2" unique_id=1736739494]
+[node name="VBoxContainer" type="VBoxContainer" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2" unique_id=1736739494]
 layout_mode = 2
 theme_override_constants/separation = -2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer" unique_id=559534766]
+[node name="RichTextLabel" type="RichTextLabel" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer" unique_id=559534766]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 7
@@ -149,7 +155,7 @@ scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RichTextLabel2" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer" unique_id=909133436]
+[node name="RichTextLabel2" type="RichTextLabel" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer" unique_id=909133436]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 7
@@ -163,7 +169,7 @@ scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RichTextLabel3" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer" unique_id=2122560599]
+[node name="RichTextLabel3" type="RichTextLabel" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer" unique_id=2122560599]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 7
@@ -177,7 +183,7 @@ scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RichTextLabel4" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer" unique_id=44912686]
+[node name="RichTextLabel4" type="RichTextLabel" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2/VBoxContainer" unique_id=44912686]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 size_flags_horizontal = 7
@@ -191,21 +197,20 @@ scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NextContainer" type="PanelContainer" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2" unique_id=359974595]
+[node name="NextContainer" type="PanelContainer" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2" unique_id=359974595]
 layout_mode = 2
 theme_override_styles/panel = ExtResource("1_7ikuu")
 
-[node name="CenterContainer" type="CenterContainer" parent="HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2/NextContainer" unique_id=1159717094]
+[node name="CenterContainer" type="CenterContainer" parent="BoxContainer/HBoxContainer/VBoxContainer/VBoxContainer/HBoxContainer2/NextContainer" unique_id=1159717094]
 layout_mode = 2
 
-[node name="Bar" type="BoxContainer" parent="HBoxContainer" unique_id=1205578366]
+[node name="HBoxContainer" type="HBoxContainer" parent="BoxContainer/HBoxContainer" unique_id=1402170197]
 layout_mode = 2
-theme_override_constants/separation = 14
+alignment = 1
 
-[node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/Bar" unique_id=521513570]
-custom_minimum_size = Vector2(24, 0)
+[node name="RichTextLabel" type="RichTextLabel" parent="BoxContainer/HBoxContainer/HBoxContainer" unique_id=521513570]
+clip_contents = false
 layout_mode = 2
-size_flags_horizontal = 6
 size_flags_vertical = 4
 theme = ExtResource("1_ub4nd")
 bbcode_enabled = true
@@ -218,8 +223,15 @@ P
 %"
 fit_content = true
 scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="TextureRect" type="TextureRect" parent="HBoxContainer/Bar" unique_id=1360999293]
+[node name="Bar" type="BoxContainer" parent="BoxContainer/HBoxContainer/HBoxContainer" unique_id=1205578366]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="TextureRect" type="TextureRect" parent="BoxContainer/HBoxContainer/HBoxContainer/Bar" unique_id=1360999293]
 visible = false
 material = SubResource("ShaderMaterial_ub4nd")
 layout_mode = 2
@@ -227,12 +239,12 @@ texture = ExtResource("1_ch7g7")
 expand_mode = 5
 stretch_mode = 4
 
-[node name="Control" type="Control" parent="HBoxContainer/Bar" unique_id=1007022402]
+[node name="Control" type="Control" parent="BoxContainer/HBoxContainer/HBoxContainer/Bar" unique_id=1007022402]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Bar/Control" unique_id=2070493443]
+[node name="VBoxContainer" type="VBoxContainer" parent="BoxContainer/HBoxContainer/HBoxContainer/Bar/Control" unique_id=2070493443]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

@@ -38,9 +38,7 @@ var goal_reached: bool:
 	get: 
 		return score_current >= score_goal
 
-var difficulty: float = 1.0
-var falling_speed: float:
-	get: return 1.59658/(1+exp(1)**(.556572*difficulty - 3.2994))
+var round_num: int
 
 var special_points := 0:
 	set(v): special_points = clampi(v, 0, 100); ChangedAttr.emit("special_points", v)
@@ -78,19 +76,6 @@ func move_rows_down(from_y: int, amount: int = 1) -> void:
 				block_list[x][y] = null
 	update_block_list()
 
-static func _calc_flash_time(line_complete: int, block: int) -> float:
-	var r := clampf(0.9 ** (3.05*(line_complete + block)), 0.05, 0.5)
-	#print("spd: ", r)
-	return r
-
-@warning_ignore("shadowed_variable_base_class")
-static func _calc_pitch(line_complete: int, block: int, width: int) -> float:
-	var r2 := floori((block+line_complete*width)*.1)
-	@warning_ignore("static_called_on_instance")
-	var r := SFX.calc_pentatonic_pitch(r2)
-	#print("spd: ", r, "ps: ", r2)
-	return r
-
 func score_line(line: int, completed: int, play_effect: bool) -> int:
 	var scored = 0
 	
@@ -99,7 +84,7 @@ func score_line(line: int, completed: int, play_effect: bool) -> int:
 		#gradually speed up the flash time
 		#block_list[x][y].flash_with_number(score)
 		if play_effect:
-			await block_list[x][line].effect(score, _calc_flash_time(completed, x), _calc_pitch(completed, x, width))
+			await block_list[x][line].effect(score, Tuner.effects.flash_time(completed, x, width), Tuner.effects.pitch(completed, x, width))
 		scored += score
 	update_block_list()
 	
@@ -158,7 +143,7 @@ func trigger_ability(idx: int) -> void:
 
 func setup_timer() -> void:
 	#print(falling_speed)
-	_down_timer.wait_time = falling_speed
+	_down_timer.wait_time = Tuner.game.falling_speed(round_num)
 	_down_timer.paused = paused_input
 	_down_timer.start()
 
@@ -178,7 +163,7 @@ func _check_for_line_completions() -> void:
 	var lines := get_scoring_lines()
 	if lines.size() > 0:
 		paused_input += 1
-		var sp_to_add := Enums.sp_from_lines(lines, self)
+		var sp_to_add := Tuner.game.sp_from_lines(lines, self)
 		print("Scored: %d" % lines.size())
 		
 		var i := 0
@@ -202,7 +187,7 @@ func _check_for_line_completions() -> void:
 			)
 			SFX.play_line()
 			for x in width: 
-				block_list[x][line].flash_with_number(0, _calc_flash_time(i, x))
+				block_list[x][line].flash_with_number(0, Tuner.effects.flash_time(i, x, width))
 			#await block_list[width-1][line].flash_with_number(0, _calc_flash_time(i, width-1))
 			_destroy_line(line)
 			
@@ -272,6 +257,10 @@ func _ready() -> void:
 	_down_timer.autostart = true
 	add_child(_down_timer)
 	setup_timer()
+
+func _init(r: float, s_x: int = 10, s_y: int = 20, scle: float = 1.0) -> void:
+	super(s_x, s_y, scle)
+	round_num = r
 
 func _check_loss() -> void:
 	if pm_left <= 0 and game.held_polyminos.size() == 0:

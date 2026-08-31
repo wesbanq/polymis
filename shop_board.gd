@@ -76,21 +76,6 @@ func _get_random_pm() -> PolyminoShape:
 				#new_mod.setup(game)
 	return shape
 
-func _get_pm_price(ps: PolyminoShape) -> int:
-	var n := 0
-	var m := 0
-	var p := 0
-	
-	for blk in ps.shape_string:
-		if blk is BlockInfo:
-			n += 1
-			if blk.modifier != null: 
-				m += 1
-				p += blk.modifier.mod_price
-	
-	@warning_ignore("narrowing_conversion")
-	return clampi(85*game.round_num + game.round_num**(n*.7) + ((p*m)/float(n))**(game.round_num*.15), 0, 999999)
-
 func purchase(idx: Enums.SHOP_EXTRA_BUTTONS, blks: bool = true) -> void:
 	if blks:
 		if game.pts >= selling[idx].price:
@@ -111,7 +96,7 @@ func purchase(idx: Enums.SHOP_EXTRA_BUTTONS, blks: bool = true) -> void:
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM].button.destroy()
 					
 					#if game.max_pm < game.max_max_pm:
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM].price = Enums.shop_add_pm_price(game.round_num, game.max_pm)
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM].price = Tuner.shop.add_pm_price(game.round_num, game.max_pm)
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM].button = ShopButton.new(
 						"res://shop_add_pm_icon.png", 
 						self, 
@@ -132,7 +117,7 @@ func purchase(idx: Enums.SHOP_EXTRA_BUTTONS, blks: bool = true) -> void:
 					_stock_shop()
 					Restock.emit()
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK].button.destroy()
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK].price = Enums.shop_add_pm_price(game.round_num, game.max_pm)
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK].price = Tuner.shop.add_pm_price(game.round_num, game.max_pm)
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK].button = ShopButton.new(
 						"res://restock.png", 
 						self, 
@@ -144,7 +129,7 @@ func purchase(idx: Enums.SHOP_EXTRA_BUTTONS, blks: bool = true) -> void:
 					game.unlocked_abil_a += 1
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL].button.destroy()
 					#if game.unlocked_abil_a < game.max_abil_a_size-1:
-					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL].price = Enums.shop_add_pm_price(game.round_num, game.max_pm)
+					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL].price = Tuner.shop.add_pm_price(game.round_num, game.max_pm)
 					extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL].button = ShopButton.new(
 						"res://shop_unlock_abil.png", 
 						self,
@@ -225,7 +210,7 @@ func _stock_shop() -> void:
 			true
 		)
 		
-		var price := _get_pm_price(pm.string)
+		var price := Tuner.shop.get_pm_price(pm.string, game.round_num)
 		var lbl := GridLabel.new(_pm_pos(i) + Vector2i(0, -1), str(price), self)
 		add_child(lbl)
 		
@@ -263,24 +248,24 @@ func _ready() -> void:
 	extra_buttons.resize(5)
 	
 	var add_pm_button := ShopButton.new("res://shop_add_pm_icon.png", self, _pm_pos(0, false), game.max_pm < game.max_max_pm)
-	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM] = SellingButton.new(Enums.shop_add_pm_price(game.round_num, game.max_pm), add_pm_button)
+	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.ADD_PM] = SellingButton.new(Tuner.shop.add_pm_price(game.round_num, game.max_pm), add_pm_button)
 	add_pm_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.ADD_PM][1], Color(1,1,1), true)
 	add_child(add_pm_button)
 	
 	var restock_button := ShopButton.new("res://restock.png", self, _pm_pos(1, false))
 	restock_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.RESTOCK][1], Color(1,1,1), true)
-	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK] = SellingButton.new(Enums.shop_restock_price(game.round_num, game.max_pm), restock_button)
+	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.RESTOCK] = SellingButton.new(Tuner.shop.restock_price(game.round_num, game.max_pm), restock_button)
 	add_child(restock_button)
 	
 	#if game.unlocked_abil_a < game.max_abil_a_size-1:
 	var abil_unlock_button := ShopButton.new("res://shop_unlock_abil.png", self, _pm_pos(2, false))
 	abil_unlock_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL][1], Color(1,1,1), true)
-	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL] = SellingButton.new(Enums.shop_restock_price(game.round_num, game.max_pm), abil_unlock_button)
+	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.UNLOCK_ACTIVE_ABIL] = SellingButton.new(Tuner.shop.restock_price(game.round_num, game.max_pm), abil_unlock_button)
 	add_child(abil_unlock_button)
 	
 	var pm_remove_button := ShopButton.new("res://shop_remove_pm_icon.png", self, _pm_pos(3, false))
 	pm_remove_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM][1], Color(1,1,1), true)
-	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM] = SellingButton.new(Enums.shop_restock_price(game.round_num, game.max_pm), pm_remove_button)
+	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM] = SellingButton.new(Tuner.shop.restock_price(game.round_num, game.max_pm), pm_remove_button)
 	add_child(pm_remove_button)
 	
 	game.score_board.Continue.connect(BoardClear.emit)

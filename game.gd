@@ -38,8 +38,8 @@ var bag: Bag
 var pts := 9999:
 	set(v): pts = v; PtsChanged.emit(v)
 
-var score_board := ScoreNumber.new()
-var abil_board := AbilityControl.new()
+var score_board: ScoreNumber
+var abil_board: AbilityControl
 
 var board: GameBoard
 var shop: ShopBoard
@@ -113,6 +113,17 @@ func make_line() -> void:
 	board.update_block_list()
 	board.score_current += board.get_score()
 
+func _new_side_ctrls_size() -> void:
+	if abil_board and score_board:
+		print("sdcvsad")
+		var abil_size := abil_board.get_ctrl_size().x
+		var score_size := score_board.get_ctrl_size().x
+		
+		if abil_size > score_size:
+			score_board.set_ctrl_size(Vector2(abil_size, 0))
+		else:
+			abil_board.set_ctrl_size(Vector2(score_size, 0))
+
 func set_abil_active(idx: int, abil_name: String) -> void:
 	if idx > max_abil_a_size or idx < 0: 
 		LimboConsole.info("Invalid index.")
@@ -158,6 +169,7 @@ func register_commands() -> void:
 	LimboConsole.register_command(func(n: int) -> void: if board and board is GameBoard: board.pm_left += n, "apm", "Adds <arg0> to the current polymino left count.")
 	LimboConsole.register_command(func(n: int) -> void: if board and board is GameBoard: board.score_current += n, "score", "Adds <arg0> to the score count.")
 	LimboConsole.register_command(func(n: int) -> void: unlocked_abil_a = n, "unlock", "Unlocks ability")
+	LimboConsole.register_command(func(n: int) -> void: round_num = n, "round", "Sets the round to <arg0>.")
 
 @warning_ignore("shadowed_variable_base_class")
 func _idk_what_to_call_this_function(name: String, val: Variant) -> void:
@@ -180,7 +192,7 @@ func trigger_ability(slot: int) -> void:
 func _game_loop() -> Enums.BOARD_FINISH:
 	var reason: Enums.BOARD_FINISH
 	while true:
-		board = GameBoard.new()
+		board = GameBoard.new(round_num)
 		@warning_ignore("shadowed_variable_base_class")
 		board.ChangedAttr.connect(func(name: String, val: Variant) -> void: BoardChangedAttr.emit(name, val))
 		board.ChangedAttr.connect(_idk_what_to_call_this_function)
@@ -192,7 +204,7 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		#board.pm_left = 4
 		
 		board.spawn_next_pm(bag)
-		board.HeldPolymino.connect(func() -> void: HeldPolymino.emit())
+		board.HeldPolymino.connect(HeldPolymino.emit)
 		board.PolyminoPlaced.connect(func() -> void:
 			board.spawn_next_pm(bag)
 			PolyminoPlaced.emit()
@@ -201,7 +213,6 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		state = Enums.GAME_STATE.GAME
 		NewBoard.emit(board)
 		reason = await board.BoardCleared
-		print("IT'S OVER. %s" % Enums.BOARD_FINISH.keys()[reason])
 		
 		#check for loss
 		if Enums.is_fail_reason(reason):
@@ -231,7 +242,22 @@ func _game_loop() -> Enums.BOARD_FINISH:
 	return reason
 
 func _prep_loop() -> void:
+	bag = Bag.load_bag_resource(Enums.BAG_PATHS[0], self)
 	bag.reshuffle(true)
+	
+	abil_board = AbilityControl.new()
+	score_board = ScoreNumber.new()
+	
+	$HBoxContainer.add_child(score_board)
+	$HBoxContainer.add_child(abil_board)
+	$HBoxContainer.move_child(abil_board, 0)
+	
+	pts = 0
+	abil_board.set_abils_from_arr(abils_a, abils_p)
+	#RNG.set_seed(RNG.generate_seed())
+	
+	#to trigger auto scaling (mb fix idk it works so who gives a shit)
+	get_viewport().size_changed.emit()
 
 func _input(event: InputEvent) -> void:
 	if event.is_pressed() and not event.is_echo():
@@ -248,7 +274,6 @@ func _input(event: InputEvent) -> void:
 				DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
 func _ready() -> void:
-	bag = Bag.load_bag_resource(Enums.BAG_PATHS[0], self)
 	abils_a.resize(max_abil_a_size)
 	abils_a.fill(Enums.ABILITIES_ACTIVE["noabil"].new(self))
 	abils_p.resize(max_abil_p_size)
@@ -256,17 +281,14 @@ func _ready() -> void:
 	var test_seed := "0001209C"
 	RNG.set_seed(test_seed)
 	register_commands()
-	$HBoxContainer.add_child(score_board)
-	$HBoxContainer.add_child(abil_board)
-	$HBoxContainer.move_child(abil_board, 0)
-	abil_board.set_abils_from_arr(abils_a, abils_p)
-	
-	get_viewport().size_changed.connect(func() -> void:
-		default_grid_size_px = int(get_viewport_rect().size.length() * .016)
-	)
 	
 	Bg.activate()
-	#to trigger auto scaling (mb fix idk it works so who gives a shit)
-	get_viewport().size_changed.emit()
-	_prep_loop()
-	_game_loop()
+	get_viewport().size_changed.connect(func() -> void:
+		default_grid_size_px = int(get_viewport_rect().size.length() * .016)
+		#_new_side_ctrls_size()
+	)
+	
+	while true:
+		await _prep_loop()
+		var reason := await _game_loop()
+		print("IT'S OVER. %s" % Enums.BOARD_FINISH.keys()[reason])
