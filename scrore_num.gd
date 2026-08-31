@@ -22,7 +22,7 @@ const _scene := preload("res://score_ui.tscn")
 @onready var _score_goal_ctrl := _sign.get_node("BoxContainer/VBoxContainer/PanelContainer/VBoxContainer/ScoreGoal")
 
 var right: bool = true
-var max_digits: int = 13
+var max_digits: int = 11
 
 @export var tween_limit := 10
 @export var tween_mult := 16
@@ -143,9 +143,9 @@ func _update_button(new: Enums.GAME_STATE) -> void:
 func get_ctrl_size() -> Vector2:
 	return _sign.get_node("BoxContainer/VBoxContainer").size
 
-func set_ctrl_size(size: Vector2) -> void:
-	_sign.get_node("BoxContainer/VBoxContainer").custom_minimum_size = size
-	#_sign.get_node("BoxContainer/VBoxContainer").custom_maximum_size = size
+#func set_ctrl_size(size: Vector2) -> void:
+	#_sign.get_node("BoxContainer/VBoxContainer").custom_minimum_size = size
+	##_sign.get_node("BoxContainer/VBoxContainer").custom_maximum_size = size
 
 func _ready() -> void:
 	add_child(_sign)

@@ -36,8 +36,8 @@ var block_size_px: int
 var _progress: int:
 	set(v): _progress = v; _update_bar()
 
-func get_ctrl_size() -> Vector2:
-	return _main_ctrl.get_node("BoxContainer/HBoxContainer").size
+#func get_ctrl_size() -> Vector2:
+	#return _main_ctrl.get_node("BoxContainer/HBoxContainer").size
 
 func set_ctrl_size(size: Vector2) -> void:
 	_main_ctrl.get_node("BoxContainer/HBoxContainer").custom_minimum_size = size
