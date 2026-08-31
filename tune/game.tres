@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="GameTuning" format=3 uid="uid://cchicigcv7qcd"]
+
+[ext_resource type="Script" uid="uid://bi56psblq83yb" path="res://game_tune.gd" id="1_6rbli"]
+
+[sub_resource type="Curve" id="Curve_ybknv"]
+_limits = [0.05, 1.0, 0.0, 1.0]
+bake_resolution = 500
+_data = [Vector2(0, 1), 0.0, -0.2947536, 0, 0, Vector2(0.25947523, 0.8156717), -1.7257345, -1.7257345, 0, 0, Vector2(0.45189506, 0.46119404), -0.500647, -0.500647, 0, 0, Vector2(0.8279884, 0.28395522), -0.8958955, -0.8958955, 0, 0, Vector2(1, 0.05), -0.2069544, 0.0, 0, 0]
+point_count = 5
+
+[resource]
+script = ExtResource("1_6rbli")
+fall_speed = SubResource("Curve_ybknv")
+last_round = 100
+metadata/_custom_type_script = "uid://bi56psblq83yb"

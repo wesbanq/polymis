@@ -25,13 +25,6 @@ const _blk_sfx: Array[AudioStreamMP3] = [
 	preload("res://sfx/block-3.mp3"),
 ]
 
-const PENTATONIC: Array[int] = [0, 2, 4, 7, 9]
-static func calc_pentatonic_pitch(step: int) -> float:
-	var degree := step % PENTATONIC.size()
-	var octave := step / float(PENTATONIC.size())
-	var semitones := PENTATONIC[degree] + octave * 12
-	return pow(2.0, semitones / 12.0)
-
 func play_count(pitch: float = 1.0) -> void:
 	_sfx_poly.play_stream(_count_sfx, 0, 0, pitch)
 

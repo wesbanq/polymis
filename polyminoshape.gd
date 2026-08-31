@@ -40,8 +40,6 @@ func calculate_bottom() -> Array[int]:
 func create_polymino(board: Board, origin: Vector2i = Vector2i(0, 0), shop: bool = false) -> Polymino:
 	return Polymino.new(self, board, origin, shop)
 
-#static func get_mod_name(name: String) -> Modifier:
-	#return (Enums.MODIFIERS[name.to_lower()].new() if Enums.MODIFIERS.keys().find(name.to_lower()) != -1 else null)
 static func get_mod_name(name: String) -> String:
 	return Enums.MODIFIERS_PATHS[name] if Enums.MODIFIERS_PATHS.keys().find(name) != -1 else ""
 
@@ -54,6 +52,13 @@ static func from_string(s: String, rc: Enums.ROTATION_CENTER) -> PolyminoShape:
 		new_shape[new_pos] = new_info
 	
 	return PolyminoShape.new(new_shape, rc)
+
+const MAX_SIZE := POLYMINO_SIZE*POLYMINO_SIZE
+static func generate_shapes() -> Array[PolyminoShape]:
+	var tree: Dictionary[Vector2i, Variant] = {Vector2i(0, 0): {}}
+	
+	
+	return []
 
 func _init(shape: Array[BlockInfo] = [null], center: Enums.ROTATION_CENTER = Enums.ROTATION_CENTER.FOUR) -> void:
 	if shape.size() < 16: return

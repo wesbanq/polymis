@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="ShopTuning" format=3 uid="uid://dwfjnyh374qxw"]
+
+[ext_resource type="Script" uid="uid://dlx260ed2wu00" path="res://shop_tune.gd" id="1_d7kgy"]
+
+[resource]
+script = ExtResource("1_d7kgy")
+metadata/_custom_type_script = "uid://dlx260ed2wu00"

@@ -25,25 +25,31 @@ grow_horizontal = 2
 grow_vertical = 2
 metadata/_custom_type_script = "uid://c8ufa4sct4jls"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1534165359]
+[node name="BoxContainer" type="BoxContainer" parent="." unique_id=919512806]
 layout_mode = 1
-anchors_preset = -1
-anchor_right = 0.85
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer" unique_id=214833021]
+[node name="VBoxContainer" type="VBoxContainer" parent="BoxContainer" unique_id=1534165359]
 layout_mode = 2
-size_flags_vertical = 3
+theme_override_constants/separation = 32
+
+[node name="PanelContainer" type="PanelContainer" parent="BoxContainer/VBoxContainer" unique_id=214833021]
+layout_mode = 2
 theme_override_styles/panel = ExtResource("1_a0jxu")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/PanelContainer" unique_id=1190295689]
+[node name="VBoxContainer" type="VBoxContainer" parent="BoxContainer/VBoxContainer/PanelContainer" unique_id=1190295689]
 layout_mode = 2
+size_flags_horizontal = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/PanelContainer/VBoxContainer" unique_id=270979584]
+[node name="HBoxContainer" type="HBoxContainer" parent="BoxContainer/VBoxContainer/PanelContainer/VBoxContainer" unique_id=270979584]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RoundNum" type="RichTextLabel" parent="VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer" unique_id=1209741448]
+[node name="RoundNum" type="RichTextLabel" parent="BoxContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer" unique_id=1209741448]
 clip_contents = false
 layout_mode = 2
 size_flags_horizontal = 3
@@ -52,8 +58,9 @@ bbcode_enabled = true
 text = "ROUND 99"
 fit_content = true
 scroll_active = false
+autowrap_mode = 0
 
-[node name="PMsLeft" type="RichTextLabel" parent="VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer" unique_id=1412585331]
+[node name="PMsLeft" type="RichTextLabel" parent="BoxContainer/VBoxContainer/PanelContainer/VBoxContainer/HBoxContainer" unique_id=1412585331]
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("1_iqr5w")
@@ -61,56 +68,66 @@ bbcode_enabled = true
 text = "99 LEFT"
 fit_content = true
 scroll_active = false
+autowrap_mode = 0
 horizontal_alignment = 2
 
-[node name="ScoreGoal" type="RichTextLabel" parent="VBoxContainer/PanelContainer/VBoxContainer" unique_id=2144477279]
+[node name="ScoreGoal" type="RichTextLabel" parent="BoxContainer/VBoxContainer/PanelContainer/VBoxContainer" unique_id=2144477279]
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("3_ptaqf")
 bbcode_enabled = true
-text = "00123456789"
+text = "00000123456789"
 fit_content = true
 scroll_active = false
+autowrap_mode = 0
 
-[node name="ScoreCurrent" type="RichTextLabel" parent="VBoxContainer/PanelContainer/VBoxContainer" unique_id=1973385827]
+[node name="ScoreCurrent" type="RichTextLabel" parent="BoxContainer/VBoxContainer/PanelContainer/VBoxContainer" unique_id=1973385827]
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("3_ptaqf")
 bbcode_enabled = true
-text = "00123456789"
+text = "00000123456789"
 fit_content = true
 scroll_active = false
+autowrap_mode = 0
 
-[node name="PtsAdded" type="RichTextLabel" parent="VBoxContainer/PanelContainer/VBoxContainer" unique_id=2072086283]
+[node name="PtsAdded" type="RichTextLabel" parent="BoxContainer/VBoxContainer/PanelContainer/VBoxContainer" unique_id=2072086283]
 layout_mode = 2
 theme = ExtResource("3_ptaqf")
 bbcode_enabled = true
-text = "00123456789"
+text = "00000123456789"
 fit_content = true
 scroll_active = false
+autowrap_mode = 0
 
-[node name="PanelContainer2" type="PanelContainer" parent="VBoxContainer" unique_id=1683275026]
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="BoxContainer/VBoxContainer" unique_id=955715386]
 layout_mode = 2
-size_flags_vertical = 10
+ratio = 3.9352
+stretch_mode = 3
+
+[node name="PanelContainer2" type="PanelContainer" parent="BoxContainer/VBoxContainer/AspectRatioContainer" unique_id=1683275026]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_styles/panel = ExtResource("1_a0jxu")
 
-[node name="ContinueButton" type="TextureRect" parent="VBoxContainer/PanelContainer2" unique_id=1245485757]
+[node name="ContinueButton" type="TextureRect" parent="BoxContainer/VBoxContainer/AspectRatioContainer/PanelContainer2" unique_id=1245485757]
+visible = false
 material = SubResource("ShaderMaterial_a0jxu")
 layout_mode = 2
 texture = ExtResource("2_4kkff")
-expand_mode = 5
-stretch_mode = 4
+expand_mode = 2
 
-[node name="ColorRect" type="ColorRect" parent="VBoxContainer/PanelContainer2" unique_id=1557684911]
+[node name="ColorRect" type="ColorRect" parent="BoxContainer/VBoxContainer/AspectRatioContainer/PanelContainer2" unique_id=1557684911]
 material = SubResource("ShaderMaterial_a0jxu")
 layout_mode = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer/PanelContainer2" unique_id=978719753]
+[node name="RichTextLabel" type="RichTextLabel" parent="BoxContainer/VBoxContainer/AspectRatioContainer/PanelContainer2" unique_id=978719753]
 layout_mode = 2
 theme = ExtResource("1_iqr5w")
 bbcode_enabled = true
 text = "Continue
 [LCTRL]"
 fit_content = true
+autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
