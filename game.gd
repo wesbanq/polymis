@@ -113,16 +113,16 @@ func make_line() -> void:
 	board.update_block_list()
 	board.score_current += board.get_score()
 
-func _new_side_ctrls_size() -> void:
-	if abil_board and score_board:
-		print("sdcvsad")
-		var abil_size := abil_board.get_ctrl_size().x
-		var score_size := score_board.get_ctrl_size().x
-		
-		if abil_size > score_size:
-			score_board.set_ctrl_size(Vector2(abil_size, 0))
-		else:
-			abil_board.set_ctrl_size(Vector2(score_size, 0))
+#func _new_side_ctrls_size() -> void:
+	#if abil_board and score_board:
+		#print("sdcvsad")
+		#var abil_size := abil_board.get_ctrl_size().x
+		#var score_size := score_board.get_ctrl_size().x
+		#
+		#if abil_size > score_size:
+			#score_board.set_ctrl_size(Vector2(abil_size, 0))
+		#else:
+			#abil_board.set_ctrl_size(Vector2(score_size, 0))
 
 func set_abil_active(idx: int, abil_name: String) -> void:
 	if idx > max_abil_a_size or idx < 0: 
@@ -285,7 +285,9 @@ func _ready() -> void:
 	Bg.activate()
 	get_viewport().size_changed.connect(func() -> void:
 		default_grid_size_px = int(get_viewport_rect().size.length() * .016)
-		#_new_side_ctrls_size()
+		if score_board and abil_board:
+			await get_tree().process_frame
+			score_board.set_ctrl_size(Vector2(abil_board.get_ctrl_size().x, 0))
 	)
 	
 	while true:
