@@ -140,12 +140,12 @@ func _update_button(new: Enums.GAME_STATE) -> void:
 		_continue_button_ctrl.material.set_shader_parameter("avail", true)
 		_continue_button_text_ctrl.text = _continue_button_text_ctrl.text.lstrip("[color=#808080]").replace("[/color]", "")
 
-func get_ctrl_size() -> Vector2:
-	return _sign.get_node("BoxContainer/VBoxContainer").size
+#func get_ctrl_size() -> Vector2:
+	#return _sign.get_node("BoxContainer/VBoxContainer").size
 
-#func set_ctrl_size(size: Vector2) -> void:
-	#_sign.get_node("BoxContainer/VBoxContainer").custom_minimum_size = size
-	##_sign.get_node("BoxContainer/VBoxContainer").custom_maximum_size = size
+func set_ctrl_size(size: Vector2) -> void:
+	_sign.get_node("BoxContainer/VBoxContainer").custom_minimum_size = size
+	#_sign.get_node("BoxContainer/VBoxContainer").custom_maximum_size = size
 
 func _ready() -> void:
 	add_child(_sign)

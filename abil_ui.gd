@@ -36,12 +36,12 @@ var block_size_px: int
 var _progress: int:
 	set(v): _progress = v; _update_bar()
 
-#func get_ctrl_size() -> Vector2:
-	#return _main_ctrl.get_node("BoxContainer/HBoxContainer").size
+func get_ctrl_size() -> Vector2:
+	return _main_ctrl.get_node("BoxContainer/HBoxContainer").size
 
-func set_ctrl_size(size: Vector2) -> void:
-	_main_ctrl.get_node("BoxContainer/HBoxContainer").custom_minimum_size = size
-	#_main_ctrl.get_node("BoxContainer/HBoxContainer").custom_maximum_size = size
+#func set_ctrl_size(size: Vector2) -> void:
+	#_main_ctrl.get_node("BoxContainer/HBoxContainer").custom_minimum_size = size
+	##_main_ctrl.get_node("BoxContainer/HBoxContainer").custom_maximum_size = size
 
 @warning_ignore("unused_parameter")
 func set_abils_from_arr(abils_a: Array[AbilityActive], abils_p: Array[AbilityPassive], bsp: int = 32) -> void:
