@@ -14,6 +14,14 @@ func sp_from_lines(lines: Array[int], board: GameBoard) -> int:
 	@warning_ignore("narrowing_conversion")
 	return board.width * mod_n * lines.size() * mod_b**2 * .25
 
+@warning_ignore("shadowed_global_identifier", "unused_parameter")
+func round_reward(total: int, goal: int, round: int) -> int:
+	@warning_ignore("integer_division")
+	return (total-goal) / 10
+
+func score_goal(round_num: int, width: int) -> int:
+	return round_num * (width*100)
+
 @export var fall_speed: Curve
 @export var last_round: int = 1
 

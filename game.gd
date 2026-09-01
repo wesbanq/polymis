@@ -139,6 +139,19 @@ func set_abil_active(idx: int, abil_name: String) -> void:
 	else:
 		LimboConsole.info("Couldn't find ability named: \"%s\"" % abil_name)
 
+func _set_round(new_round: int) -> void:
+	round_num = new_round
+	score_board.ChangeNumber.emit(new_round, Enums.SCORE_BOARD.ROUND_NUM)
+	if shop:
+		shop._place_buttons()
+	if board:
+		board.round_num = round_num
+
+func _skip_board() -> void: 
+	if board: 
+		board.board_finish(Enums.BOARD_FINISH.WIN_CONTINUE)
+		LimboConsole.info("Skipped board.")
+
 func set_sp(add: int) -> void:
 	if board:
 		board.special_points += add
@@ -152,7 +165,7 @@ func set_grid_scale(new_scale: int) -> void:
 func register_commands() -> void:
 	LimboConsole.register_command(func() -> void: LimboConsole.info("Block positions are now %s." % ("HIDDEN" if show_block_position else "SHOWN")); show_block_position = not show_block_position, "blkpos", "Toggles showing block positions.")
 	LimboConsole.register_command(func(v: int) -> void: pts += v; LimboConsole.info("Set pts to %d." % pts), "pts", "Adds <arg0> to pts.")
-	LimboConsole.register_command(func() -> void: if board: board.board_finish(Enums.BOARD_FINISH.WIN_CONTINUE); LimboConsole.info("Skipped board."), "skip", "Skips to the next shop board.")
+	LimboConsole.register_command(_skip_board, "skip", "Skips to the next shop board.")
 	LimboConsole.register_command(spwn_pm, "spm", "Spawns a polymino described by <s> with <rc> rotation center.")
 	LimboConsole.register_command(set_grid_scale, "scale", "Changes the scale of the UI to <arg0>.")
 	LimboConsole.register_command(spwn_blk, "blk", "Spawns default block at position (<x>, <y>).")
@@ -169,7 +182,7 @@ func register_commands() -> void:
 	LimboConsole.register_command(func(n: int) -> void: if board and board is GameBoard: board.pm_left += n, "apm", "Adds <arg0> to the current polymino left count.")
 	LimboConsole.register_command(func(n: int) -> void: if board and board is GameBoard: board.score_current += n, "score", "Adds <arg0> to the score count.")
 	LimboConsole.register_command(func(n: int) -> void: unlocked_abil_a = n, "unlock", "Unlocks ability")
-	LimboConsole.register_command(func(n: int) -> void: round_num = n, "round", "Sets the round to <arg0>.")
+	LimboConsole.register_command(_set_round, "round", "Sets the round to <arg0>.")
 
 @warning_ignore("shadowed_variable_base_class")
 func _idk_what_to_call_this_function(name: String, val: Variant) -> void:
@@ -200,7 +213,7 @@ func _game_loop() -> Enums.BOARD_FINISH:
 		
 		#REMOVE L8R VVV dbg
 		#board.special_points = 99999
-		board.score_goal = 1
+		#board.score_goal = 1
 		#board.pm_left = 4
 		
 		board.spawn_next_pm(bag)
@@ -222,7 +235,7 @@ func _game_loop() -> Enums.BOARD_FINISH:
 			GameOver.emit()
 			break
 		else:
-			pts += board.pts_added
+			pts += Tuner.game.round_reward(board.score_current, board.score_goal, round_num)
 		
 		board.queue_free()
 		#GAMEPLAY END
@@ -254,7 +267,7 @@ func _prep_loop() -> void:
 	
 	pts = 0
 	abil_board.set_abils_from_arr(abils_a, abils_p)
-	#RNG.set_seed(RNG.generate_seed())
+	RNG.set_seed(RNG.generate_seed())
 	
 	#to trigger auto scaling (mb fix idk it works so who gives a shit)
 	get_viewport().size_changed.emit()
@@ -272,14 +285,17 @@ func _input(event: InputEvent) -> void:
 				DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 			else:
 				DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		
+		if event.is_action("skip"):
+			_skip_board()
 
 func _ready() -> void:
 	abils_a.resize(max_abil_a_size)
 	abils_a.fill(Enums.ABILITIES_ACTIVE["noabil"].new(self))
 	abils_p.resize(max_abil_p_size)
 	
-	var test_seed := "0001209C"
-	RNG.set_seed(test_seed)
+	#var test_seed := "0001209C"
+	#RNG.set_seed(test_seed)
 	register_commands()
 	
 	Bg.activate()
