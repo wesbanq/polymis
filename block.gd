@@ -72,7 +72,7 @@ func _process(_delta: float) -> void:
 	if board:
 		scale = Vector2(board.grid_size_px/32., board.grid_size_px/32.)
 		position = get_position_from_grid(board_position, board)
-		if board.game.show_block_position: t.text = "(%s, %s)" % [board_position.x, board_position.y]
+		if board._game.show_block_position: t.text = "(%s, %s)" % [board_position.x, board_position.y]
 		else: t.text = ""
 
 static func get_position_from_grid(grid_pos: Vector2i, brd: Board) -> Vector2:
@@ -125,7 +125,7 @@ func _ready() -> void:
 	if board:
 		scale = Vector2(board.grid_size_px/32., board.grid_size_px/32.)
 		position = get_position_from_grid(board_position, board)
-		if board.game.show_block_position: t.text = "(%s, %s)" % [board_position.x, board_position.y]
+		if board._game.show_block_position: t.text = "(%s, %s)" % [board_position.x, board_position.y]
 		else: t.text = ""
 		if not ghost: 
 			_hoverable = Hoverable.new(
@@ -156,7 +156,7 @@ func _init(b_i: BlockInfo, b: Vector2i, brd: Board, prototype: PolyminoShape, id
 	#mb like change it to be more elegant next time???????????????????????
 	if modifier: # chk if block has modifier
 		modifier._copy = true
-		modifier.setup(board.game)
+		modifier.setup(board._game)
 		var new_shader := modifier.get_shader()
 		if new_shader:
 			material = new_shader

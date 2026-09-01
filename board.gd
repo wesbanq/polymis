@@ -8,14 +8,14 @@ signal UpdatedBoardSize(size: Vector2)
 signal ChangedAttr(name: String, new: Variant)
 signal UpdatedBlockList
 
-@onready var game: GameMain = $/root/GameMain
+@onready var _game: GameMain = $/root/GameMain
 @onready var container := get_parent()
 
 var width := 10
 var height := 20:
 	set(v): height = v; ChangedAttr.emit("height", v)
 
-var _init_grid_size := func() -> int: ChangedAttr.emit("grid_size_px", game.default_grid_size_px); return game.default_grid_size_px
+var _init_grid_size := func() -> int: ChangedAttr.emit("grid_size_px", _game.default_grid_size_px); return _game.default_grid_size_px
 @onready var grid_size_px: int = _init_grid_size.call():
 	set(v): grid_size_px = v; update_position(); ChangedAttr.emit("grid_size_px", v)
 var grid_padding_px := 0:
@@ -28,7 +28,7 @@ var board_size_px: Vector2:
 var offsets: Vector2:
 	get: return Vector2(-board_size_px.x/4, board_size_px.y/4)
 
-var block_list#: Array[Array[Block]]
+var block_list: Array[Array]#: Array[Array[Block]]
 
 func update_block_list() -> void:
 	block_list = []

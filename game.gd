@@ -35,8 +35,8 @@ var held_polyminos: Array[PolyminoShape] = []
 @onready var default_grid_size_px := int(get_viewport_rect().size.length() * 0.017):
 	set(v): default_grid_size_px = v; set_grid_scale(v)
 var bag: Bag
-var pts := 9999:
-	set(v): pts = v; PtsChanged.emit(v)
+var pts: int:
+	set(v): pts = max(0, v); PtsChanged.emit(v)
 
 var score_board: ScoreNumber
 var abil_board: AbilityControl
@@ -143,7 +143,7 @@ func _set_round(new_round: int) -> void:
 	round_num = new_round
 	score_board.ChangeNumber.emit(new_round, Enums.SCORE_BOARD.ROUND_NUM)
 	if shop:
-		shop._place_buttons()
+		shop._reprice()
 	if board:
 		board.round_num = round_num
 

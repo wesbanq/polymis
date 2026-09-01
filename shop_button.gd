@@ -6,6 +6,7 @@ var board: ShopBoard
 var blk: Block
 var lable: GridLabel
 var grid_pos: Vector2i
+var price: int
 var active := true
 
 var _hoverable: Hoverable
@@ -51,10 +52,11 @@ func hover(top: String, desc: String, top_color: Color = Color(1, 1, 1), shop: b
 	_hoverable = Hoverable.new(self, click_within_block, top, desc, top_color, shop)
 	add_child(_hoverable)
 
-func _init(img_path: String, brd: ShopBoard, g_p: Vector2i, act: bool = active) -> void:
+func _init(img_path: String, brd: ShopBoard, g_p: Vector2i, price_: int, act: bool = active) -> void:
 	asset_path = img_path
 	board = brd
 	grid_pos = g_p
+	price = price_
 	blk = Block.new(BlockInfo.new(Enums.COLORS.WHITE), board._pm_pos(0, false), board, null)
 	
 	texture = load(asset_path)
@@ -74,7 +76,7 @@ func _init(img_path: String, brd: ShopBoard, g_p: Vector2i, act: bool = active) 
 	
 	lable = GridLabel.new(
 		grid_pos + Vector2i(0, -2), 
-		str(Tuner.shop.add_pm_price(board.game.round_num, board.game.max_pm)), 
+		str(price_), 
 		board)
 	board.add_child(lable)
 	_rescale()

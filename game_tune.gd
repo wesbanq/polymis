@@ -1,23 +1,23 @@
 class_name GameTuning
 extends Tuning
 
-func sp_from_lines(lines: Array[int], board: GameBoard) -> int:
+func sp_from_lines(lines: Array[int], width: int, block_list: Array[Array]) -> int:
 	var mod_n := 1
 	var mod_b := 1
 	
 	for y in lines:
-		for x in board.width:
-			if board.block_list[x][y].modifier:
+		for x in width:
+			if block_list[x][y].modifier:
 				mod_n += 1
-				mod_b += board.block_list[x][y].modifier.sp_bonus
+				mod_b += block_list[x][y].modifier.sp_bonus
 	
 	@warning_ignore("narrowing_conversion")
-	return board.width * mod_n * lines.size() * mod_b**2 * .25
+	return width * mod_n * lines.size() * mod_b**2 * .25
 
 @warning_ignore("shadowed_global_identifier", "unused_parameter")
 func round_reward(total: int, goal: int, round: int) -> int:
 	@warning_ignore("integer_division")
-	return (total-goal) / 10
+	return max(0, (total-goal) / 10)
 
 func score_goal(round_num: int, width: int) -> int:
 	return round_num * (width*100)

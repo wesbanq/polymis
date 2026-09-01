@@ -22,16 +22,16 @@ var score_current := 0:
 	set(v): 
 		score_current = v
 		ScoreChanged.emit()
-		game.score_board.ChangeNumber.emit(score_current, Enums.SCORE_BOARD.SCORE_CURRENT)
-		game.score_board.ChangeNumber.emit(max(pts_added, 0), Enums.SCORE_BOARD.PTS_ADDED)
+		_game.score_board.ChangeNumber.emit(score_current, Enums.SCORE_BOARD.SCORE_CURRENT)
+		_game.score_board.ChangeNumber.emit(max(pts_added, 0), Enums.SCORE_BOARD.PTS_ADDED)
 
-@onready var pm_left: int = game.max_pm:
-	set(v): pm_left = v; game.score_board.ChangeNumber.emit(pm_left, Enums.SCORE_BOARD.PM_LEFT)
-@onready var score_goal: int = Tuner.game.score_goal(round_num, width):
+@onready var pm_left: int = _game.max_pm:
+	set(v): pm_left = v; _game.score_board.ChangeNumber.emit(pm_left, Enums.SCORE_BOARD.PM_LEFT)
+@onready var score_goal: int:
 	set(v):
 		score_goal = v
-		if game and game.score_board: 
-			game.score_board.ChangeNumber.emit(score_goal, Enums.SCORE_BOARD.SCORE_GOAL)
+		if _game and _game.score_board: 
+			_game.score_board.ChangeNumber.emit(score_goal, Enums.SCORE_BOARD.SCORE_GOAL)
 
 var pts_added: int:
 	get: 
@@ -51,8 +51,8 @@ var round_num: int:
 var special_points := 0:
 	set(v): special_points = clampi(v, 0, 100); ChangedAttr.emit("special_points", v)
 
-@onready var next_board: Board = Board.new(4*game.next_size+max(game.next_size-1, 0), 4)
-@onready var hold_board: Board = Board.new(4*game.hold_size+max(game.hold_size-1, 0), 4)
+@onready var next_board: Board = Board.new(4*_game.next_size+max(_game.next_size-1, 0), 4)
+@onready var hold_board: Board = Board.new(4*_game.hold_size+max(_game.hold_size-1, 0), 4)
 
 func spawn_polymino(ps: PolyminoShape, origin: Vector2i = Vector2i(int(width/2.0 - 2)+1, height-4)) -> void:
 	if _controlled_polymino != null:
@@ -130,24 +130,24 @@ func get_scoring_lines() -> Array[int]:
 
 func hold_polymino() -> void:
 	#dont allow holding last piece unless switching betweenkojsgn
-	if not _hold_cooldown and (pm_left > 0 or (pm_left == 0 and game.held_polyminos.size() > 0)): 
-		if game.held_polyminos.size() >= game.hold_size:
-			var new_polymino = game.held_polyminos.pop_front()
+	if not _hold_cooldown and (pm_left > 0 or (pm_left == 0 and _game.held_polyminos.size() > 0)): 
+		if _game.held_polyminos.size() >= _game.hold_size:
+			var new_polymino = _game.held_polyminos.pop_front()
 			if _controlled_polymino:
-				game.held_polyminos.append(_controlled_polymino.string)
+				_game.held_polyminos.append(_controlled_polymino.string)
 				_controlled_polymino.destroy()
 				_controlled_polymino = null
 			spawn_polymino(new_polymino)
 		else:
-			game.held_polyminos.append(_controlled_polymino.string)
+			_game.held_polyminos.append(_controlled_polymino.string)
 			_controlled_polymino.destroy()
 			_controlled_polymino = null
-			spawn_next_pm(game.bag)
+			spawn_next_pm(_game.bag)
 		_hold_cooldown = true
 		HeldPolymino.emit()
 
 func trigger_ability(idx: int) -> void:
-	game.trigger_ability(idx)
+	_game.trigger_ability(idx)
 
 func setup_timer() -> void:
 	#print(falling_speed)
@@ -171,7 +171,7 @@ func _check_for_line_completions() -> void:
 	var lines := get_scoring_lines()
 	if lines.size() > 0:
 		paused_input += 1
-		var sp_to_add := Tuner.game.sp_from_lines(lines, self)
+		var sp_to_add := Tuner.game.sp_from_lines(lines, width, block_list)
 		print("Scored: %d" % lines.size())
 		
 		var i := 0
@@ -235,8 +235,8 @@ func destroy_block_at(pos: Vector2i) -> void:
 
 func spawn_next_pm(bag: Bag) -> void:
 	if pm_left <= 0:
-		if game.held_polyminos.size() > 0:
-			spawn_polymino(game.held_polyminos.pop_front())
+		if _game.held_polyminos.size() > 0:
+			spawn_polymino(_game.held_polyminos.pop_front())
 			HeldPolymino.emit()
 		#else:
 			#push_error("no pm left.")
@@ -255,12 +255,12 @@ func _ready() -> void:
 			_controlled_polymino.DownTimer.emit()
 	)
 	
-	game.score_board.Continue.connect(func():
+	_game.score_board.Continue.connect(func():
 		if pts_added >= 0:
 			board_finish(Enums.BOARD_FINISH.WIN_CONTINUE)
 	)
-	game.score_board.setup_score_board(self)
-	game.PausedGame.connect(_toggle_visibility)
+	_game.score_board.setup_score_board(self)
+	_game.PausedGame.connect(_toggle_visibility)
 	
 	_down_timer.autostart = true
 	add_child(_down_timer)
@@ -271,7 +271,7 @@ func _init(r: int, s_x: int = 10, s_y: int = 20, scle: float = 1.0) -> void:
 	round_num = r
 
 func _check_loss() -> void:
-	if pm_left <= 0 and game.held_polyminos.size() == 0:
+	if pm_left <= 0 and _game.held_polyminos.size() == 0:
 		if goal_reached:
 			board_finish(Enums.BOARD_FINISH.WIN_PM_LEFT)
 		else:
@@ -288,7 +288,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event.is_echo() or \
 	event.is_released() or \
 	not _controlled_polymino or \
-	game.paused or paused_input > 0: 
+	_game.paused or paused_input > 0: 
 		return
 	
 	if event.is_action("snap_down"):

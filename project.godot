@@ -25,12 +25,12 @@ buses/default_bus_layout=""
 
 [autoload]
 
+Tuner="*uid://bvn3pwav7b1oa"
 Bg="*uid://3c2tp244v6ts"
 Enums="*res://enums.gd"
 RNG="*res://rng.gd"
 LimboConsole="*uid://dyxornv8vwibg"
 HoverManager="*res://hover_manager.gd"
-Tuner="*uid://bvn3pwav7b1oa"
 FontSizer="*uid://3abe3k6wcjgo"
 SFX="*uid://dg74fa8wfq5k7"
 
