@@ -243,8 +243,13 @@ func _check_eligible(_score: int) -> void:
 			else:
 				pm.lbl.change_color(Enums.UI.NORMAL_TEXT)
 
-func _ready() -> void:
-	_stock_shop()
+func _place_buttons() -> void:
+	if extra_buttons.size() > 0:
+		for button in extra_buttons:
+			button.button.queue_free()
+			button = null
+		extra_buttons = []
+	
 	extra_buttons.resize(5)
 	
 	var add_pm_button := ShopButton.new("res://shop_add_pm_icon.png", self, _pm_pos(0, false), game.max_pm < game.max_max_pm)
@@ -267,6 +272,9 @@ func _ready() -> void:
 	pm_remove_button.hover(hover_args[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM][0], hover_args[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM][1], Color(1,1,1), true)
 	extra_buttons[Enums.SHOP_EXTRA_BUTTONS.REMOVE_PM] = SellingButton.new(Tuner.shop.restock_price(game.round_num, game.max_pm), pm_remove_button)
 	add_child(pm_remove_button)
+
+func _ready() -> void:
+	_stock_shop()
 	
 	game.score_board.Continue.connect(BoardClear.emit)
 	game.score_board.setup_score_board(self)

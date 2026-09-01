@@ -25,10 +25,13 @@ var score_current := 0:
 		game.score_board.ChangeNumber.emit(score_current, Enums.SCORE_BOARD.SCORE_CURRENT)
 		game.score_board.ChangeNumber.emit(max(pts_added, 0), Enums.SCORE_BOARD.PTS_ADDED)
 
-@onready var pm_left: int = game.max_pm: #TODO fomrula
+@onready var pm_left: int = game.max_pm:
 	set(v): pm_left = v; game.score_board.ChangeNumber.emit(pm_left, Enums.SCORE_BOARD.PM_LEFT)
-@onready var score_goal: int = game.round_num * (width*100):
-	set(v): score_goal = v; game.score_board.ChangeNumber.emit(score_goal, Enums.SCORE_BOARD.SCORE_GOAL)
+@onready var score_goal: int = Tuner.game.score_goal(round_num, width):
+	set(v):
+		score_goal = v
+		if game and game.score_board: 
+			game.score_board.ChangeNumber.emit(score_goal, Enums.SCORE_BOARD.SCORE_GOAL)
 
 var pts_added: int:
 	get: 
@@ -38,7 +41,12 @@ var goal_reached: bool:
 	get: 
 		return score_current >= score_goal
 
-var round_num: int
+var round_num: int:
+	set(v): 
+		round_num = v
+		if _down_timer: 
+			_down_timer.wait_time = Tuner.game.falling_speed(v)
+		score_goal = Tuner.game.score_goal(v, width)
 
 var special_points := 0:
 	set(v): special_points = clampi(v, 0, 100); ChangedAttr.emit("special_points", v)
@@ -258,7 +266,7 @@ func _ready() -> void:
 	add_child(_down_timer)
 	setup_timer()
 
-func _init(r: float, s_x: int = 10, s_y: int = 20, scle: float = 1.0) -> void:
+func _init(r: int, s_x: int = 10, s_y: int = 20, scle: float = 1.0) -> void:
 	super(s_x, s_y, scle)
 	round_num = r
 
