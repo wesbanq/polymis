@@ -4,4 +4,5 @@
 
 [resource]
 script = ExtResource("1_d7kgy")
+abil_unlock_base_prices = Array[int]([100, 400, 2000])
 metadata/_custom_type_script = "uid://dlx260ed2wu00"
