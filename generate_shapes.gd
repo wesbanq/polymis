@@ -10,7 +10,7 @@ var group_percentage: Array[float] = [
 	15.0,
 	10.0,
 	15.0,
-	40.0,
+	35.0,
 	10.0,
 	6.0,
 	2.0,
