@@ -53,13 +53,6 @@ static func from_string(s: String, rc: Enums.ROTATION_CENTER) -> PolyminoShape:
 	
 	return PolyminoShape.new(new_shape, rc)
 
-const MAX_SIZE := POLYMINO_SIZE*POLYMINO_SIZE
-static func generate_shapes() -> Array[PolyminoShape]:
-	var tree: Dictionary[Vector2i, Variant] = {Vector2i(0, 0): {}}
-	
-	
-	return []
-
 func _init(shape: Array[BlockInfo] = [null], center: Enums.ROTATION_CENTER = Enums.ROTATION_CENTER.FOUR) -> void:
 	if shape.size() < 16: return
 	shape_string = shape

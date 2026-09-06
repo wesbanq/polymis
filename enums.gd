@@ -74,9 +74,9 @@ var ABILITIES_ACTIVE := {
 	"noabil": NoAbility,
 }
 
-var ABILITIES_PASSIVE := {
-	
-}
+#var ABILITIES_PASSIVE := {
+	#
+#}
 
 enum SCORE_BOARD {
 	ROUND_NUM,
