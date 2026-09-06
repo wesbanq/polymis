@@ -67,14 +67,15 @@ static func _get_ranges(weight_src: Array[Variant]) -> Array[float]:
 	#create a list of ranges all corresponding to a polymino
 	#the length of a ranges is determined by the polyminos weight	
 	for v in weight_src:
-		var tmp := load(v)
+		var tmp = load(v) if v is String else v
 		result.append(tmp.weight + (result[-1] if result.size() > 0 else 0.))
 	return result
 
 @warning_ignore("shadowed_variable")
 func _get_random_pm() -> PolyminoShape:
 	#duplicate deep so as not to change the original polyminoshape resources
-	var shape: PolyminoShape = load(RNG.pick_random_weight(_get_ranges(ShapeGen.every_pm), ShapeGen.every_pm)).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
+	var picked: PolyminoShape = RNG.pick_random_weight(_get_ranges(ShapeGen.every_pm), ShapeGen.every_pm)
+	var shape: PolyminoShape = picked.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 	var new_color := RNG.get_random_color()
 	
 	for blk in shape.shape_string:
@@ -177,10 +178,10 @@ func _input(event: InputEvent) -> void:
 			if extra_buttons[Enums.SHOP_EXTRA_BUTTONS[key]] and extra_buttons[Enums.SHOP_EXTRA_BUTTONS[key]].button.click_within_block(world_pos):
 				purchase(Enums.SHOP_EXTRA_BUTTONS[key], false)
 
-func _pm_pos(i: int, a: bool = true) -> Vector2i:
+func _pm_pos(i: int, extra_button: bool = true) -> Vector2i:
 	@warning_ignore("integer_division")
-	return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1 if a else (2*i-1) + (i+1)*_grid_spacing + 2, 
-					height - height/3 if a else height/3)
+	return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing if extra_button else (2*i-1) + (i+1)*_grid_spacing + 2, 
+					height - height/3 if extra_button else height/3)
 	#return Vector2i(i*PM_SIZE + (i+1)*_grid_spacing + 1, height/2)
 
 func _stock_shop() -> void:
