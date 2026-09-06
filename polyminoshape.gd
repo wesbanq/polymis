@@ -53,6 +53,11 @@ static func from_string(s: String, rc: Enums.ROTATION_CENTER) -> PolyminoShape:
 	
 	return PolyminoShape.new(new_shape, rc)
 
+func change_color(color: Color) -> void:
+	for blk in shape_string:
+		if blk:
+			blk.color = color
+
 func _init(shape: Array[BlockInfo] = [null], center: Enums.ROTATION_CENTER = Enums.ROTATION_CENTER.FOUR) -> void:
 	if shape.size() < 16: return
 	shape_string = shape

@@ -21,7 +21,6 @@ metadata/_custom_type_script = "uid://c8h0liekeyd2c"
 
 [resource]
 script = ExtResource("1_1ff7w")
-weight = null
 shape_string = Array[ExtResource("2_q6iii")]([SubResource("Resource_y3jc4"), SubResource("Resource_sqd8v"), null, null, null, SubResource("Resource_k3d3l"), null, null, null, SubResource("Resource_al6es"), null, null, null, null, null, null])
 rotation_center = 3
 metadata/_custom_type_script = "uid://cruubg6nait1l"
