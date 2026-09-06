@@ -12,8 +12,7 @@ signal IncreasedPMCount
 
 const PM_SIZE := 4
 
-@onready var _avail_pieces := Enums.read_folder_paths(shape_path)
-@onready var _ranges: Array[float] = _get_ranges(_avail_pieces)
+#@onready var _avail_pieces := Enums.read_folder_paths(shape_path)
 
 var _bought_restocks := 0
 var _bought_removes := 0
@@ -75,7 +74,7 @@ static func _get_ranges(weight_src: Array[Variant]) -> Array[float]:
 @warning_ignore("shadowed_variable")
 func _get_random_pm() -> PolyminoShape:
 	#duplicate deep so as not to change the original polyminoshape resources
-	var shape: PolyminoShape = load(RNG.pick_random_weight(_ranges, _avail_pieces)).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
+	var shape: PolyminoShape = load(RNG.pick_random_weight(_get_ranges(ShapeGen.every_pm), ShapeGen.every_pm)).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 	var new_color := RNG.get_random_color()
 	
 	for blk in shape.shape_string:
