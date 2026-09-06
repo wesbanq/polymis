@@ -33,6 +33,7 @@ LimboConsole="*uid://dyxornv8vwibg"
 HoverManager="*res://hover_manager.gd"
 FontSizer="*uid://3abe3k6wcjgo"
 SFX="*uid://dg74fa8wfq5k7"
+ShapeGen="*uid://rluhx18r33ct"
 
 [editor]
 
