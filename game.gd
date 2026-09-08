@@ -163,6 +163,7 @@ func set_grid_scale(new_scale: int) -> void:
 		shop.grid_size_px = new_scale
 
 func register_commands() -> void:
+	LimboConsole.register_command(func(v: int = 120) -> void: LimboConsole.info(TuningSim.run(v)), "tunesim", "Runs every Tuning formula across <arg0> (default 120) rounds and writes CSVs to res://tuning_sim/.")
 	LimboConsole.register_command(func() -> void: LimboConsole.info("Block positions are now %s." % ("HIDDEN" if show_block_position else "SHOWN")); show_block_position = not show_block_position, "blkpos", "Toggles showing block positions.")
 	LimboConsole.register_command(func(v: int) -> void: pts += v; LimboConsole.info("Set pts to %d." % pts), "pts", "Adds <arg0> to pts.")
 	LimboConsole.register_command(_skip_board, "skip", "Skips to the next shop board.")

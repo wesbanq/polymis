@@ -42,7 +42,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/limbo_console/plugin.cfg")
+enabled=PackedStringArray("res://addons/limbo_console/plugin.cfg", "res://addons/tuning_sim_dock/plugin.cfg")
 
 [input]
 
