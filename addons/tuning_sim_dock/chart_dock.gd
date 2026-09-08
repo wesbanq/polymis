@@ -12,6 +12,12 @@ var _series: Dictionary = {}
 var _current_key: String = ""
 var _poll_accum := 0.0
 
+# current value of each formula's extra (non-swept) argument -- see TuningSim.EXTRA_ARGS.
+# one slider per entry is built in _ready(); keys/ranges/defaults all come from there so this
+# dock never needs its own copy of what the arguments are or what's reasonable for them
+var _arg_values: Dictionary = {}
+var _arg_labels: Dictionary = {}
+
 # local-to-_chart pixel x of the mouse, or -1 when not hovering; read back in _draw_chart()
 var _hover_x: float = -1.0
 
@@ -33,6 +39,9 @@ func _ready() -> void:
 	_option = OptionButton.new()
 	_option.item_selected.connect(_on_option_selected)
 	vbox.add_child(_option)
+
+	for arg_name in TuningSim.EXTRA_ARGS:
+		vbox.add_child(_build_arg_slider(arg_name, TuningSim.EXTRA_ARGS[arg_name]))
 
 	_chart = Control.new()
 	_chart.custom_minimum_size = Vector2(0, 200)
@@ -71,6 +80,35 @@ func _process(delta: float) -> void:
 	if _chart:
 		_chart.queue_redraw()
 
+func _build_arg_slider(arg_name: String, range_def: Dictionary) -> Control:
+	_arg_values[arg_name] = range_def["default"]
+
+	var row := HBoxContainer.new()
+
+	var label := Label.new()
+	label.custom_minimum_size = Vector2(70, 0)
+	label.text = "%s: %s" % [arg_name, str(range_def["default"])]
+	_arg_labels[arg_name] = label
+	row.add_child(label)
+
+	var slider := HSlider.new()
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.min_value = range_def["min"]
+	slider.max_value = range_def["max"]
+	slider.step = 1
+	slider.value = range_def["default"]
+	slider.value_changed.connect(func(v: float) -> void: _on_arg_changed(arg_name, v))
+	row.add_child(slider)
+
+	return row
+
+func _on_arg_changed(arg_name: String, value: float) -> void:
+	_arg_values[arg_name] = int(value)
+	_arg_labels[arg_name].text = "%s: %d" % [arg_name, int(value)]
+	_refresh_series()
+	if _chart:
+		_chart.queue_redraw()
+
 func _reload_watched() -> void:
 	for r in _watched:
 		if is_instance_valid(r) and r.changed.is_connected(_on_tuning_changed):
@@ -103,7 +141,7 @@ func _on_tuning_changed() -> void:
 		_status.text = "updated %s" % Time.get_time_string_from_system()
 
 func _refresh_series() -> void:
-	_series = TuningSim.compute_series(100)
+	_series = TuningSim.compute_series(100, _arg_values["width"], _arg_values["current"], _arg_values["abil_tier"])
 
 func _populate_options() -> void:
 	if not _option:
@@ -209,4 +247,4 @@ func _draw_chart() -> void:
 		_chart.draw_string(font, label_pos, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1, 0.9, 0.2))
 
 func _on_export_pressed() -> void:
-	_status.text = TuningSim.run()
+	_status.text = TuningSim.run(120, _arg_values["width"], _arg_values["current"], _arg_values["abil_tier"])

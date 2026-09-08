@@ -38,17 +38,28 @@ static func _modded_shape(n: int, mod_path: String) -> PolyminoShape:
 		shape.shape_string[i] = info
 	return shape
 
+## every formula argument that ISN'T the thing being swept across the x-axis, exposed here
+## with a slider-friendly (min, max, default) range so a UI can offer one control per argument
+## instead of the values being silently hardcoded
+const EXTRA_ARGS := {
+	"width": {"min": 4, "max": 20, "default": REPRESENTATIVE_WIDTH},        # score_goal, flash_time/pitch's line_width
+	"current": {"min": 0, "max": 30, "default": 5},                        # add_pm/restock/remove_pm_price's owned-count
+	"abil_tier": {"min": 0, "max": 2, "default": 0},                       # abil_unlock_price's ability slot tier
+}
+
 ## one Dictionary[String, Array[Vector2]] entry per plotted series -- x is round_num for
 ## everything except the two "by clear step" effect series, which don't scale with round_num
-## at all and get their own x-axis (progress through a single line-clear sequence)
-static func compute_series(max_round: int = 120) -> Dictionary:
+## at all and get their own x-axis (progress through a single line-clear sequence).
+## width/current/abil_tier are the formulas' extra (non-swept) arguments -- see EXTRA_ARGS.
+static func compute_series(max_round: int = 120, width: int = REPRESENTATIVE_WIDTH, current: int = 5, abil_tier: int = 0) -> Dictionary:
 	var game_t := load_game_tuning()
 	var shop_t := load_shop_tuning()
 	var effects_t := load_effects_tuning()
 
 	# two comparison shapes for get_pm_price: a plain 4-block piece, and a single gold-modded
 	# block (gold.tres, mod_price=5000 -- the most expensive modifier) to make the modifier
-	# compounding term's behavior visible rather than theoretical
+	# compounding term's behavior visible rather than theoretical. get_pm_price's "extra
+	# argument" is the shape itself, which isn't a slider-able scalar, so it stays fixed.
 	var plain_4 := _plain_shape(4)
 	var gold_1 := _modded_shape(1, "res://modifiers/resources/gold.tres")
 
@@ -58,23 +69,21 @@ static func compute_series(max_round: int = 120) -> Dictionary:
 		"add_pm_price": [] as Array[Vector2],
 		"restock_price": [] as Array[Vector2],
 		"remove_pm_price": [] as Array[Vector2],
-		"abil_unlock_price(tier0)": [] as Array[Vector2],
-		"abil_unlock_price(tier2)": [] as Array[Vector2],
+		"abil_unlock_price": [] as Array[Vector2],
 		"get_pm_price(4blk,no-mod)": [] as Array[Vector2],
 		"get_pm_price(1blk,gold-mod)": [] as Array[Vector2],
 	}
 	for round_num in range(1, max_round + 1):
-		series["score_goal"].append(Vector2(round_num, game_t.score_goal(round_num, REPRESENTATIVE_WIDTH)))
+		series["score_goal"].append(Vector2(round_num, game_t.score_goal(round_num, width)))
 		series["falling_speed"].append(Vector2(round_num, game_t.falling_speed(round_num)))
-		series["add_pm_price"].append(Vector2(round_num, shop_t.add_pm_price(round_num, 5)))
-		series["restock_price"].append(Vector2(round_num, shop_t.restock_price(round_num, 5)))
-		series["remove_pm_price"].append(Vector2(round_num, shop_t.remove_pm_price(round_num, 5)))
-		series["abil_unlock_price(tier0)"].append(Vector2(round_num, shop_t.abil_unlock_price(round_num, 0)))
-		series["abil_unlock_price(tier2)"].append(Vector2(round_num, shop_t.abil_unlock_price(round_num, 2)))
+		series["add_pm_price"].append(Vector2(round_num, shop_t.add_pm_price(round_num, current)))
+		series["restock_price"].append(Vector2(round_num, shop_t.restock_price(round_num, current)))
+		series["remove_pm_price"].append(Vector2(round_num, shop_t.remove_pm_price(round_num, current)))
+		series["abil_unlock_price"].append(Vector2(round_num, shop_t.abil_unlock_price(round_num, abil_tier)))
 		series["get_pm_price(4blk,no-mod)"].append(Vector2(round_num, shop_t.get_pm_price(plain_4, round_num)))
 		series["get_pm_price(1blk,gold-mod)"].append(Vector2(round_num, shop_t.get_pm_price(gold_1, round_num)))
 
-	var line_width := REPRESENTATIVE_WIDTH
+	var line_width := width
 	var flash_span := effects_t.last_flash_line * line_width
 	var flash_series: Array[Vector2] = []
 	var pitch_series: Array[Vector2] = []
@@ -102,12 +111,11 @@ static func _write_csv(filename: String, header: Array[String], rows: Array[Arra
 
 ## writes CSVs covering every series from compute_series() -- the entry point used by both
 ## the "tunesim" in-game console command and the "run in editor" EditorScript
-static func run(max_round: int = 120) -> String:
-	var series := compute_series(max_round)
+static func run(max_round: int = 120, width: int = REPRESENTATIVE_WIDTH, current: int = 5, abil_tier: int = 0) -> String:
+	var series := compute_series(max_round, width, current, abil_tier)
 	var round_keys: Array[String] = [
 		"score_goal", "falling_speed", "add_pm_price", "restock_price", "remove_pm_price",
-		"abil_unlock_price(tier0)", "abil_unlock_price(tier2)",
-		"get_pm_price(4blk,no-mod)", "get_pm_price(1blk,gold-mod)",
+		"abil_unlock_price", "get_pm_price(4blk,no-mod)", "get_pm_price(1blk,gold-mod)",
 	]
 	var rows: Array[Array] = []
 	for i in max_round:
