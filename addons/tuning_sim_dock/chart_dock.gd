@@ -6,8 +6,11 @@ var _chart: Control
 var _status: Label
 var _export_button: Button
 
+const POLL_INTERVAL := 0.25
+
 var _series: Dictionary = {}
 var _current_key: String = ""
+var _poll_accum := 0.0
 
 # local-to-_chart pixel x of the mouse, or -1 when not hovering; read back in _draw_chart()
 var _hover_x: float = -1.0
@@ -52,6 +55,21 @@ func _ready() -> void:
 	_reload_watched()
 	_refresh_series()
 	_populate_options()
+	set_process(true)
+
+## Resource.changed doesn't reliably fire for a generic property edit on a plain custom
+## Resource in the inspector (that behavior seems to be specific to built-in types like Curve/
+## Material, not something the generic inspector guarantees for arbitrary Resource subclasses)
+## -- confirmed by this dock not updating in practice. Polling is slower to react (up to
+## POLL_INTERVAL) but can't silently fail to notice a change the way the signal did.
+func _process(delta: float) -> void:
+	_poll_accum += delta
+	if _poll_accum < POLL_INTERVAL:
+		return
+	_poll_accum = 0.0
+	_refresh_series()
+	if _chart:
+		_chart.queue_redraw()
 
 func _reload_watched() -> void:
 	for r in _watched:
