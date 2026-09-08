@@ -9,6 +9,9 @@ var _export_button: Button
 var _series: Dictionary = {}
 var _current_key: String = ""
 
+# local-to-_chart pixel x of the mouse, or -1 when not hovering; read back in _draw_chart()
+var _hover_x: float = -1.0
+
 # every Resource we've hooked .changed on, so _reload_watched() can cleanly disconnect
 # before reconnecting (also covers Curve sub-resources like fall_speed/flash_curve, since
 # editing a curve control point emits `changed` on the Curve, not necessarily on the
@@ -31,7 +34,10 @@ func _ready() -> void:
 	_chart = Control.new()
 	_chart.custom_minimum_size = Vector2(0, 200)
 	_chart.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_chart.mouse_filter = Control.MOUSE_FILTER_STOP
 	_chart.draw.connect(_draw_chart)
+	_chart.gui_input.connect(_on_chart_gui_input)
+	_chart.mouse_exited.connect(_on_chart_mouse_exited)
 	vbox.add_child(_chart)
 
 	_status = Label.new()
@@ -101,6 +107,25 @@ func _on_option_selected(idx: int) -> void:
 	_current_key = _option.get_item_text(idx)
 	_chart.queue_redraw()
 
+func _on_chart_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		_hover_x = event.position.x
+		_chart.queue_redraw()
+
+func _on_chart_mouse_exited() -> void:
+	_hover_x = -1.0
+	_chart.queue_redraw()
+
+## compact display for values ranging from ~0.05 (falling_speed) to ~999999 (prices) --
+## GDScript's % string formatting has no %g ("shortest readable" float) specifier, so this
+## picks a fixed-decimal format by magnitude instead
+static func _fmt_num(v: float) -> String:
+	if absf(v) >= 1000.0:
+		return "%.0f" % v
+	elif absf(v) >= 1.0:
+		return "%.2f" % v
+	return "%.4f" % v
+
 func _draw_chart() -> void:
 	if _current_key == "" or not _series.has(_current_key):
 		return
@@ -139,8 +164,31 @@ func _draw_chart() -> void:
 	var font := ThemeDB.fallback_font
 	_chart.draw_string(font, Vector2(4, 14), _current_key, HORIZONTAL_ALIGNMENT_LEFT, -1, 12)
 	_chart.draw_string(font, Vector2(4, rect_size.y - 6),
-		"x: %s-%s   y: %.3g to %.3g" % [str(min_x), str(max_x), min_y, max_y],
+		"x: %s-%s   y: %s to %s" % [_fmt_num(min_x), _fmt_num(max_x), _fmt_num(min_y), _fmt_num(max_y)],
 		HORIZONTAL_ALIGNMENT_LEFT, -1, 11)
+
+	# hover readout: map the cursor's pixel x back to a data point and show its exact value.
+	# points are always consecutive integer x steps (round_num or clear-step), so the nearest
+	# index is a direct round-trip through the same x-axis scale used to build `poly` above
+	if _hover_x >= 0.0 and _hover_x >= margin and _hover_x <= rect_size.x - margin:
+		var data_x: float = min_x + (_hover_x - margin) / plot_w * (max_x - min_x)
+		var idx: int = clampi(roundi(data_x - points[0].x), 0, points.size() - 1)
+		var pt: Vector2 = points[idx]
+		var hx: float = margin + (pt.x - min_x) / (max_x - min_x) * plot_w
+		var hy: float = margin + plot_h - (pt.y - min_y) / (max_y - min_y) * plot_h
+
+		_chart.draw_line(Vector2(hx, margin), Vector2(hx, margin + plot_h), Color(1, 1, 1, 0.3), 1.0)
+		_chart.draw_circle(Vector2(hx, hy), 3.5, Color(1, 0.9, 0.2))
+
+		var label := "x=%s  y=%s" % [_fmt_num(pt.x), _fmt_num(pt.y)]
+		var label_size := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, 12)
+		var label_pos := Vector2(hx + 6, hy - 6)
+		if label_pos.x + label_size.x > rect_size.x:
+			label_pos.x = hx - 6 - label_size.x
+		if label_pos.y - label_size.y < 0:
+			label_pos.y = hy + label_size.y + 6
+		_chart.draw_rect(Rect2(label_pos + Vector2(-2, -label_size.y), label_size + Vector2(4, 4)), Color(0, 0, 0, 0.6))
+		_chart.draw_string(font, label_pos, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1, 0.9, 0.2))
 
 func _on_export_pressed() -> void:
 	_status.text = TuningSim.run()
