@@ -81,5 +81,5 @@ static func load_bag_resource(path: String, _game: GameMain) -> Bag:
 		var color := Color(randf(), randf(), randf())
 		for blk in ps.shape_string:
 			if blk:
-				blk.
+				blk.color = color
 	return new_bag
