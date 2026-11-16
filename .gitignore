@@ -10,3 +10,9 @@
 *.bmp
 fonts/
 *.svg
+
+# Godot imports CSVs as translations by default; tuning sim output isn't one
+tuning_sim/*.translation
+
+# Windows leftover copies of locked files
+~*
